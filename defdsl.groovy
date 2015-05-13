@@ -48,12 +48,24 @@ class Path {
 
 @Canonical
 class PathSpec {
-    PathSpec parent
+    private PathSpec parent
+
+    PathSpec(parent = null) {
+        this.parent = parent
+    }
+
+    Map<String, PathSpec> children = [:]
 
     VerbSpec get, post, patch, delete
 
     def methodMissing(String name, args) {
         println "PathSpec.MethodMissing: $name"
+        if (name.startsWith('/')) {
+            def innerSpec = new PathSpec(this)
+            Definition.runClosure(args[0], innerSpec, this)
+            children[name] = innerSpec
+            return innerSpec
+        }
         def verb = new VerbSpec(args[0])
         Definition.setProperty(this, name, verb)
         verb
@@ -148,6 +160,12 @@ def p = new Path()."/comments" {
     }.document { docs ->
         docs.description = "Description for comments.POST"
         docs
+    }
+
+    "/:id" {
+        get    {req, res -> "comments/:id.GET"}
+        patch  {req, res -> "comments/:id.PATCH"}
+        delete {req, res -> "comments/:id.DELETE"}
     }
 }
 
