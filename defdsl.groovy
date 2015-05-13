@@ -273,3 +273,27 @@ assert s.definition.schemas.Comment.properties.size() == 2
 assert s.definition.schemas.Comment.properties.id.type == 'Integer'
 
 println s
+
+@Grab('com.sparkjava:spark-core:2.1')
+class SpecLoader {
+    def verbs = ['get', 'patch', 'post', 'delete']
+    def loadSpec(Spec spec) {
+        loadPath(spec.path)
+    }
+
+    private def loadPath(Path pathSet) {
+        pathSet.paths.each { path ->
+            def pathName = path.key
+            println "registering path $pathName"
+            verbs.each { verb ->
+                if (path.value[verb]) {
+                    println "registering verb ${pathName}.${verb}"
+                    spark.Spark."$verb"(pathName, path.value[verb].run)
+                }
+            }
+        }
+
+    }
+}
+
+new SpecLoader().loadSpec(s)
