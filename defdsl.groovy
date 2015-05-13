@@ -50,23 +50,34 @@ class Path {
 class PathSpec {
     PathSpec parent
 
-    Closure get, post, patch, delete
+    VerbSpec get, post, patch, delete
 
     def methodMissing(String name, args) {
         println "PathSpec.MethodMissing: $name"
-
-        Definition.setProperty(this, name, args[0])
+        def verb = new VerbSpec(args[0])
+        Definition.setProperty(this, name, verb)
+        verb
     }
 }
 
 @Canonical
 class VerbSpec {
-    Closure handler
+    Closure run
+
+    VerbSpec document
 
     VerbSpec(Closure cl) {
-        handler = cl
+        run = cl
     }
+
+    def methodMissing(String name, args) {
+        println "VerbSpec.MethodMissing: $name"
+
+        Definition.setProperty(this, name, new VerbSpec(args[0]))
+    }
+
 }
+
 
 @Canonical
 class Schema {
@@ -135,13 +146,16 @@ def p = new Path()."/comments" {
     post { req, res ->
         "comments.POST"
     }.document { docs ->
+        docs.description = "Description for comments.POST"
         docs
     }
 }
 
 assert p."/comments"
-assert p."/comments".get(null, null) == "comments.GET"
-assert p."/comments".post(null, null) == "comments.POST"
+assert p."/comments".get.run(null, null) == "comments.GET"
+assert p."/comments".post.run(null, null) == "comments.POST"
+assert p."/comments".post.document.run([ summary: "Summary for comments.POST"]) ==
+        [ summary: "Summary for comments.POST", description: "Description for comments.POST"]
 
 println p
 
