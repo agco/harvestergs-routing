@@ -1,24 +1,6 @@
 // Builder syntax to create a schema with properties,
 // departing and destination airport and path it a 2-way flight.
-/*
-def schema = new SchemaBuilder().definition {
-    Comment {
-        properties {
-            foobar {
-                id {
-                    type 'Integer'
-                    description 'The comment id'
-                }
-                name {
-                    type 'String'
-                    description 'The comment name'
-                }
-            }
-        }
-        required 'id', 'name'
-    }
-}
-*/
+
 def schema = new defBuilder().Comment {
     properties {
         id {
@@ -30,8 +12,9 @@ def schema = new defBuilder().Comment {
             description 'The comment name'
         }
     }
-    //required 'id', 'name'
+    required 'id', 'name'
 }
+
 //assert schema.properties.size() == 2
 //assert schema.properties == [new Property(name: 'mrhaki'), new Property(name: 'Hubert A. Klein Ikkink')]
 //assert schema.retourFlight
@@ -72,10 +55,6 @@ class defBuilder {
     }
 }
 
-@Canonical
-class Definition {
-    Map<String, Schema> schemas = [:]
-}
 
 @Canonical
 class Schema {
@@ -90,7 +69,7 @@ class Schema {
                 defBuilder.runClosure(args[0], propList, this);
                 break;
             case "required":
-                println "foobar"
+                this.required = args
         }
     }
 }
