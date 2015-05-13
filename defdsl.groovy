@@ -165,6 +165,7 @@ def p = new Path()."/comments" {
     "/:id" {
         get    {req, res -> "comments/:id.GET"}
         patch  {req, res -> "comments/:id.PATCH"}
+            .document { docs -> docs.operationId = "commentUpdate"; docs }
         delete {req, res -> "comments/:id.DELETE"}
     }
 }
@@ -174,6 +175,9 @@ assert p."/comments".get.run(null, null) == "comments.GET"
 assert p."/comments".post.run(null, null) == "comments.POST"
 assert p."/comments".post.document.run([ summary: "Summary for comments.POST"]) ==
         [ summary: "Summary for comments.POST", description: "Description for comments.POST"]
+
+assert p."/comments".children."/:id".get.run(null, null) == "comments/:id.GET"
+assert p."/comments".children."/:id".patch.document.run([:]) == [ operationId: "commentUpdate" ]
 
 println p
 
