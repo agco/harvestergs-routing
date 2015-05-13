@@ -48,12 +48,24 @@ class Path {
 
 @Canonical
 class PathSpec {
-    PathSpec parent
+    private PathSpec parent
+
+    PathSpec(parent = null) {
+        this.parent = parent
+    }
+
+    Map<String, PathSpec> children = [:]
 
     VerbSpec get, post, patch, delete
 
     def methodMissing(String name, args) {
         println "PathSpec.MethodMissing: $name"
+        if (name.startsWith('/')) {
+            def innerSpec = new PathSpec(this)
+            Definition.runClosure(args[0], innerSpec, this)
+            children[name] = innerSpec
+            return innerSpec
+        }
         def verb = new VerbSpec(args[0])
         Definition.setProperty(this, name, verb)
         verb
@@ -149,6 +161,13 @@ def p = new Path()."/comments" {
         docs.description = "Description for comments.POST"
         docs
     }
+
+    "/:id" {
+        get    {req, res -> "comments/:id.GET"}
+        patch  {req, res -> "comments/:id.PATCH"}
+            .document { docs -> docs.operationId = "commentUpdate"; docs }
+        delete {req, res -> "comments/:id.DELETE"}
+    }
 }
 
 assert p."/comments"
@@ -156,6 +175,9 @@ assert p."/comments".get.run(null, null) == "comments.GET"
 assert p."/comments".post.run(null, null) == "comments.POST"
 assert p."/comments".post.document.run([ summary: "Summary for comments.POST"]) ==
         [ summary: "Summary for comments.POST", description: "Description for comments.POST"]
+
+assert p."/comments".children."/:id".get.run(null, null) == "comments/:id.GET"
+assert p."/comments".children."/:id".patch.document.run([:]) == [ operationId: "commentUpdate" ]
 
 println p
 
