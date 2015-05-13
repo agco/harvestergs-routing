@@ -139,6 +139,22 @@ class Property {
     }
 }
 
+@Canonical
+class Spec {
+    Definition definition = new Definition()
+    Path path = new Path()
+
+    def definition(Closure cl) {
+        Definition.runClosure(cl, definition, this)
+        this
+    }
+
+    def path(Closure cl) {
+        Definition.runClosure(cl, path, this)
+        this
+    }
+}
+
 def d = new Definition().Comment {
     properties {
         id {
@@ -195,3 +211,94 @@ assert p."/comments".post.flags.contains('skipValidation')
 
 println p
 
+def spec = new Spec()
+def s = new Spec()
+    .definition {
+        Comment {
+            properties {
+                id {
+                    type 'Integer'
+                    description 'The comment id'
+                }
+                name {
+                    type 'String'
+                    description 'The comment name'
+                }
+            }
+            required 'id', 'name'
+        }
+                .path
+    }
+    .path {
+        "/comments" {
+            get { req, res ->
+                "comments.GET"
+            }
+
+            post { req, res ->
+                "comments.POST"
+            }.document { docs ->
+                docs.description = "Description for comments.POST"
+                docs
+            }
+            .skipAuth
+                    .skipValidation
+
+            "/:id" {
+                get    {req, res -> "comments/:id.GET"}
+                patch  {req, res -> "comments/:id.PATCH"}
+                        .document { docs -> docs.operationId = "commentUpdate"; docs }
+                delete {req, res -> "comments/:id.DELETE"}
+            }
+        }
+    }
+
+assert s.definition
+assert s.path
+
+assert s.path.paths["/comments"]
+assert s.path.paths["/comments"].get.run(null, null) == "comments.GET"
+assert s.path.paths["/comments"].post.run(null, null) == "comments.POST"
+assert s.path.paths["/comments"].post.document.run([ summary: "Summary for comments.POST"]) ==
+        [ summary: "Summary for comments.POST", description: "Description for comments.POST"]
+
+assert s.path.paths["/comments"].children."/:id".get.run(null, null) == "comments/:id.GET"
+assert s.path.paths["/comments"].children."/:id".patch.document.run([:]) == [ operationId: "commentUpdate" ]
+
+assert s.path.paths["/comments"].post.flags.contains('skipAuth')
+assert s.path.paths["/comments"].post.flags.contains('skipValidation')
+
+assert s.definition.schemas.Comment.properties.size() == 2
+assert s.definition.schemas.Comment.properties.size() == 2
+assert s.definition.schemas.Comment.properties.id.type == 'Integer'
+
+println s
+
+@Grab('com.sparkjava:spark-core:2.1')
+class SpecLoader {
+    def verbs = ['get', 'patch', 'post', 'delete']
+    def loadSpec(Spec spec) {
+        loadPath(spec.path)
+    }
+
+    private def loadPath(Path pathSet) {
+        pathSet.paths.each { path ->
+            loadPathSpec(path.value, path.key)
+        }
+    }
+
+    private def loadPathSpec(PathSpec path, String pathName) {
+        println "registering path $pathName"
+        verbs.each { verb ->
+            if (path[verb]) {
+                println "registering verb ${pathName}.${verb}"
+                spark.Spark."$verb"(pathName, path[verb].run)
+            }
+        }
+        path.children.each {
+            loadPathSpec(it.value, pathName + it.key)
+        }
+    }
+}
+
+new SpecLoader().loadSpec(s)
