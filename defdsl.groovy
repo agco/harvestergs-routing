@@ -75,17 +75,26 @@ class PathSpec {
 @Canonical
 class VerbSpec {
     Closure run
-
     VerbSpec document
+    HashSet<String> flags = new HashSet<>()
 
     VerbSpec(Closure cl) {
         run = cl
     }
 
+    def propertyMissing(String name) {
+        println "VerbSpec.propertyMissing $name"
+        flags.add(name)
+        // returning 'this' to allow further chaining
+        this
+    }
+
     def methodMissing(String name, args) {
         println "VerbSpec.MethodMissing: $name"
-
-        Definition.setProperty(this, name, new VerbSpec(args[0]))
+        def verb = new VerbSpec(args[0])
+        Definition.setProperty(this, name, verb)
+        // returning 'this' to allow further chaining
+        this
     }
 
 }
@@ -161,6 +170,8 @@ def p = new Path()."/comments" {
         docs.description = "Description for comments.POST"
         docs
     }
+    .skipAuth
+    .skipValidation
 
     "/:id" {
         get    {req, res -> "comments/:id.GET"}
@@ -178,6 +189,9 @@ assert p."/comments".post.document.run([ summary: "Summary for comments.POST"]) 
 
 assert p."/comments".children."/:id".get.run(null, null) == "comments/:id.GET"
 assert p."/comments".children."/:id".patch.document.run([:]) == [ operationId: "commentUpdate" ]
+
+assert p."/comments".post.flags.contains('skipAuth')
+assert p."/comments".post.flags.contains('skipValidation')
 
 println p
 
