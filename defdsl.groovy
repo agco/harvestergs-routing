@@ -3,6 +3,7 @@
 // ----------------------------------------------
 import groovy.transform.*
 
+@Canonical
 class Definition {
     Map<String, Schema> schemas = [:]
 
@@ -32,6 +33,40 @@ class Definition {
     }
 }
 
+@Canonical
+class Path {
+    Map<String, PathSpec> paths = [:]
+
+    def methodMissing(String name, args) {
+        println "Path.MethodMissing: $name"
+        def spec = new PathSpec()
+        paths[name] = spec
+        Definition.runClosure(args[0], spec, this)
+        paths
+    }
+}
+
+@Canonical
+class PathSpec {
+    PathSpec parent
+
+    Closure get, post, patch, delete
+
+    def methodMissing(String name, args) {
+        println "PathSpec.MethodMissing: $name"
+
+        Definition.setProperty(this, name, args[0])
+    }
+}
+
+@Canonical
+class VerbSpec {
+    Closure handler
+
+    VerbSpec(Closure cl) {
+        handler = cl
+    }
+}
 
 @Canonical
 class Schema {
@@ -72,7 +107,7 @@ class Property {
     }
 }
 
-def x = new Definition().Comment {
+def d = new Definition().Comment {
     properties {
         id {
             type 'Integer'
@@ -87,8 +122,26 @@ def x = new Definition().Comment {
 }
 
 
-assert x.Comment.properties.size() == 2
-assert x.Comment.properties.id.type == 'Integer'
+assert d.Comment.properties.size() == 2
+assert d.Comment.properties.id.type == 'Integer'
 
-println x
+println d
+
+def p = new Path()."/comments" {
+    get { req, res ->
+        "comments.GET"
+    }
+
+    post { req, res ->
+        "comments.POST"
+    }.document { docs ->
+        docs
+    }
+}
+
+assert p."/comments"
+assert p."/comments".get(null, null) == "comments.GET"
+assert p."/comments".post(null, null) == "comments.POST"
+
+println p
 
