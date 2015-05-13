@@ -1,26 +1,3 @@
-// Builder syntax to create a schema with properties,
-// departing and destination airport and path it a 2-way flight.
-
-def schema = new defBuilder().Comment {
-    properties {
-        id {
-            type 'Integer'
-            description 'The comment id'
-        }
-        name {
-            type 'String'
-            description 'The comment name'
-        }
-    }
-    required 'id', 'name'
-}
-
-//assert schema.properties.size() == 2
-//assert schema.properties == [new Property(name: 'mrhaki'), new Property(name: 'Hubert A. Klein Ikkink')]
-//assert schema.retourFlight
-
-println schema
-
 // ----------------------------------------------
 // Builder implementation and supporting classes.
 // ----------------------------------------------
@@ -58,7 +35,7 @@ class defBuilder {
 
 @Canonical
 class Schema {
-    PropertyList propList = new PropertyList()
+    PropertyList properties = new PropertyList()
 
     List<String> required = []
 
@@ -66,7 +43,7 @@ class Schema {
         println "Schema.methodMissing $name"
         switch (name) {
             case "properties":
-                defBuilder.runClosure(args[0], propList, this);
+                defBuilder.runClosure(args[0], properties, this);
                 break;
             case "required":
                 this.required = args
@@ -75,20 +52,17 @@ class Schema {
 }
 
 @Canonical
-class PropertyList {
-    List<Property> properties = []
-
+class PropertyList extends HashMap<String, Property> {
     def methodMissing(String name, args) {
         println "PropertyList.methodMissing $name"
-        def prop = new Property(name: name)
+        def prop = new Property()
         defBuilder.runClosure(args[0], prop, this)
-        properties << prop
+        this[name] = prop
     }
 }
 
 @Canonical
-class Property { 
-    String name
+class Property {
     String type
     String description
 
@@ -97,4 +71,27 @@ class Property {
         defBuilder.setProperty(this, name, args[0])
     }
 }
+
+// Builder syntax to create a schema with properties,
+// departing and destination airport and path it a 2-way flight.
+
+def x = new defBuilder().Comment {
+    properties {
+        id {
+            type 'Integer'
+            description 'The comment id'
+        }
+        name {
+            type 'String'
+            description 'The comment name'
+        }
+    }
+    required 'id', 'name'
+}
+
+
+assert x.Comment.properties.size() == 2
+assert x.Comment.properties.id.type == 'Integer'
+
+println x
 
