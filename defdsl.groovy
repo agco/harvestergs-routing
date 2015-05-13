@@ -3,19 +3,19 @@
 // ----------------------------------------------
 import groovy.transform.*
 
-class defBuilder {
+class Definition {
     Map<String, Schema> schemas = [:]
 
     def methodMissing(String name, args) {
-        println "defBuilder.MethodMissing: $name"
+        println "Definition.MethodMissing: $name"
         def schema = new Schema()
         schemas[name] = schema
-        defBuilder.runClosure(args[0], schema, this)
+        Definition.runClosure(args[0], schema, this)
         schemas
     }
 
     static def runClosure(Closure cl, Object delegate, Object owner) {
-        println "defBuilder.runClosure"
+        println "Definition.runClosure"
         def code = cl.rehydrate(delegate, owner, owner)
         code.resolveStrategy = Closure.DELEGATE_ONLY
         code()
@@ -43,7 +43,7 @@ class Schema {
         println "Schema.methodMissing $name"
         switch (name) {
             case "properties":
-                defBuilder.runClosure(args[0], properties, this);
+                Definition.runClosure(args[0], properties, this);
                 break;
             case "required":
                 this.required = args
@@ -56,7 +56,7 @@ class PropertyList extends HashMap<String, Property> {
     def methodMissing(String name, args) {
         println "PropertyList.methodMissing $name"
         def prop = new Property()
-        defBuilder.runClosure(args[0], prop, this)
+        Definition.runClosure(args[0], prop, this)
         this[name] = prop
     }
 }
@@ -68,14 +68,11 @@ class Property {
 
     def methodMissing(String name, args) {
         println "Property.methodMissing $name"
-        defBuilder.setProperty(this, name, args[0])
+        Definition.setProperty(this, name, args[0])
     }
 }
 
-// Builder syntax to create a schema with properties,
-// departing and destination airport and path it a 2-way flight.
-
-def x = new defBuilder().Comment {
+def x = new Definition().Comment {
     properties {
         id {
             type 'Integer'
