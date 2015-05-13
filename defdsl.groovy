@@ -141,20 +141,16 @@ class Property {
 
 @Canonical
 class Spec {
-    List<Definition> definitions = []
-    List<Path> paths = []
+    Definition definition = new Definition()
+    Path path = new Path()
 
     def definition(Closure cl) {
-        def d = new Definition()
-        definitions << d
-        Definition.runClosure(cl, d, this)
+        Definition.runClosure(cl, definition, this)
         this
     }
 
     def path(Closure cl) {
-        def p = new Path()
-        paths << p
-        Definition.runClosure(cl, p, this)
+        Definition.runClosure(cl, path, this)
         this
     }
 }
@@ -257,19 +253,23 @@ def s = new Spec()
         }
     }
 
-assert s.definitions
-assert s.paths
+assert s.definition
+assert s.path
 
-assert p."/comments"
-assert p."/comments".get.run(null, null) == "comments.GET"
-assert p."/comments".post.run(null, null) == "comments.POST"
-assert p."/comments".post.document.run([ summary: "Summary for comments.POST"]) ==
+assert s.path.paths["/comments"]
+assert s.path.paths["/comments"].get.run(null, null) == "comments.GET"
+assert s.path.paths["/comments"].post.run(null, null) == "comments.POST"
+assert s.path.paths["/comments"].post.document.run([ summary: "Summary for comments.POST"]) ==
         [ summary: "Summary for comments.POST", description: "Description for comments.POST"]
 
-assert p."/comments".children."/:id".get.run(null, null) == "comments/:id.GET"
-assert p."/comments".children."/:id".patch.document.run([:]) == [ operationId: "commentUpdate" ]
+assert s.path.paths["/comments"].children."/:id".get.run(null, null) == "comments/:id.GET"
+assert s.path.paths["/comments"].children."/:id".patch.document.run([:]) == [ operationId: "commentUpdate" ]
 
-assert p."/comments".post.flags.contains('skipAuth')
-assert p."/comments".post.flags.contains('skipValidation')
+assert s.path.paths["/comments"].post.flags.contains('skipAuth')
+assert s.path.paths["/comments"].post.flags.contains('skipValidation')
+
+assert s.definition.schemas.Comment.properties.size() == 2
+assert s.definition.schemas.Comment.properties.size() == 2
+assert s.definition.schemas.Comment.properties.id.type == 'Integer'
 
 println s
