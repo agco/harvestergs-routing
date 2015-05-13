@@ -25,7 +25,12 @@ def schema = new RouteBuilder().Category {
             type 'String'
             description 'Foo bar'
         }
+        id {
+            type 'Integer'
+            description 'Foo bar'
+        }
     }
+    required 'name', 'id'
 }
 
 println JsonOutput.toJson(schema)
@@ -39,16 +44,23 @@ import groovy.util.BuilderSupport
 
 @Canonical
 class JsonSchema {
-    String resourceName
-    def properties = [:]
+    String title
+    Map<String, PropertySchema> properties
+    HashSet<String> required
 }
 
 @Canonical
-class propertySchema {
-
+class PropertySchema {
+    String type
+    String description
 }
 
 class RouteBuilder extends BuilderSupport {
+    def nameMapping = [
+        "properties": { new HashMap<String, PropertySchema>() },
+        "required":   { new HashSet<String>() }
+    ]
+
     @java.lang.Override
     protected void setParent(java.lang.Object parent, java.lang.Object child) {
         println "setParent: parent: [$parent] child: [$child]"
@@ -66,9 +78,12 @@ class RouteBuilder extends BuilderSupport {
     protected java.lang.Object createNode(java.lang.Object methodName) {
         println "createNode: [$methodName]"
         if (! getCurrent()) {
-            return new JsonSchema(resourceName: methodName)
+            return new JsonSchema(title: methodName)
         }
 
+        if (nameMapping.containsKey(methodName)) {
+            return [name: methodName, value: nameMapping[methodName]()]
+        }
         return [name: methodName, value: [:]]
     }
 
