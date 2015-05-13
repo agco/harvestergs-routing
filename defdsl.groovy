@@ -139,6 +139,26 @@ class Property {
     }
 }
 
+@Canonical
+class Spec {
+    List<Definition> definitions = []
+    List<Path> paths = []
+
+    def definition(Closure cl) {
+        def d = new Definition()
+        definitions << d
+        Definition.runClosure(cl, d, this)
+        this
+    }
+
+    def path(Closure cl) {
+        def p = new Path()
+        paths << p
+        Definition.runClosure(cl, p, this)
+        this
+    }
+}
+
 def d = new Definition().Comment {
     properties {
         id {
@@ -195,3 +215,61 @@ assert p."/comments".post.flags.contains('skipValidation')
 
 println p
 
+def spec = new Spec()
+def s = new Spec()
+    .definition {
+        Comment {
+            properties {
+                id {
+                    type 'Integer'
+                    description 'The comment id'
+                }
+                name {
+                    type 'String'
+                    description 'The comment name'
+                }
+            }
+            required 'id', 'name'
+        }
+                .path
+    }
+    .path {
+        "/comments" {
+            get { req, res ->
+                "comments.GET"
+            }
+
+            post { req, res ->
+                "comments.POST"
+            }.document { docs ->
+                docs.description = "Description for comments.POST"
+                docs
+            }
+            .skipAuth
+                    .skipValidation
+
+            "/:id" {
+                get    {req, res -> "comments/:id.GET"}
+                patch  {req, res -> "comments/:id.PATCH"}
+                        .document { docs -> docs.operationId = "commentUpdate"; docs }
+                delete {req, res -> "comments/:id.DELETE"}
+            }
+        }
+    }
+
+assert s.definitions
+assert s.paths
+
+assert p."/comments"
+assert p."/comments".get.run(null, null) == "comments.GET"
+assert p."/comments".post.run(null, null) == "comments.POST"
+assert p."/comments".post.document.run([ summary: "Summary for comments.POST"]) ==
+        [ summary: "Summary for comments.POST", description: "Description for comments.POST"]
+
+assert p."/comments".children."/:id".get.run(null, null) == "comments/:id.GET"
+assert p."/comments".children."/:id".patch.document.run([:]) == [ operationId: "commentUpdate" ]
+
+assert p."/comments".post.flags.contains('skipAuth')
+assert p."/comments".post.flags.contains('skipValidation')
+
+println s
