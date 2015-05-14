@@ -1,6 +1,7 @@
 // ----------------------------------------------
 // Builder implementation and supporting classes.
 // ----------------------------------------------
+import com.oracle.webservices.internal.api.message.ContentType
 import groovy.transform.*
 
 @Canonical
@@ -140,7 +141,7 @@ class Property {
 }
 
 @Canonical
-class Spec {
+class Resource {
     Definition definition = new Definition()
     Path path = new Path()
 
@@ -211,8 +212,8 @@ assert p."/comments".post.flags.contains('skipValidation')
 
 println p
 
-def spec = new Spec()
-def s = new Spec()
+def spec = new Resource()
+def s = new Resource()
     .definition {
         Comment {
             properties {
@@ -232,11 +233,11 @@ def s = new Spec()
     .path {
         "/comments" {
             get { req, res ->
-                "comments.GET"
+                "comments.get"
             }
 
             post { req, res ->
-                "comments.POST"
+                "comments.post"
             }.document { docs ->
                 docs.description = "Description for comments.POST"
                 docs
@@ -245,10 +246,10 @@ def s = new Spec()
                     .skipValidation
 
             "/:id" {
-                get    {req, res -> "comments/:id.GET"}
-                patch  {req, res -> "comments/:id.PATCH"}
+                get    {req, res -> "comments/1.get"}
+                patch  {req, res -> "comments/1.patch"}
                         .document { docs -> docs.operationId = "commentUpdate"; docs }
-                delete {req, res -> "comments/:id.DELETE"}
+                delete {req, res -> "comments/1.delete"}
             }
         }
     }
@@ -257,12 +258,12 @@ assert s.definition
 assert s.path
 
 assert s.path.paths["/comments"]
-assert s.path.paths["/comments"].get.run(null, null) == "comments.GET"
-assert s.path.paths["/comments"].post.run(null, null) == "comments.POST"
+assert s.path.paths["/comments"].get.run(null, null) == "comments.get"
+assert s.path.paths["/comments"].post.run(null, null) == "comments.post"
 assert s.path.paths["/comments"].post.document.run([ summary: "Summary for comments.POST"]) ==
         [ summary: "Summary for comments.POST", description: "Description for comments.POST"]
 
-assert s.path.paths["/comments"].children."/:id".get.run(null, null) == "comments/:id.GET"
+assert s.path.paths["/comments"].children."/:id".get.run(null, null) == "comments/1.get"
 assert s.path.paths["/comments"].children."/:id".patch.document.run([:]) == [ operationId: "commentUpdate" ]
 
 assert s.path.paths["/comments"].post.flags.contains('skipAuth')
@@ -275,9 +276,9 @@ assert s.definition.schemas.Comment.properties.id.type == 'Integer'
 println s
 
 @Grab('com.sparkjava:spark-core:2.1')
-class SpecLoader {
+class RouteLoader {
     def verbs = ['get', 'patch', 'post', 'delete']
-    def loadSpec(Spec spec) {
+    def loadResource(Resource spec) {
         loadPath(spec.path)
     }
 
@@ -301,4 +302,26 @@ class SpecLoader {
     }
 }
 
-new SpecLoader().loadSpec(s)
+new RouteLoader().loadResource(s)
+
+@Grab('org.codehaus.groovy.modules.http-builder:http-builder:0.7.1')
+
+import groovyx.net.http.RESTClient
+import groovyx.net.http.ContentType
+import static groovyx.net.http.ContentType.JSON
+
+
+def client = new RESTClient('http://localhost:4567')
+def targets = [
+        "comments" : [ "get", "post" ],
+        "comments/1": ["get", "patch", "delete"]
+]
+targets.each { path ->
+    path.value.each { verb ->
+        def res = client."$verb"(path: path.key, requestContentType: ContentType.JSON)
+        assert res.status == 200
+        assert res.responseData == "${path.key}.${verb}"
+    }
+}
+
+spark.Spark.stop()
