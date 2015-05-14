@@ -276,7 +276,7 @@ assert s.definition.schemas.Comment.properties.id.type == 'Integer'
 println s
 
 @Grab('com.sparkjava:spark-core:2.1')
-class RouteLoader {
+class RsrourceLoader {
     def verbs = ['get', 'patch', 'post', 'delete']
     def loadResource(Resource spec) {
         loadPath(spec.path)
@@ -302,7 +302,7 @@ class RouteLoader {
     }
 }
 
-new RouteLoader().loadResource(s)
+new RsrourceLoader().loadResource(s)
 
 @Grab('org.codehaus.groovy.modules.http-builder:http-builder:0.7.1')
 
