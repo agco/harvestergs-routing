@@ -1,15 +1,6 @@
-import groovy.json.JsonOutput
 import cucumber.api.PendingException
-
 import static cucumber.api.groovy.EN.*
-import groovyx.net.http.RESTClient
-import groovyx.net.http.ContentType
-import static groovyx.net.http.ContentType.JSON
 
-def client = new RESTClient('http://localhost:9091')
-def resp
-def inputOrder
-def error
 def sut
 def input
 def target
