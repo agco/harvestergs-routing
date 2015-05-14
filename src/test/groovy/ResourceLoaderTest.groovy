@@ -1,4 +1,4 @@
-
+/*
 def d = new Definition().Comment {
     properties {
         id {
@@ -118,7 +118,7 @@ assert s.definition.schemas.Comment.properties.id.type == 'Integer'
 
 println s
 
-new RsrourceLoader().loadResource(s)
+new ResourceLoader().loadResource(s)
 
 import groovyx.net.http.RESTClient
 import groovyx.net.http.ContentType
@@ -139,3 +139,4 @@ targets.each { path ->
 }
 
 spark.Spark.stop()
+*/

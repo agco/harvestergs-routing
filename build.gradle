@@ -27,4 +27,9 @@ dependencies {
     testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
+
+    def cucumberVersion ='1.2.2'
+    testCompile "info.cukes:cucumber-groovy:$cucumberVersion"
+    testCompile "info.cukes:cucumber-junit:$cucumberVersion"
+    //testCompile group: 'info.cukes', version: cucumberVersion, name: 'cucumber-junit'
 }

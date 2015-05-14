@@ -1,4 +1,4 @@
-class RsrourceLoader {
+class ResourceLoader {
     def verbs = ['get', 'patch', 'post', 'delete']
     def loadResource(Resource spec) {
         loadPath(spec.path)
