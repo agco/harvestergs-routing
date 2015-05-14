@@ -1,5 +1,6 @@
 import groovy.json.JsonOutput
 import cucumber.api.PendingException
+
 import static cucumber.api.groovy.EN.*
 import groovyx.net.http.RESTClient
 import groovyx.net.http.ContentType
@@ -17,6 +18,8 @@ def createSut(entity) {
     switch (entity) {
         case "schema" : return new Definition()
         case "path": return new Path()
+        case "resource": return new Resource()
+        default: throw new PendingException()
     }
 }
 
@@ -73,6 +76,13 @@ When(~/^it is fully defined/) { ->
         case "path":
             input = definePath(sut)
             break
+        case "resource":
+            input = new Resource()
+            input.definition = defineSchema(sut.definition)
+            input.path = definePath(sut.path)
+            break
+        default:
+            throw new PendingException()
     }
 }
 
@@ -103,5 +113,11 @@ Then(~/it correctly maps into a set of objects/) { ->
         case "path":
             checkPath(input)
             break
+        case "resource":
+            checkSchema(input.definition.schemas)
+            checkPath(input.path.paths)
+            break
+        default:
+            throw new PendingException()
     }
 }
