@@ -2,11 +2,11 @@ import groovy.transform.*
 
 @Canonical
 class Resource {
-    Definition definition = new Definition()
-    Path path = new Path()
+    Definition definitions = new Definition()
+    Path paths = new Path()
 
     def definition(Closure cl) {
-        Definition.runClosure(cl, definition, this)
+        Definition.runClosure(cl, definitions, this)
         this
     }
 

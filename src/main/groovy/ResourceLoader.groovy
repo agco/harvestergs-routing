@@ -1,7 +1,9 @@
 class ResourceLoader {
-    def verbs = ['get', 'patch', 'post', 'delete']
+    private final verbs = ['get', 'patch', 'post', 'delete']
+
     def loadResource(Resource spec) {
-        loadPath(spec.path)
+        loadPath(spec.paths)
+        loadDocs(spec)
     }
 
     private def loadPath(Path pathSet) {
@@ -21,6 +23,11 @@ class ResourceLoader {
         path.children.each {
             loadPathSpec(it.value, pathName + it.key)
         }
+    }
+
+    private def loadDocs(Resource spec) {
+        def swaggerDoc = "foobar"
+        spark.Spark.get("/swagger") { req, res -> swagerDoc }
     }
 }
 
