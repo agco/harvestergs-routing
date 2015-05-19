@@ -1,3 +1,10 @@
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.fge.jackson.JsonLoader
+import com.github.fge.jsonschema.main.JsonSchemaFactory
+import groovy.json.JsonOutput
+
+//import static java.util.UUID.randomUUID
+
 class ResourceLoader {
     private final verbs = ['get', 'patch', 'post', 'delete']
 
@@ -5,6 +12,18 @@ class ResourceLoader {
         loadPath spec.paths
         loadDocs spec
         loadValidation spec
+
+        spark.Spark.exception(ValidationException.class, { e, request, response ->
+            response.status(400);
+            response.body(JsonOutput.toJson([
+                    id: UUID.randomUUID(),
+                    title: 'Invalid data',
+                    detail: e.validationResults
+            ]));
+            //response.body('{ "message": "Invalid input" }');
+            response.type("application/json");
+        });
+
     }
 
     private def loadPath(Path pathSet) {
@@ -31,13 +50,31 @@ class ResourceLoader {
         spark.Spark.get("/swagger"){ req, res -> swagerDoc }
     }
 
+    private def jsonSchemaFactory = JsonSchemaFactory.byDefault()
+    private def objectMapper = new ObjectMapper()
+
+
+    // todo: extract this method (and exception) so it can be broadly used
+    def error = [
+            invalid: { results -> throw new ValidationException( validationResults: results ) }
+    ]
+
+    class ValidationException extends RuntimeException {
+        String validationResults
+    }
+
     private def loadValidation(Resource spec) {
         spec.paths.paths.each {
+            // todo: just create schemas for mapped actions
+            def dslSchema = spec.definitions.schemas.iterator().next().value
+            def postSchema = jsonSchemaFactory.getJsonSchema(objectMapper.valueToTree(dslSchema))
             spark.Spark.before("${it.key}"){ req, res ->
-                if (req.requestMethod() == 'POST'){
-                    println "request contents: ${req.body()}"
-                    if (!req.body()?.contains('name')) {
-                        spark.Spark.halt(400)
+                if (req.requestMethod() == 'POST') {
+                    // todo: handle parsing errors -- shouldn't they all return a 400?
+                    def validationResults = postSchema.validate(JsonLoader.fromString(req.body()?:"{}"))
+                    if (!validationResults.isSuccess()) {
+                        //spark.Spark.halt 400, validationResults.messages.toString()
+                        error.invalid validationResults.messages.toString()
                     }
                 }
             }

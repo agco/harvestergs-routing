@@ -1,4 +1,6 @@
 import cucumber.api.PendingException
+import groovy.json.JsonSlurper
+
 import static cucumber.api.groovy.EN.*
 import groovyx.net.http.RESTClient
 import groovyx.net.http.*
@@ -41,11 +43,11 @@ def defineSchema(builder) {
     builder.Comment {
         properties {
             id {
-                type 'Integer'
+                type 'integer'
                 description 'The comment id'
             }
             name {
-                type 'String'
+                type 'string'
                 description 'The comment name'
             }
         }
@@ -108,7 +110,7 @@ When(~/^it is loaded/) { ->
 
 def checkSchema(schema) {
     assert schema.Comment.properties.size() == 2
-    assert schema.Comment.properties.id.type == 'Integer'
+    assert schema.Comment.properties.id.type == 'integer'
 }
 
 def checkPath(path) {
@@ -172,13 +174,18 @@ When(~/^I post a resource that is missing mandatory fields$/) { ->
     }
 }
 
-Then(~/^I receive an error code$/) { ->
-    assert error.statusCode == 400
+Then(~/^I receive a (\d+) code$/) { code ->
+    assert error.statusCode.toString() == code
 }
 
-Then(~/^the message lists all missing fields$/) { ->
-    // Write code here that turns the phrase above into concrete actions
+Then(~/^the response is a valid jsonapi error$/) { ->
+    assert error.response.responseData
+    def msg = error.response.responseData
+    assert msg.id
+    assert msg.title
+    assert msg.detail
+}
+
+Then(~/^the details list all missing fields$/) { ->
     throw new PendingException()
 }
-
-
