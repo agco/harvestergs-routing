@@ -1,4 +1,3 @@
 language: groovy
-script: ./gradlew clean check --debug
 jdk:
   - oraclejdk8
