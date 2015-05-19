@@ -178,14 +178,16 @@ Then(~/^I receive a (\d+) code$/) { code ->
     assert error.statusCode.toString() == code
 }
 
+def msg
+
 Then(~/^the response is a valid jsonapi error$/) { ->
     assert error.response.responseData
-    def msg = error.response.responseData
+    msg = error.response.responseData
     assert msg.id
     assert msg.title
     assert msg.detail
 }
 
 Then(~/^the details list all missing fields$/) { ->
-    throw new PendingException()
+    msg.detail.contains('name')
 }
