@@ -1,0 +1,24 @@
+{
+    "description": "Returns the $singular with the provided id, if it exists.",
+    "tags": ["$plural"],
+    "parameters": [
+        {
+            "name": "${singular}Id",
+            "in": "path",
+            "type": "string",
+            "description": "ID of the $singular",
+            "required": true
+        }
+    ],
+    "responses": {
+        "200": {
+            "description": "A $singular, with the provided id, if it exists.",
+            "schema": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/$resource"
+                }
+            }
+        }
+    }
+}
