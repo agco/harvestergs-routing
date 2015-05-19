@@ -1,4 +1,5 @@
-version = '0.1.0'
+version = '0.2.0'
+name = 'harvester.gs'
 
 // Apply the groovy plugin to add support for Groovy
 apply plugin: 'groovy'
@@ -15,6 +16,13 @@ dependencies {
     // We use the latest groovy 2.x version for building this library
     compile 'org.codehaus.groovy:groovy-all:2.4.0'
     compile 'com.sparkjava:spark-core:2.1'
+
+    def jacksonVersion = '2.5.3'
+    compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
+    compile "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+    compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+
+    compile group: "com.github.fge:json-schema-validator:2.2.6"
 
     // We use the awesome Spock testing and specification framework
     testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
