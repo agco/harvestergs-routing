@@ -42,7 +42,7 @@ def defineSchema(builder) {
                 description 'The comment name'
             }
         }
-        required 'id', 'name'
+        required 'name'
     }
 }
 
@@ -149,4 +149,24 @@ And(~/correctly documents them/) { ->
     //def res = client.get(path:'swagger', requestContentType: ContentType.JSON)
     throw new PendingException()
 }
+
+def response
+
+When(~/^I post a resource that is missing mandatory fields$/) { ->
+    // Write code here that turns the phrase above into concrete actions
+    def resource = '{}'
+    response = client.post(path: '/comments', requestContentType: ContentType.JSON)
+    println response
+}
+
+Then(~/^I receive an error code$/) { ->
+    // Write code here that turns the phrase above into concrete actions
+    assert response.status == 400
+}
+
+Then(~/^the message lists all missing fields$/) { ->
+    // Write code here that turns the phrase above into concrete actions
+    throw new PendingException()
+}
+
 
