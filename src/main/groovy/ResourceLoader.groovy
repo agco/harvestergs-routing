@@ -20,7 +20,6 @@ class ResourceLoader {
                     title: 'Invalid data',
                     detail: e.validationResults
             ]));
-            //response.body('{ "message": "Invalid input" }');
             response.type("application/json");
         });
 
@@ -63,17 +62,21 @@ class ResourceLoader {
         String validationResults
     }
 
+    private def getSchema(Resource spec) {
+        // todo: refactor for a more robust approach to getting the main schema -- should the containing class be an array?
+        def dslSchema = spec.definitions.schemas.iterator().next().value
+    }
+
     private def loadValidation(Resource spec) {
         spec.paths.paths.each {
             // todo: just create schemas for mapped actions
-            def dslSchema = spec.definitions.schemas.iterator().next().value
+            def dslSchema = getSchema(spec)
             def postSchema = jsonSchemaFactory.getJsonSchema(objectMapper.valueToTree(dslSchema))
             spark.Spark.before("${it.key}"){ req, res ->
                 if (req.requestMethod() == 'POST') {
                     // todo: handle parsing errors -- shouldn't they all return a 400?
                     def validationResults = postSchema.validate(JsonLoader.fromString(req.body()?:"{}"))
                     if (!validationResults.isSuccess()) {
-                        //spark.Spark.halt 400, validationResults.messages.toString()
                         error.invalid validationResults.messages.toString()
                     }
                 }
