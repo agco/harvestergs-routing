@@ -1,7 +1,7 @@
 import cucumber.api.PendingException
 import static cucumber.api.groovy.EN.*
 import groovyx.net.http.RESTClient
-import groovyx.net.http.ContentType
+import groovyx.net.http.*
 import static groovyx.net.http.ContentType.JSON
 
 
@@ -11,8 +11,15 @@ def target
 
 def client = new RESTClient('http://localhost:4567')
 def targets = [
-        "comments" : [ "get", "post" ],
-        "comments/1": ["get", "patch", "delete"]
+        "comments" : [
+                "get" : null,
+                "post": [ name: 'foobar' ]
+        ],
+        "comments/1": [
+                "get": null,
+                "patch": [ name: 'test'],
+                "delete": null
+        ]
 ]
 
 
@@ -137,8 +144,9 @@ Then(~/it correctly maps into a set of objects/) { ->
 
 Then(~/it correctly creates API endpoints/) { ->
     targets.each { path ->
-        path.value.each { verb ->
-            def res = client."$verb"(path: path.key, requestContentType: ContentType.JSON)
+        path.value.each { x ->
+            def verb = x.key
+            def res = client."$verb"(path: path.key, requestContentType: ContentType.JSON, body: x.value)
             assert res.status == 200
             assert res.responseData == "${path.key}.${verb}"
         }
@@ -150,18 +158,22 @@ And(~/correctly documents them/) { ->
     throw new PendingException()
 }
 
-def response
+def error
 
 When(~/^I post a resource that is missing mandatory fields$/) { ->
     // Write code here that turns the phrase above into concrete actions
     def resource = '{}'
-    response = client.post(path: '/comments', requestContentType: ContentType.JSON)
-    println response
+    try {
+        response = client.post(path: '/comments', requestContentType: ContentType.JSON)
+        fail("HTTP action should have returned an error")
+    }
+    catch(HttpResponseException e) {
+        error = e
+    }
 }
 
 Then(~/^I receive an error code$/) { ->
-    // Write code here that turns the phrase above into concrete actions
-    assert response.status == 400
+    assert error.statusCode == 400
 }
 
 Then(~/^the message lists all missing fields$/) { ->
