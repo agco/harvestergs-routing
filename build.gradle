@@ -1,17 +1,27 @@
-version= '0.2.0'
-name= 'harvestergs'
+version = '0.2.0'
 
+// Apply the groovy plugin to add support for Groovy
 apply plugin: 'groovy'
 
+// In this section you declare where to find the dependencies of your project
 repositories {
+    // Use 'jcenter' for resolving your dependencies.
+    // You can declare any Maven/Ivy/file repository here.
     jcenter()
 }
 
+// In this section you declare the dependencies for your production and test code
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.4.3'
+    compile 'org.codehaus.groovy:groovy-all:2.4.0'
     compile 'com.sparkjava:spark-core:2.1'
 
-    testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
+    def jacksonVersion = '2.5.3'
+    compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
+    compile "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+    compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+
+    compile "com.github.fge:json-schema-validator:2.2.6"
+
     testCompile 'junit:junit:4.12'
     testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
 
