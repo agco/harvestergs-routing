@@ -1,10 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" inherit-compiler-output="true">
+<module external.linked.project.id="routeBuilderDSL" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$" external.system.id="GRADLE" external.system.module.group="" external.system.module.version="0.2.0" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/build/classes/main" />
+    <output-test url="file://$MODULE_DIR$/build/classes/test" />
     <exclude-output />
-    <content url="file://$MODULE_DIR$" />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/main/groovy" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/groovy" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
+      <excludeFolder url="file://$MODULE_DIR$/.gradle" />
+      <excludeFolder url="file://$MODULE_DIR$/build" />
+    </content>
     <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="groovy-2.4.3" level="application" />
+    <orderEntry type="library" exported="" name="Gradle: org.codehaus.groovy:groovy-all:2.4.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.sparkjava:spark-core:2.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.5.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.5.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.5.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.github.fge:json-schema-validator:2.2.6" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.slf4j:slf4j-api:1.7.7" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.slf4j:slf4j-simple:1.7.7" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-server:9.0.2.v20130417" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-webapp:9.0.2.v20130417" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.google.code.findbugs:jsr305:3.0.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: joda-time:joda-time:2.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.googlecode.libphonenumber:libphonenumber:6.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.github.fge:json-schema-core:1.2.5" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.mail:mailapi:1.4.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: net.sf.jopt-simple:jopt-simple:4.6" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty.orbit:javax.servlet:3.0.0.v201112011016" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-http:9.0.2.v20130417" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-io:9.0.2.v20130417" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-xml:9.0.2.v20130417" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-servlet:9.0.2.v20130417" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.github.fge:uri-template:0.9" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.github.fge:jackson-coreutils:1.8" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.mozilla:rhino:1.7R4" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.activation:activation:1.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-util:9.0.2.v20130417" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-security:9.0.2.v20130417" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.github.fge:msg-simple:1.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.google.guava:guava:16.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.github.fge:btf:1.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: junit:junit:4.12" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.codehaus.groovy.modules.http-builder:http-builder:0.7.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: info.cukes:cucumber-groovy:1.2.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: info.cukes:cucumber-junit:1.2.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.hamcrest:hamcrest-core:1.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.apache.httpcomponents:httpclient:4.2.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: net.sf.json-lib:json-lib:2.3:jdk15" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: net.sourceforge.nekohtml:nekohtml:1.9.16" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: xml-resolver:xml-resolver:1.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: info.cukes:cucumber-core:1.2.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: info.cukes:cucumber-jvm-deps:1.0.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: info.cukes:gherkin:2.12.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.apache.httpcomponents:httpcore:4.2.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: commons-logging:commons-logging:1.1.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: commons-codec:commons-codec:1.6" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: commons-beanutils:commons-beanutils:1.8.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: commons-collections:commons-collections:3.2.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: commons-lang:commons-lang:2.4" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: net.sf.ezmorph:ezmorph:1.0.6" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: xerces:xercesImpl:2.9.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: info.cukes:cucumber-html:0.2.3" level="project" />
   </component>
 </module>
