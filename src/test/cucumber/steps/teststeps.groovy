@@ -155,11 +155,6 @@ Then(~/it correctly creates API endpoints/) { ->
     }
 }
 
-And(~/correctly documents them/) { ->
-    //def res = client.get(path:'swagger', requestContentType: ContentType.JSON)
-    throw new PendingException()
-}
-
 def error
 
 When(~/^I post a resource that is missing mandatory fields$/) { ->
@@ -190,4 +185,19 @@ Then(~/^the response is a valid jsonapi error$/) { ->
 
 Then(~/^the details list all missing fields$/) { ->
     msg.detail.contains('name')
+}
+
+When(~/^I get the documentation for it$/) { ->
+    response = client.post(path: '/swagger', requestContentType: ContentType.JSON)
+    throw new PendingException()
+}
+
+Then(~/^I receive a swagger-compliant response$/) { ->
+    // Write code here that turns the phrase above into concrete actions
+    throw new PendingException()
+}
+
+Then(~/^the response correctly describes the resource$/) { ->
+    // Write code here that turns the phrase above into concrete actions
+    throw new PendingException()
 }
