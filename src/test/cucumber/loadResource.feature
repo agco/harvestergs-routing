@@ -5,14 +5,14 @@ Feature: Load a resource
 
   Scenario Outline: Single valid resource
     Given the aforementioned resource definition
-     When I run a <action>
+     When I run a <action> at path <path>
      Then I receive a <code> response code
       And the response message is correct
 
   Examples:
-    | action | code |
-    | get    |  200 |
-    | post   |  200 |
+    | path       | action | code |
+    | comments   | get    |  200 |
+    | comments   | post   |  200 |
 
   Scenario: Standard docs generation
     Given the aforementioned resource definition
