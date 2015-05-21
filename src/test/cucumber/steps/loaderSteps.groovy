@@ -6,11 +6,6 @@ import groovyx.net.http.RESTClient
 import groovyx.net.http.*
 import static groovyx.net.http.ContentType.JSON
 
-
-def sut
-def input
-def target
-
 def client = new RESTClient('http://localhost:4567')
 def targets = [
         "comments" : [
@@ -74,11 +69,6 @@ Then(~/^I receive a swagger-compliant response$/) { ->
 Then(~/^the response correctly describes the resource$/) { ->
     // Write code here that turns the phrase above into concrete actions
     throw new PendingException()
-}
-
-When(~/^I reach its REST endpoints$/) { ->
-    // ugly for now, but leaving all checks at the 'then' clause
-    // makes test a lot simpler. Refactor if this hurts.
 }
 
 def response
