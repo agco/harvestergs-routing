@@ -3,10 +3,16 @@ Feature: Load a resource
     Given a set of related resources
     And these resources are loaded into an API
 
-  Scenario: Single valid resource
+  Scenario Outline: Single valid resource
     Given the aforementioned resource definition
-    When I reach its REST endpoints
-    Then I receive the correct messages in return
+     When I run an <action>
+     Then I receive a <code> response code
+      And the response message is correct
+
+  Examples:
+    | action | code |
+    | get    |  200 |
+    | post   |  200 |
 
   Scenario: Standard docs generation
     Given the aforementioned resource definition
