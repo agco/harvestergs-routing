@@ -73,7 +73,7 @@ Then(~/^the response correctly describes the resource$/) { ->
 
 def response
 def expectedBody
-When(~/^I run a (\w+) at path (\w+)$/) { verb, path ->
+When(~/^I run a (\w+) at path (.+)$/) { verb, path ->
     def body = targets[path][verb]
     response = client."$verb"(path: path, requestContentType: ContentType.JSON, body: body)
     expectedBody = "${path}.${verb}"

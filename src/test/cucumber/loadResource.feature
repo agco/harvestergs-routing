@@ -12,7 +12,10 @@ Feature: Load a resource
   Examples:
     | path       | action | code |
     | comments   | get    |  200 |
-    | comments   | post   |  200 |
+    | comments   | post   |  201 |
+    | comments/1 | patch  |  200 |
+    | comments/1 | delete |  204 |
+    | comments/1 | get    |  200 |
 
   Scenario: Standard docs generation
     Given the aforementioned resource definition
