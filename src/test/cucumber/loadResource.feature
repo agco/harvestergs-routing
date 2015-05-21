@@ -5,8 +5,8 @@ Feature: Load a resource
 
   Scenario: Single valid resource
     Given the aforementioned resource definition
-    When it is loaded
-    Then it correctly creates API endpoints
+    When I reach its REST endpoints
+    Then I receive the correct messages in return
 
   Scenario: Standard docs generation
     Given the aforementioned resource definition
