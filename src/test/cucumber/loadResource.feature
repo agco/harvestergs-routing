@@ -5,7 +5,7 @@ Feature: Load a resource
 
   Scenario Outline: Single valid resource
     Given the aforementioned resource definition
-     When I run an <action>
+     When I run a <action>
      Then I receive a <code> response code
       And the response message is correct
 
