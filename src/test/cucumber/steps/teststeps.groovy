@@ -83,7 +83,7 @@ def createSut(entity) {
     }
 }
 
-Given(~/^a valid (\w+) definition$/) { entity ->
+Given(~/^a valid *(.+) definition$/) { entity ->
     sut = createSut(entity)
     target = entity
 }
