@@ -1,10 +1,9 @@
 version = '0.2.2'
 
 apply plugin: 'groovy'
+apply plugin: 'jacoco'
 
 repositories {
-    // Use 'jcenter' for resolving your dependencies.
-    // You can declare any Maven/Ivy/file repository here.
     jcenter()
 }
 

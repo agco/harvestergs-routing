@@ -1,0 +1,18 @@
+{
+    "parameters": [
+        {
+            "name": "$singular",
+            "in": "body",
+            "description": "The $singular JSON you want to update",
+            "schema": {
+                "$ref": "#/definitions/$resource"
+            },
+            "required": true
+        }
+    ],
+    "responses": {
+        "200": {
+            "description": "Updates the $singular"
+        }
+    }
+}
