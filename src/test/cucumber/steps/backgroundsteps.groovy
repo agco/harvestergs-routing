@@ -37,12 +37,12 @@ Given(~/^a set of related resources$/) { ->
                 docs
             }
             .skipAuth
-                    .skipValidation
+            .skipValidation
 
             "/:id" {
                 get    {req, res -> "comments/1.get"}
                 patch  {req, res -> "comments/1.patch"}
-                        .document { docs -> docs.operationId = "commentUpdate"; docs }
+                        //.document { docs -> docs.operationId = "commentUpdate"; docs }
                 delete {req, res -> "comments/1.delete"}
             }
         }

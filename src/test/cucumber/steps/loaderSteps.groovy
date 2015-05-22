@@ -10,7 +10,7 @@ def client = new RESTClient('http://localhost:4567')
 def targets = [
         "comments" : [
                 "get" : null,
-                "post": [ body: 'foobar' ]
+                "post": [ body: 'foobar' ],
         ],
         "comments/1": [
                 "get": null,
@@ -57,8 +57,8 @@ Then(~/^the details list all missing fields$/) { ->
 }
 
 When(~/^I get the documentation for it$/) { ->
-    throw new PendingException()
-    response = client.post(path: '/swagger', requestContentType: ContentType.JSON)
+    response = client.get(path: '/swagger', requestContentType: ContentType.JSON)
+    //throw new PendingException()
 }
 
 Then(~/^I receive a swagger-compliant response$/) { ->
@@ -72,17 +72,33 @@ Then(~/^the response correctly describes the resource$/) { ->
 }
 
 def response
-def expectedBody
 When(~/^I run a (\w+) at path (.+)$/) { verb, path ->
     def body = targets[path][verb]
     response = client."$verb"(path: path, requestContentType: ContentType.JSON, body: body)
-    expectedBody = "${path}.${verb}"
 }
 
 Then(~/^I receive a (\d+) response code$/) { int code ->
     assert response.status == code
 }
 
-Then(~/^the response message is correct$/) { ->
-    assert response.responseData == expectedBody
+Then(~/^the response message is (.+)/) { messageContents ->
+    switch (messageContents) {
+        case "a list":
+            assert response.responseData == "comments.get"
+            break
+        case "the updated resource":
+            assert response.responseData == "comments/1.patch"
+            break
+        case "a single resource":
+            assert response.responseData == "comments/1.get"
+            break
+        case "the new resource":
+            assert response.responseData == "comments.post"
+            break
+        case "empty":
+            assert ! response.responseData
+            break
+        default:
+            throw new PendingException()
+    }
 }

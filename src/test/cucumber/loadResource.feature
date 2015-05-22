@@ -7,15 +7,15 @@ Feature: Load a resource
     Given the aforementioned resource definition
      When I run a <action> at path <path>
      Then I receive a <code> response code
-      And the response message is correct
+      And the response message is <response>
 
   Examples:
-    | path       | action | code |
-    | comments   | get    |  200 |
-    | comments   | post   |  201 |
-    | comments/1 | patch  |  200 |
-    | comments/1 | delete |  204 |
-    | comments/1 | get    |  200 |
+    | path       | action | code | response             |
+    | comments   | get    |  200 | a list               |
+    | comments   | post   |  201 | the new resource     |
+    | comments/1 | patch  |  200 | the updated resource |
+    | comments/1 | delete |  204 | empty                |
+    | comments/1 | get    |  200 | a single resource    |
 
   Scenario: Standard docs generation
     Given the aforementioned resource definition
