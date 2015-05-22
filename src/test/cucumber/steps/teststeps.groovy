@@ -76,7 +76,7 @@ def checkPath(path) {
 
 def createSut(entity) {
     switch (entity) {
-        case "schema" : return new Definition()
+        case ~/.*schema/ :
         case "path": return new Path()
         case "resource": return new Resource()
         default: throw new PendingException()
