@@ -11,8 +11,9 @@ def resources = []
 Given(~/^a set of related resources$/) { ->
     // Write code here that turns the phrase above into concrete actions
     def commentResource = new Resource()
-    commentResource.definitions =
-            commentResource.definitions
+
+    commentResource
+            .definitions
             .Comments {
                 properties {
                     body {
@@ -23,8 +24,8 @@ Given(~/^a set of related resources$/) { ->
                 required 'body'
             }
 
-    commentResource.paths =
-        commentResource.paths
+    commentResource
+        .paths
         ."/comments" {
             get { req, res ->
                 "comments.get"
