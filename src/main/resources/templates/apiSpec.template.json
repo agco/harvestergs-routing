@@ -1,0 +1,19 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "$title",
+        "description": "$description",
+        "version": "$version"
+    },
+    "host": "$host",
+    "schemes": [
+        "https"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+    },
+    "definitions": {
+    }
+}

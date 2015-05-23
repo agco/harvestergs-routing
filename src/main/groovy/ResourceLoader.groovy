@@ -46,7 +46,7 @@ class ResourceLoader {
 
     private def loadDocs(Resource spec) {
         def swaggerDoc = "foobar"
-        spark.Spark.get("/swagger"){ req, res -> swagerDoc }
+        spark.Spark.get("/swagger"){ req, res -> swaggerDoc }
     }
 
     private def jsonSchemaFactory = JsonSchemaFactory.byDefault()
@@ -67,21 +67,66 @@ class ResourceLoader {
         def dslSchema = spec.definitions.schemas.iterator().next().value
     }
 
+    private def defaultCodes = [
+            GET: 200,
+            POST: 201,
+            PATCH: 200,
+            DELETE: 204
+    ]
+
+    private def verbHandling = [
+            GET: [
+                    defaultCode: 200,
+                    hasBody: false
+            ],
+            POST: [
+                    defaultCode: 201,
+                    hasBody: true
+            ],
+            PATCH: [
+                    defaultCode: 200,
+                    hasBody: true
+            ],
+            DELETE: [
+                    defaultCode: 204,
+                    hasBody: false
+            ]
+    ]
+
     private def loadValidation(Resource spec) {
-        spec.paths.paths.each {
-            // todo: just create schemas for mapped actions
-            def dslSchema = getSchema(spec)
-            def postSchema = jsonSchemaFactory.getJsonSchema(objectMapper.valueToTree(dslSchema))
-            spark.Spark.before("${it.key}"){ req, res ->
+        def dslSchema = getSchema(spec)
+        def postSchema = jsonSchemaFactory.getJsonSchema(objectMapper.valueToTree(dslSchema))
+        recursePath (spec.paths, { path, pathName ->
+            spark.Spark.before(pathName){ req, res ->
                 if (req.requestMethod() == 'POST') {
+                    def pogo = JsonLoader.fromString(req.body()?:"{}")
                     // todo: handle parsing errors -- shouldn't they all return a 400?
-                    def validationResults = postSchema.validate(JsonLoader.fromString(req.body()?:"{}"))
+                    def validationResults = postSchema.validate(pogo)
                     if (!validationResults.isSuccess()) {
                         error.invalid validationResults.messages.toString()
                     }
                 }
             }
+
+            spark.Spark.after(pathName){ req, res ->
+                res.status defaultCodes[req.requestMethod()]
+            }
+        })
+    }
+
+    private def recursePath(Path pathSet, Closure visitor) {
+        pathSet.paths.each { path ->
+            recursePath path.value, path.key, visitor
         }
     }
+
+    private def recursePath(PathSpec path, String pathName, Closure visitor) {
+        visitor(path, pathName)
+
+        path.children.each {
+            recursePath it.value, pathName + it.key, visitor
+        }
+    }
+
 }
 

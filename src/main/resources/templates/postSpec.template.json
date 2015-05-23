@@ -1,0 +1,18 @@
+{
+    "parameters": [
+        {
+            "name": "$singular",
+            "in": "body",
+            "description": "The $singular JSON you want to post",
+            "schema": {
+                "$ref": "#/definitions/$resource"
+            },
+            "required": true
+        }
+    ],
+    "responses": {
+        "200": {
+            "description": "Make a new $singular"
+        }
+    }
+}
