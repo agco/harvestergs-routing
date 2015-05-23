@@ -86,6 +86,14 @@ def checkSchema(schema) {
     assert schema.Comment.properties.id.type == 'integer'
 }
 
+def checkNestedSchema(schema) {
+    assert schema.Comment.properties.size() == 3
+    assert schema.Comment.properties.id.type == 'integer'
+    assert schema.Comment.properties.pingback
+    assert schema.Comment.properties.pingback.properties.size() == 2
+    assert schema.Comment.properties.pingback.properties.email.type == 'string'
+}
+
 def checkPath(path) {
     assert path."/comments"
     assert path."/comments".get.run(null, null) == "comments.get"
@@ -137,6 +145,9 @@ Then(~/it correctly maps into a set of objects/) { ->
     switch (target) {
         case "schema":
             checkSchema(input)
+            break
+        case "nested schema":
+            checkNestedSchema(input)
             break
         case "path":
             checkPath(input)
