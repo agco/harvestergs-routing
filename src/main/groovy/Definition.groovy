@@ -41,6 +41,8 @@ class Schema {
                 break;
             case "required":
                 this.required = args
+                break;
+            //todo: throw here
         }
     }
 }
@@ -58,8 +60,12 @@ class PropertyList extends HashMap<String, Property> {
 class Property {
     String type
     String description
+    PropertyList properties = new PropertyList()
 
     def methodMissing(String name, args) {
+        if (name == 'properties') {
+            return Definition.runClosure(args[0], properties, this);
+        }
         Definition.setProperty(this, name, args[0])
     }
 }
