@@ -22,6 +22,32 @@ def defineSchema(builder) {
         required 'name'
     }
 }
+def defineNestedSchema(builder) {
+    builder.Comment {
+        properties {
+            id {
+                type 'integer'
+                description 'The comment id'
+            }
+            name {
+                type 'string'
+                description 'The comment name'
+            }
+            pingback {
+                type 'object'
+                properties {
+                    email {
+                        type 'string'
+                    }
+                    url {
+                        type 'string'
+                    }
+                }
+            }
+        }
+        required 'name'
+    }
+}
 
 def definePath(builder) {
     builder."/comments" {
@@ -76,7 +102,7 @@ def checkPath(path) {
 
 def createSut(entity) {
     switch (entity) {
-        case ~/.*schema/ :
+        case ~/.*schema/ : return new Definition()
         case "path": return new Path()
         case "resource": return new Resource()
         default: throw new PendingException()
@@ -92,6 +118,9 @@ When(~/^it is fully defined/) { ->
     switch (target) {
         case "schema":
             input = defineSchema(sut)
+            break
+        case "nested schema":
+            input = defineNestedSchema(sut)
             break
         case "path":
             input = definePath(sut)
