@@ -36,10 +36,18 @@ def defineNestedSchema(builder) {
             pingback {
                 type 'object'
                 properties {
-                    email {
-                        type 'string'
+                    author {
+                        type 'object'
+                        properties {
+                            name {
+                                type 'string'
+                            }
+                            email {
+                                type 'string'
+                            }
+                        }
                     }
-                    url {
+                    quote {
                         type 'string'
                     }
                 }
@@ -91,7 +99,10 @@ def checkNestedSchema(schema) {
     assert schema.Comment.properties.id.type == 'integer'
     assert schema.Comment.properties.pingback
     assert schema.Comment.properties.pingback.properties.size() == 2
-    assert schema.Comment.properties.pingback.properties.email.type == 'string'
+    assert schema.Comment.properties.pingback.properties.quote.type == 'string'
+    assert schema.Comment.properties.pingback.properties.author.type == 'object'
+    assert schema.Comment.properties.pingback.properties.author.properties.size() == 2
+    assert schema.Comment.properties.pingback.properties.author.properties.email.type == 'string'
 }
 
 def checkPath(path) {
