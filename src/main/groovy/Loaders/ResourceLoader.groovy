@@ -18,7 +18,7 @@ class ResourceLoader {
 
     def loadResource(Resource spec) {
         loadPath spec.paths
-        loadDocs spec
+        docLoader.loadDocs spec
         loadValidation spec
 
         spark.Spark.exception(ValidationException.class, { e, request, response ->

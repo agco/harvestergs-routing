@@ -59,14 +59,36 @@ Then(~/^the details list all missing fields$/) { ->
 }
 
 When(~/^I get the documentation for it$/) { ->
-    throw new PendingException()
     response = client.get(path: '/swagger', requestContentType: ContentType.JSON)
 }
 
+/*
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "$title",
+        "description": "$description",
+        "version": "$version"
+    },
+    "host": "$host",
+    "schemes": [
+        "https"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+    },
+    "definitions": {
+    }
+}
+*/
 Then(~/^I receive a swagger-compliant response$/) { ->
     // Write code here that turns the phrase above into concrete actions
     assert response
     assert response.responseData
+    assert response.responseData.swagger == "2.0"
+    assert response.responseData.info.title
     throw new PendingException()
 }
 
