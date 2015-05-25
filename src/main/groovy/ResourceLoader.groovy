@@ -1,5 +1,7 @@
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.fge.jackson.JsonLoader
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.github.fge.jackson.*
 import com.github.fge.jsonschema.main.JsonSchemaFactory
 import groovy.json.JsonOutput
 
@@ -97,6 +99,7 @@ class ResourceLoader {
 
     private def loadValidation(Resource spec) {
         def dslSchema = getSchema(spec)
+        objectMapper.setSerializationInclusion(Include.NON_NULL);
         def postSchema = jsonSchemaFactory.getJsonSchema(objectMapper.valueToTree(dslSchema))
         recursePath (spec.paths, { path, pathName ->
             spark.Spark.before(pathName){ req, res ->
