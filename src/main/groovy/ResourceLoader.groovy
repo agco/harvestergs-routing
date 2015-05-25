@@ -6,7 +6,12 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory
 import groovy.json.JsonOutput
 
 class ResourceLoader {
+    def ResourceLoader(PathVisitor pathVisitor = new PathVisitor()) {
+        this.pathVisitor = pathVisitor
+    }
+
     private final verbs = ['get', 'patch', 'post', 'delete']
+    private pathVisitor
 
     def loadResource(Resource spec) {
         loadPath spec.paths
@@ -19,8 +24,9 @@ class ResourceLoader {
                     id: UUID.randomUUID(),
                     title: 'Invalid data',
                     detail: e.validationResults
-            ]));
-            response.type("application/json");
+            ]))
+
+            response.type "application/json"
         });
 
     }
@@ -97,7 +103,7 @@ class ResourceLoader {
 
     private def loadValidation(Resource spec) {
         def dslSchema = getSchema(spec)
-        objectMapper.setSerializationInclusion(Include.NON_NULL);
+        objectMapper.setSerializationInclusion Include.NON_NULL
         def postSchema = jsonSchemaFactory.getJsonSchema(objectMapper.valueToTree(dslSchema))
         recursePath (spec.paths, { path, pathName ->
             spark.Spark.before(pathName){ req, res ->
