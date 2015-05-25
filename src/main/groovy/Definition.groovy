@@ -58,13 +58,13 @@ class PropertyList extends HashMap<String, Property> {
 
 @Canonical
 class Property {
-    String type
-    String description
+    String type = ""
+    String description = ""
     PropertyList properties = new PropertyList()
 
     def methodMissing(String name, args) {
         if (name == 'properties') {
-            return Definition.runClosure(args[0], properties, this);
+            return Definition.runClosure(args[0], properties, this)
         }
         Definition.setProperty(this, name, args[0])
     }

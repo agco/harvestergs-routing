@@ -20,6 +20,15 @@ Given(~/^a set of related resources$/) { ->
                         type 'string'
                         description 'Comments contents'
                     }
+
+                    author {
+                        type 'object'
+                        properties {
+                            name { type 'string'}
+                            email { type 'string'}
+                            url { type 'string'}
+                        }
+                    }
                 }
                 required 'body'
             }
