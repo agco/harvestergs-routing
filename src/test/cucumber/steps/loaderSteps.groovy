@@ -59,8 +59,8 @@ Then(~/^the details list all missing fields$/) { ->
 }
 
 When(~/^I get the documentation for it$/) { ->
+    throw new PendingException()
     response = client.get(path: '/swagger', requestContentType: ContentType.JSON)
-    //throw new PendingException()
 }
 
 Then(~/^I receive a swagger-compliant response$/) { ->

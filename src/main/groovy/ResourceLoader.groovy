@@ -5,8 +5,6 @@ import com.github.fge.jackson.*
 import com.github.fge.jsonschema.main.JsonSchemaFactory
 import groovy.json.JsonOutput
 
-//import static java.util.UUID.randomUUID
-
 class ResourceLoader {
     private final verbs = ['get', 'patch', 'post', 'delete']
 
