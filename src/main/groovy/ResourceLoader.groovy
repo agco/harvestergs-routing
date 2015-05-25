@@ -32,24 +32,14 @@ class ResourceLoader {
     }
 
     private def loadPath(Path pathSet) {
-        pathSet.paths.each { path ->
-            loadPathSpec path.value, path.key
-        }
-    }
-
-    private def loadPathSpec(PathSpec path, String pathName) {
-        //todo: turn this into log entries
-        //println "registering path $pathName"
-        verbs.each { verb ->
-            if (path[verb]) {
-                //todo: turn this into log entries
-                //println "registering verb ${pathName}.${verb}"
-                spark.Spark."$verb" pathName, path[verb].run
+        def visitor = { path, pathName ->
+            verbs.each { verb ->
+                if (path[verb]) {
+                    spark.Spark."$verb" pathName, path[verb].run
+                }
             }
         }
-        path.children.each {
-            loadPathSpec it.value, pathName + it.key
-        }
+        pathVisitor.visitPath pathSet, visitor
     }
 
     private def loadDocs(Resource spec) {
@@ -122,7 +112,7 @@ class ResourceLoader {
             }
         }
 
-        recursePath (spec.paths, visitor)
+        pathVisitor.visitPath spec.paths, visitor
     }
 
     private def recursePath(Path pathSet, Closure visitor) {
