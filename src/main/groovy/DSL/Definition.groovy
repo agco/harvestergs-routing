@@ -11,12 +11,14 @@ class Definition {
         schemas
     }
 
+    // todo: turn this into a first-class function, or at least extract
     static def runClosure(Closure cl, Object delegate, Object owner) {
         def code = cl.rehydrate(delegate, owner, owner)
         code.resolveStrategy = Closure.DELEGATE_ONLY
         code()
     }
 
+    // todo: turn this into a first-class function, or at least extract
     static def setProperty(Object obj, String property, Object value, boolean throwOnMiss = true) {
         if (obj.hasProperty(property)) {
             obj[property] = value
