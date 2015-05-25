@@ -31,8 +31,9 @@ class Definition {
 @Canonical
 class Schema {
     PropertyList properties = new PropertyList()
-
-    List<String> required = []
+    List<String> required
+    String type
+    String description
 
     def methodMissing(String name, args) {
         switch (name) {
@@ -42,30 +43,18 @@ class Schema {
             case "required":
                 this.required = args
                 break;
+            default:
+                Definition.setProperty(this, name, args[0]);
             //todo: throw here
         }
     }
 }
 
 @Canonical
-class PropertyList extends HashMap<String, Property> {
+class PropertyList extends HashMap<String, Schema> {
     def methodMissing(String name, args) {
-        def prop = new Property()
+        def prop = new Schema()
         Definition.runClosure(args[0], prop, this)
         this[name] = prop
-    }
-}
-
-@Canonical
-class Property {
-    String type
-    String description
-    PropertyList properties = new PropertyList()
-
-    def methodMissing(String name, args) {
-        if (name == 'properties') {
-            return Definition.runClosure(args[0], properties, this);
-        }
-        Definition.setProperty(this, name, args[0])
     }
 }

@@ -19,6 +19,8 @@ def targets = [
         ]
 ]
 
+def response
+
 Given(~/^the aforementioned resource definition$/) { ->
     // no action needed here -- all the setup occurred in the background steps
 }
@@ -57,12 +59,14 @@ Then(~/^the details list all missing fields$/) { ->
 }
 
 When(~/^I get the documentation for it$/) { ->
+    throw new PendingException()
     response = client.get(path: '/swagger', requestContentType: ContentType.JSON)
-    //throw new PendingException()
 }
 
 Then(~/^I receive a swagger-compliant response$/) { ->
     // Write code here that turns the phrase above into concrete actions
+    assert response
+    assert response.responseData
     throw new PendingException()
 }
 
@@ -71,7 +75,6 @@ Then(~/^the response correctly describes the resource$/) { ->
     throw new PendingException()
 }
 
-def response
 When(~/^I run a (\w+) at path (.+)$/) { verb, path ->
     def body = targets[path][verb]
     response = client."$verb"(path: path, requestContentType: ContentType.JSON, body: body)
