@@ -55,7 +55,7 @@ Then(~/^the response is a valid jsonapi error$/) { ->
 }
 
 Then(~/^the details list all missing fields$/) { ->
-    msg.detail.contains('name')
+    assert msg.detail.contains('body')
 }
 
 When(~/^I get the documentation for it$/) { ->

@@ -28,6 +28,7 @@ Given(~/^a set of related resources$/) { ->
                             email { type 'string'}
                             url { type 'string'}
                         }
+                        required 'name', 'email'
                     }
                 }
                 required 'body'
