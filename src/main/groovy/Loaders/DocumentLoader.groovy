@@ -7,10 +7,11 @@ class DocumentLoader {
     private engine = new SimpleTemplateEngine()
     private templates = [:]
 
-    def DocumentLoader(PathVisitor pathVisitor = new PathVisitor(),
-                       specProperties = ['host': 'localhost', 'version': '0.1', 'description': 'api description', 'title': 'api title']) {
+    def DocumentLoader(specProperties = null,
+                       PathVisitor pathVisitor = new PathVisitor()) {
         this.pathVisitor = pathVisitor
-        this.specProperties = specProperties
+        this.specProperties = specProperties?:
+                ['host': 'localhost', 'version': '0.1', 'description': 'api description', 'title': 'api title']
     }
 
     private getTemplate(specName) {
@@ -35,7 +36,7 @@ class DocumentLoader {
         def visitor = { path, pathName ->
             path.properties.each { prop, val ->
                 if ((val) && (val.class == VerbSpec)) {
-                    println "DocLoader is visiting ${prop} ($val), at path: ${pathName}"
+                    //println "DocLoader is visiting ${prop} ($val), at path: ${pathName}"
                 }
             }
         }

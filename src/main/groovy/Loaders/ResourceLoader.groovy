@@ -6,10 +6,11 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory
 import groovy.json.JsonOutput
 
 class ResourceLoader {
-    def ResourceLoader(PathVisitor pathVisitor = new PathVisitor(),
-                       DocumentLoader docLoader = new DocumentLoader()) {
-        this.pathVisitor = pathVisitor
-        this.docLoader = docLoader
+    def ResourceLoader(specProperties = null,
+                       PathVisitor pathVisitor = null,
+                       DocumentLoader docLoader = null) {
+        this.pathVisitor = new PathVisitor()
+        this.docLoader = new DocumentLoader(specProperties)
     }
 
     private final verbs = ['get', 'patch', 'post', 'delete']
