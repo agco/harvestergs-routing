@@ -105,12 +105,12 @@ class ResourceLoader {
         def dslSchema = getSchema(spec)
         objectMapper.setSerializationInclusion Include.NON_NULL
         def postSchema = jsonSchemaFactory.getJsonSchema(objectMapper.valueToTree(dslSchema))
-        recursePath (spec.paths, { path, pathName ->
+        def visitor = { path, pathName ->
             spark.Spark.before(pathName){ req, res ->
                 if (req.requestMethod() == 'POST') {
-                    def pogo = JsonLoader.fromString(req.body()?:"{}")
+                    def pogo = JsonLoader.fromString(req.body()?: "{}")
                     // todo: handle parsing errors -- shouldn't they all return a 400?
-                    def validationResults = postSchema.validate(pogo)
+                    def validationResults = postSchema.validate pogo
                     if (!validationResults.isSuccess()) {
                         error.invalid validationResults.messages.toString()
                     }
@@ -120,7 +120,9 @@ class ResourceLoader {
             spark.Spark.after(pathName){ req, res ->
                 res.status defaultCodes[req.requestMethod()]
             }
-        })
+        }
+
+        recursePath (spec.paths, visitor)
     }
 
     private def recursePath(Path pathSet, Closure visitor) {
