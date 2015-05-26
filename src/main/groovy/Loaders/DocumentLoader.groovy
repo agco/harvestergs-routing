@@ -1,3 +1,5 @@
+package com.agcocorp.harvester.routing
+
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.text.SimpleTemplateEngine
@@ -17,7 +19,7 @@ class DocumentLoader {
     }
 
     private getTemplate(specName) {
-        def specRaw = getClass().getResourceAsStream("templates/${specName}Spec.template.json").text
+        def specRaw = this.class.getClassLoader().getResourceAsStream("templates/${specName}Spec.template.json").text
         if (!templates[specName]) {
             templates[specName] = engine.createTemplate(specRaw)
         }

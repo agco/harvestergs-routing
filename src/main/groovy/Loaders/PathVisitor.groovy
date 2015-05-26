@@ -1,3 +1,5 @@
+package com.agcocorp.harvester.routing
+
 class PathVisitor {
     def visitPath(Path pathSet, Closure visitor) {
         pathSet.paths.each { path ->

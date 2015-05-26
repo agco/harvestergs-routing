@@ -1,3 +1,5 @@
+package com.agcocorp.harvester.routing
+
 import groovy.transform.*
 
 @Canonical

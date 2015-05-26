@@ -1,3 +1,5 @@
+package com.agcocorp.harvester.routing
+
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.fge.jackson.JsonLoader
 import com.github.fge.jsonschema.main.JsonSchemaFactory
