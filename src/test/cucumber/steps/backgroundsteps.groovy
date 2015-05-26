@@ -14,7 +14,7 @@ Given(~/^a set of related resources$/) { ->
 
     commentResource
             .definitions
-            .Comments {
+            .Comment {
                 properties {
                     body {
                         type 'string'
@@ -62,7 +62,7 @@ Given(~/^a set of related resources$/) { ->
 }
 
 Given(~/^these resources are loaded into an API$/) { ->
-    def loader = new ResourceLoader()
+    def loader = new ResourceLoader([ "title": "testApp" ])
     resources.each {
         loader.loadResource it
     }
