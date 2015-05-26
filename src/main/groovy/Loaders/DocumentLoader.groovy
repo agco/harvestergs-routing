@@ -1,3 +1,4 @@
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.text.SimpleTemplateEngine
 
@@ -6,12 +7,13 @@ class DocumentLoader {
     private specProperties
     private engine = new SimpleTemplateEngine()
     private templates = [:]
+    private final defaultProps = ['host': 'localhost', 'version': '0.1.0', 'description': 'api description', 'title': 'api title']
 
     def DocumentLoader(specProperties = null,
                        PathVisitor pathVisitor = new PathVisitor()) {
         this.pathVisitor = pathVisitor
-        this.specProperties = specProperties?:
-                ['host': 'localhost', 'version': '0.1', 'description': 'api description', 'title': 'api title']
+        this.specProperties = defaultProps
+        this.specProperties << (specProperties?:[:])
     }
 
     private getTemplate(specName) {
@@ -43,13 +45,17 @@ class DocumentLoader {
                             'singular': 'singular',
                             'ref'     : '$ref']
 
-                    println verbSpec
+                    //println verbSpec
                 }
             }
         }
 
         pathVisitor.visitPath spec.paths, visitor
 
-        spark.Spark.get("/swagger"){ req, res -> root }
+        spark.Spark.get("/swagger"){ req, res ->
+            res.type "application/json"
+            //root
+            JsonOutput.toJson(root)
+        }
     }
 }

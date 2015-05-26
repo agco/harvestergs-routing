@@ -101,6 +101,7 @@ class ResourceLoader {
         def postSchema = jsonSchemaFactory.getJsonSchema(objectMapper.valueToTree(dslSchema))
         def visitor = { path, pathName ->
             spark.Spark.before(pathName){ req, res ->
+
                 if (req.requestMethod() == 'POST') {
                     def pogo = JsonLoader.fromString(req.body()?: "{}")
                     // todo: handle parsing errors -- shouldn't they all return a 400?
@@ -113,6 +114,8 @@ class ResourceLoader {
 
             spark.Spark.after(pathName){ req, res ->
                 res.status defaultCodes[req.requestMethod()]
+                //res.type "application/json"
+                //res.body JsonOutput.toJson(res.body())
             }
         }
 
