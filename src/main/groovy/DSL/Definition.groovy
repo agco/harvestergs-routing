@@ -9,7 +9,7 @@ class Definition {
     def methodMissing(String name, args) {
         def schema = new Schema()
         if (! schemas) {
-            _mainSchema = schema
+            _mainSchema = name
         }
         schemas[name] = schema
         Definition.runClosure(args[0], schema, this)

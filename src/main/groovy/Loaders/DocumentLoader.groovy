@@ -38,7 +38,7 @@ class DocumentLoader {
 
     def loadDocs(Resource spec) {
         def root = loadSpec 'api', specProperties
-        def resource = 'Resource' //spec.definitions.schemas.mainSchema
+        def resource = spec.definitions.mainSchema
         def singular = camelCase(resource)
 
         def visitor = { path, pathName ->

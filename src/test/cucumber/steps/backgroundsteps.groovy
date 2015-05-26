@@ -14,7 +14,7 @@ Given(~/^a set of related resources$/) { ->
 
     commentResource
             .definitions
-            .Comments {
+            .Comment {
                 properties {
                     body {
                         type 'string'
