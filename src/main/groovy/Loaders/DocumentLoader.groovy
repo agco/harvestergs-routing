@@ -36,16 +36,21 @@ class DocumentLoader {
         str[0].toLowerCase() + str.substring(1)
     }
 
+    def getPlural(endPoint) {
+        def match = (endPoint =~ ~/\\/([\w-]+)/)
+        match[0][1]
+    }
     def loadDocs(Resource spec) {
         def root = loadSpec 'api', specProperties
         def resource = spec.definitions.mainSchemaName
         def singular = camelCase(resource)
+        def plural = getPlural(spec.paths.rootPathEndpoint)
 
         def visitor = { path, pathName ->
             path.properties.each { prop, val ->
                 if ((val) && (val.class == VerbSpec)) {
                     def verbSpec = loadSpec prop, [
-                            'plural'  : 'plural',
+                            'plural'  : plural,
                             'resource': resource,
                             'singular': singular,
                             'ref'     : '$ref']

@@ -62,8 +62,7 @@ When(~/^I get the documentation for it$/) { ->
     response = client.get(path: '/swagger', requestContentType: ContentType.JSON)
 }
 
-Then(~/^I receive a swagger-compliant response$/) { ->
-    // Write code here that turns the phrase above into concrete actions
+Then(~/^the response correctly describes the resource$/) { ->
     assert response
     assert response.responseData
     assert response.responseData.swagger == "2.0"
@@ -71,17 +70,15 @@ Then(~/^I receive a swagger-compliant response$/) { ->
     assert response.responseData.info.title == "testApp"
     assert response.responseData.paths."/comments"
     assert response.responseData.paths."/comments".get
-    assert response.responseData.paths."/comments".post
+    assert response.responseData.paths."/comments".get.description ==
+            "Returns a collection of comments the user has access to."
+    assert response.responseData.paths."/comments/:id".patch.parameters[0].description ==
+            "The comment JSON you want to update"
     assert response.responseData.paths."/comments/:id"
+    assert response.responseData.paths."/comments/:id".patch
     assert response.responseData.paths."/comments/:id".get
     assert response.responseData.paths."/comments/:id".patch
     assert response.responseData.paths."/comments/:id".delete
-    throw new PendingException()
-}
-
-Then(~/^the response correctly describes the resource$/) { ->
-    // Write code here that turns the phrase above into concrete actions
-    throw new PendingException()
 }
 
 When(~/^I run a (\w+) at path (.+)$/) { verb, path ->

@@ -3,9 +3,15 @@ import groovy.transform.*
 @Canonical
 class Path {
     Map<String, PathSpec> paths = [:]
+    private _rootPathEndpoint
+    def getrootPathEndpoint() { _rootPathEndpoint }
 
     def methodMissing(String name, args) {
         def spec = new PathSpec()
+        if (! paths) {
+            _rootPathEndpoint = name
+        }
+
         paths[name] = spec
         Definition.runClosure(args[0], spec, this)
         paths
