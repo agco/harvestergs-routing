@@ -90,6 +90,13 @@ Then(~/^I receive a swagger-compliant response$/) { ->
     assert response.responseData.swagger == "2.0"
     assert response.responseData.info.version == "0.1.0"
     assert response.responseData.info.title == "testApp"
+    assert response.responseData.paths."/comments"
+    assert response.responseData.paths."/comments".get
+    assert response.responseData.paths."/comments".post
+    assert response.responseData.paths."/comments/:id"
+    assert response.responseData.paths."/comments/:id".get
+    assert response.responseData.paths."/comments/:id".patch
+    assert response.responseData.paths."/comments/:id".delete
     throw new PendingException()
 }
 

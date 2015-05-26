@@ -38,13 +38,17 @@ class DocumentLoader {
         def visitor = { path, pathName ->
             path.properties.each { prop, val ->
                 if ((val) && (val.class == VerbSpec)) {
-                    //println "DocLoader is visiting ${prop} ($val), at path: ${pathName}"
                     def verbSpec = loadSpec prop, [
                             'plural'  : 'plural',
                             'resource': 'resource',
                             'singular': 'singular',
                             'ref'     : '$ref']
 
+                    if (! root.paths."$pathName") {
+                        root.paths."$pathName" = [:]
+                    }
+
+                    root.paths."$pathName"."$prop" = verbSpec
                     //println verbSpec
                 }
             }
@@ -54,7 +58,6 @@ class DocumentLoader {
 
         spark.Spark.get("/swagger"){ req, res ->
             res.type "application/json"
-            //root
             JsonOutput.toJson(root)
         }
     }
