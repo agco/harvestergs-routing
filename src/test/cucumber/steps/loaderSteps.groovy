@@ -1,5 +1,11 @@
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.fge.jackson.JsonLoader
+import com.github.fge.jsonschema.main.JsonSchemaFactory
 import cucumber.api.PendingException
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 
 import static cucumber.api.groovy.EN.*
 import groovyx.net.http.RESTClient
@@ -111,3 +117,14 @@ Then(~/^the response message is (.+)/) { messageContents ->
             throw new PendingException()
     }
 }
+
+def jsonSchemaFactory = JsonSchemaFactory.byDefault()
+def objectMapper = new ObjectMapper()
+
+Then(~/^it is swagger-compliant response$/) { ->
+    def schema = jsonSchemaFactory.getJsonSchema("resource:/swagger-schema.json")
+    def data = objectMapper.valueToTree(response.responseData)
+    def valResults = schema.validate(data)
+    assert valResults.isSuccess()
+}
+

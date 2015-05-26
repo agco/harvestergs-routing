@@ -1,7 +1,6 @@
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.fge.jackson.JsonLoader
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.github.fge.jackson.*
 import com.github.fge.jsonschema.main.JsonSchemaFactory
 import groovy.json.JsonOutput
 
