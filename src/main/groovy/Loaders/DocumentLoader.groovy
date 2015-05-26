@@ -37,6 +37,13 @@ class DocumentLoader {
             path.properties.each { prop, val ->
                 if ((val) && (val.class == VerbSpec)) {
                     //println "DocLoader is visiting ${prop} ($val), at path: ${pathName}"
+                    def verbSpec = loadSpec prop, [
+                            'plural'  : 'plural',
+                            'resource': 'resource',
+                            'singular': 'singular',
+                            'ref'     : '$ref']
+
+                    println verbSpec
                 }
             }
         }
