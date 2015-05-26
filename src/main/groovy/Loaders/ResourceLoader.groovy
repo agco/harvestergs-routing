@@ -1,16 +1,24 @@
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.fge.jackson.JsonLoader
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.github.fge.jackson.*
 import com.github.fge.jsonschema.main.JsonSchemaFactory
 import groovy.json.JsonOutput
 
 class ResourceLoader {
+    def ResourceLoader(specProperties = null,
+                       PathVisitor pathVisitor = null,
+                       DocumentLoader docLoader = null) {
+        this.pathVisitor = new PathVisitor()
+        this.docLoader = new DocumentLoader(specProperties)
+    }
+
     private final verbs = ['get', 'patch', 'post', 'delete']
+    private pathVisitor
+    private docLoader
 
     def loadResource(Resource spec) {
         loadPath spec.paths
-        loadDocs spec
+        docLoader.loadDocs spec
         loadValidation spec
 
         spark.Spark.exception(ValidationException.class, { e, request, response ->
@@ -19,31 +27,22 @@ class ResourceLoader {
                     id: UUID.randomUUID(),
                     title: 'Invalid data',
                     detail: e.validationResults
-            ]));
-            response.type("application/json");
+            ]))
+
+            response.type "application/json"
         });
 
     }
 
     private def loadPath(Path pathSet) {
-        pathSet.paths.each { path ->
-            loadPathSpec path.value, path.key
-        }
-    }
-
-    private def loadPathSpec(PathSpec path, String pathName) {
-        //todo: turn this into log entries
-        //println "registering path $pathName"
-        verbs.each { verb ->
-            if (path[verb]) {
-                //todo: turn this into log entries
-                //println "registering verb ${pathName}.${verb}"
-                spark.Spark."$verb" pathName, path[verb].run
+        def visitor = { path, pathName ->
+            verbs.each { verb ->
+                if (path[verb]) {
+                    spark.Spark."$verb" pathName, path[verb].run
+                }
             }
         }
-        path.children.each {
-            loadPathSpec it.value, pathName + it.key
-        }
+        pathVisitor.visitPath pathSet, visitor
     }
 
     private def loadDocs(Resource spec) {
@@ -66,7 +65,7 @@ class ResourceLoader {
 
     private def getSchema(Resource spec) {
         // todo: refactor for a more robust approach to getting the main schema -- should the containing class be an array?
-        def dslSchema = spec.definitions.schemas.iterator().next().value
+        def dslSchema = spec.definitions.schemas[spec.definitions.mainSchemaName]
     }
 
     private def defaultCodes = [
@@ -97,14 +96,15 @@ class ResourceLoader {
 
     private def loadValidation(Resource spec) {
         def dslSchema = getSchema(spec)
-        objectMapper.setSerializationInclusion(Include.NON_NULL);
+        objectMapper.setSerializationInclusion Include.NON_NULL
         def postSchema = jsonSchemaFactory.getJsonSchema(objectMapper.valueToTree(dslSchema))
-        recursePath (spec.paths, { path, pathName ->
+        def visitor = { path, pathName ->
             spark.Spark.before(pathName){ req, res ->
+
                 if (req.requestMethod() == 'POST') {
-                    def pogo = JsonLoader.fromString(req.body()?:"{}")
+                    def pogo = JsonLoader.fromString(req.body()?: "{}")
                     // todo: handle parsing errors -- shouldn't they all return a 400?
-                    def validationResults = postSchema.validate(pogo)
+                    def validationResults = postSchema.validate pogo
                     if (!validationResults.isSuccess()) {
                         error.invalid validationResults.messages.toString()
                     }
@@ -113,8 +113,12 @@ class ResourceLoader {
 
             spark.Spark.after(pathName){ req, res ->
                 res.status defaultCodes[req.requestMethod()]
+                //res.type "application/json"
+                //res.body JsonOutput.toJson(res.body())
             }
-        })
+        }
+
+        pathVisitor.visitPath spec.paths, visitor
     }
 
     private def recursePath(Path pathSet, Closure visitor) {

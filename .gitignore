@@ -4,3 +4,5 @@
 .idea/tasks.xml
 build
 .gradle
+.idea/libraries
+.idea/gradle.xml

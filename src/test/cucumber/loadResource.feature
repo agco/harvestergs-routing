@@ -20,8 +20,8 @@ Feature: Load a resource
   Scenario: Standard docs generation
     Given the aforementioned resource definition
     When I get the documentation for it
-    Then I receive a swagger-compliant response
-    And the response correctly describes the resource
+    Then the response correctly describes the resource
+    And it is swagger-compliant response
 
   Scenario: Mandatory fields missing
     Given the aforementioned resource definition
