@@ -66,7 +66,7 @@ class ResourceLoader {
 
     private def getSchema(Resource spec) {
         // todo: refactor for a more robust approach to getting the main schema -- should the containing class be an array?
-        def dslSchema = spec.definitions.schemas.iterator().next().value
+        def dslSchema = spec.definitions.schemas[spec.definitions.mainSchema]
     }
 
     private def defaultCodes = [
