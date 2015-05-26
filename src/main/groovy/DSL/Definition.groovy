@@ -3,9 +3,14 @@ import groovy.transform.*
 @Canonical
 class Definition {
     Map<String, Schema> schemas = [:]
+    private _mainSchema
+    def getmainSchema() { _mainSchema }
 
     def methodMissing(String name, args) {
         def schema = new Schema()
+        if (! schemas) {
+            _mainSchema = schema
+        }
         schemas[name] = schema
         Definition.runClosure(args[0], schema, this)
         schemas

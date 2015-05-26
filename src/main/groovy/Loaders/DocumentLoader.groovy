@@ -32,16 +32,22 @@ class DocumentLoader {
 
     def PathVisitor pathVisitor
 
+    def camelCase(str) {
+        str[0].toLowerCase() + str.substring(1)
+    }
+
     def loadDocs(Resource spec) {
         def root = loadSpec 'api', specProperties
+        def resource = 'Resource' //spec.definitions.schemas.mainSchema
+        def singular = camelCase(resource)
 
         def visitor = { path, pathName ->
             path.properties.each { prop, val ->
                 if ((val) && (val.class == VerbSpec)) {
                     def verbSpec = loadSpec prop, [
                             'plural'  : 'plural',
-                            'resource': 'resource',
-                            'singular': 'singular',
+                            'resource': resource,
+                            'singular': singular,
                             'ref'     : '$ref']
 
                     if (! root.paths."$pathName") {
@@ -49,7 +55,6 @@ class DocumentLoader {
                     }
 
                     root.paths."$pathName"."$prop" = verbSpec
-                    //println verbSpec
                 }
             }
         }
