@@ -1,6 +1,21 @@
+package com.agcocorp.harvester.routing
+
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.text.SimpleTemplateEngine
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.fge.jackson.JsonLoader
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.github.fge.jsonschema.main.JsonSchemaFactory
+
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.SerializerProvider;
 
 class DocumentLoader {
     private slurper = new JsonSlurper()
@@ -17,7 +32,7 @@ class DocumentLoader {
     }
 
     private getTemplate(specName) {
-        def specRaw = getClass().getResourceAsStream("templates/${specName}Spec.template.json").text
+        def specRaw = this.class.getClassLoader().getResourceAsStream("templates/${specName}Spec.template.json").text
         if (!templates[specName]) {
             templates[specName] = engine.createTemplate(specRaw)
         }
@@ -66,9 +81,16 @@ class DocumentLoader {
 
         pathVisitor.visitPath spec.paths, visitor
 
+        root.definitions = spec.definitions.schemas
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
+        mapper.setSerializationInclusion(Include.NON_NULL);
+        def json = mapper.writeValueAsString(root);
+
         spark.Spark.get("/swagger"){ req, res ->
             res.type "application/json"
-            JsonOutput.toJson(root)
+            json
         }
     }
 }

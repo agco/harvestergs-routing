@@ -1,3 +1,5 @@
+package com.agcocorp.harvester.routing
+
 import cucumber.api.PendingException
 import groovy.json.JsonSlurper
 
@@ -29,6 +31,13 @@ Given(~/^a set of related resources$/) { ->
                             url { type 'string'}
                         }
                         required 'name', 'email'
+                    }
+
+                    tags {
+                        type 'array'
+                        items {
+                            type 'string'
+                        }
                     }
                 }
                 required 'body'

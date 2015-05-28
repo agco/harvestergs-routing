@@ -1,7 +1,8 @@
+package com.agcocorp.harvester.routing
+
 import cucumber.api.PendingException
 import groovy.json.JsonSlurper
 import static cucumber.api.groovy.EN.*
-
 
 def sut
 def input
