@@ -32,6 +32,13 @@ Given(~/^a set of related resources$/) { ->
                         }
                         required 'name', 'email'
                     }
+
+                    tags {
+                        type 'array'
+                        items {
+                            type 'string'
+                        }
+                    }
                 }
                 required 'body'
             }
