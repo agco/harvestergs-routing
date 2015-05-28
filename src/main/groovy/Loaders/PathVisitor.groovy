@@ -1,3 +1,5 @@
+package com.agcocorp.harvester.routing
+
 class PathVisitor {
     def visitPath(Path pathSet, Closure visitor) {
         pathSet.paths.each { path ->
@@ -6,7 +8,7 @@ class PathVisitor {
     }
 
     private def recursePath(PathSpec path, String pathName, Closure visitor) {
-        visitor(path, pathName)
+        visitor path, pathName
 
         path.children.each {
             recursePath it.value, pathName + it.key, visitor
