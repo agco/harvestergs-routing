@@ -1,6 +1,6 @@
 package com.agcocorp.harvester.routing
 
-import groovy.transform.*
+import groovy.transform.Canonical
 
 @Canonical
 class Path {
@@ -15,7 +15,7 @@ class Path {
         }
 
         paths[name] = spec
-        Definition.runClosure(args[0], spec, this)
+        Definition.runClosure args[0], spec, this
         paths
     }
 }

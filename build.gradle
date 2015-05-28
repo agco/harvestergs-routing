@@ -2,6 +2,7 @@ version = '0.4.0'
 
 apply plugin: 'groovy'
 apply plugin: 'jacoco'
+apply plugin: 'codenarc'
 
 repositories {
     jcenter()
@@ -24,4 +25,9 @@ dependencies {
     def cucumberVersion ='1.2.2'
     testCompile "info.cukes:cucumber-groovy:$cucumberVersion"
     testCompile "info.cukes:cucumber-junit:$cucumberVersion"
+}
+
+codenarc {
+    maxPriority2Violations 30
+    maxPriority3Violations 30
 }

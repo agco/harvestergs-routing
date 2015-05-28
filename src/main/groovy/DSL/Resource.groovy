@@ -1,6 +1,6 @@
 package com.agcocorp.harvester.routing
 
-import groovy.transform.*
+import groovy.transform.Canonical
 
 @Canonical
 class Resource {

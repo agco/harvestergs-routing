@@ -1,18 +1,11 @@
 package com.agcocorp.harvester.routing
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.fge.jackson.JsonLoader
 import com.github.fge.jsonschema.main.JsonSchemaFactory
 import cucumber.api.PendingException
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
-
 import static cucumber.api.groovy.EN.*
 import groovyx.net.http.RESTClient
 import groovyx.net.http.*
-import static groovyx.net.http.ContentType.JSON
 
 def client = new RESTClient('http://localhost:4567')
 def targets = [
