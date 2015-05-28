@@ -71,13 +71,11 @@ Then(~/^the response correctly describes the resource$/) { ->
         assert info.version == "0.1.0"
         assert info.title == "testApp"
 
-        /*
-        assert definitions."Comments"
-        definitions."Comments".with {
+        assert definitions."Comment"
+        definitions."Comment".with {
             assert properties
             assert required
         }
-        */
 
         assert paths."/comments"
         paths."/comments".with {
