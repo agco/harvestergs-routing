@@ -36,7 +36,12 @@ Given(~/^a set of related resources$/) { ->
                     tags {
                         type 'array'
                         items {
-                            type 'string'
+                            type 'object'
+                            properties {
+                                name { type 'string' }
+                                size { type 'integer' }
+                            }
+                            required 'name'
                         }
                     }
                 }

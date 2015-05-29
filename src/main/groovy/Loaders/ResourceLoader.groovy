@@ -106,7 +106,7 @@ class ResourceLoader {
                 if (req.requestMethod() == 'POST') {
                     def pogo = JsonLoader.fromString(req.body()?: "{}")
                     // todo: handle parsing errors -- shouldn't they all return a 400?
-                    def validationResults = postSchema.validate pogo
+                    def validationResults = postSchema.validate pogo, true
                     if (!validationResults.isSuccess()) {
                         error.invalid validationResults.messages.toString()
                     }

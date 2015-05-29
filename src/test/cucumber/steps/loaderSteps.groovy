@@ -3,6 +3,8 @@ package com.agcocorp.harvester.routing
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.fge.jsonschema.main.JsonSchemaFactory
 import cucumber.api.PendingException
+import groovy.json.JsonOutput
+
 import static cucumber.api.groovy.EN.*
 import groovyx.net.http.RESTClient
 import groovyx.net.http.*
@@ -11,7 +13,7 @@ def client = new RESTClient('http://localhost:4567')
 def targets = [
         "comments" : [
                 "get" : null,
-                "post": [ body: 'foobar', tags: [ 'foo', 'bar' ] ],
+                "post": [ body: 'foobar', tags: [ [ name: 'foo' ], [ name: 'bar' ] ] ],
         ],
         "comments/1": [
                 "get": null,
@@ -98,7 +100,13 @@ Then(~/^the response correctly describes the resource$/) { ->
 
 When(~/^I run a (\w+) at path (.+)$/) { verb, path ->
     def body = targets[path][verb]
-    response = client."$verb"(path: path, requestContentType: ContentType.JSON, body: body)
+    try {
+        response = client."$verb"(path: path, requestContentType: ContentType.JSON, body: body)
+    }
+    catch (HttpResponseException e) {
+        println "Error: ${ JsonOutput.toJson(e.response.responseData) }"
+        throw e
+    }
 }
 
 Then(~/^I receive a (\d+) response code$/) { int code ->
