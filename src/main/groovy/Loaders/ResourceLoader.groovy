@@ -40,7 +40,11 @@ class ResourceLoader {
         def visitor = { path, pathName ->
             verbs.each { verb ->
                 if (path[verb]) {
-                    spark.Spark."$verb" pathName, path[verb].run
+                    spark.Spark."$verb" pathName, { req, res ->
+                        res.type "application/json"
+                        def innerRes = path[verb].run(req, res)
+                        JsonOutput.toJson(innerRes)
+                    }
                 }
             }
         }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.fge.jsonschema.main.JsonSchemaFactory
 import cucumber.api.PendingException
 import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 
 import static cucumber.api.groovy.EN.*
 import groovyx.net.http.RESTClient
@@ -113,10 +114,14 @@ Then(~/^I receive a (\d+) response code$/) { int code ->
     assert response.status == code
 }
 
+def slurper = new JsonSlurper()
+
 Then(~/^the response message is (.+)/) { messageContents ->
     switch (messageContents) {
         case "a list":
-            assert response.responseData == "comments.get"
+            response.responseData.with {
+                assert body == 'Hello World!'
+            }
             break
         case "the updated resource":
             assert response.responseData == "comments/1.patch"

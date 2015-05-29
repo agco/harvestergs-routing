@@ -52,7 +52,7 @@ Given(~/^a set of related resources$/) { ->
         .paths
         ."/comments" {
             get { req, res ->
-                "comments.get"
+                [ body: 'Hello World!', tags: [  ] ]
             }
 
             post { req, res ->
