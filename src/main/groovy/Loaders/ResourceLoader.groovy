@@ -8,11 +8,19 @@ import groovy.json.JsonOutput
 import com.fasterxml.jackson.databind.JsonNode
 
 class ResourceLoader {
+    private final jsonSchemaFactory = JsonSchemaFactory.byDefault()
+    private final objectMapper
+    private final verbs = ['get', 'patch', 'post', 'delete']
+    private final pathVisitor
+    private final docLoader
+
     def ResourceLoader(specProperties = null,
                        PathVisitor pathVisitor = null,
                        DocumentLoader docLoader = null) {
-        this.pathVisitor = new PathVisitor()
-        this.docLoader = new DocumentLoader(specProperties)
+        this.pathVisitor = pathVisitor?: new PathVisitor()
+        this.docLoader = docLoader?: new DocumentLoader(specProperties)
+        this.objectMapper = new ObjectMapper()
+        this.objectMapper.setSerializationInclusion Include.NON_NULL
     }
 
     def loadResource(Resource spec) {
@@ -30,10 +38,6 @@ class ResourceLoader {
             response.type "application/json"
         });
     }
-
-    private final verbs = ['get', 'patch', 'post', 'delete']
-    private pathVisitor
-    private docLoader
 
     private getPogo(req) {
         if (! req.body()) {
@@ -59,7 +63,6 @@ class ResourceLoader {
     private validators = [
         'post': { spec, req ->
             def dslSchema = getSchema(spec)
-            objectMapper.setSerializationInclusion Include.NON_NULL
             def postSchema = jsonSchemaFactory.getJsonSchema(objectMapper.valueToTree(dslSchema))
 
             return validate(req, postSchema)
@@ -91,9 +94,6 @@ class ResourceLoader {
         }
         pathVisitor.visitPath spec.paths, visitor
     }
-
-    private def jsonSchemaFactory = JsonSchemaFactory.byDefault()
-    private def objectMapper = new ObjectMapper()
 
     private error = [
             invalid: { results -> throw new ValidationException( validationResults: results ) }
