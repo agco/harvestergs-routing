@@ -90,11 +90,6 @@ class ResourceLoader {
         pathVisitor.visitPath spec.paths, visitor
     }
 
-    private def loadDocs(Resource spec) {
-        def swaggerDoc = "foobar"
-        spark.Spark.get("/swagger"){ req, res -> swaggerDoc }
-    }
-
     private def jsonSchemaFactory = JsonSchemaFactory.byDefault()
     private def objectMapper = new ObjectMapper()
 
@@ -138,49 +133,5 @@ class ResourceLoader {
                     hasBody: false
             ]
     ]
-
-    private def loadValidation(Resource spec) {
-        def dslSchema = getSchema(spec)
-        objectMapper.setSerializationInclusion Include.NON_NULL
-        def postSchema = jsonSchemaFactory.getJsonSchema(objectMapper.valueToTree(dslSchema))
-        def visitor = { path, pathName ->
-            spark.Spark.before(pathName){ req, res ->
-
-                if (req.requestMethod() == 'POST') {
-                    def pogo = JsonLoader.fromString(req.body()?: "{}")
-                    // todo: handle parsing errors -- shouldn't they all return a 400?
-                    def validationResults = postSchema.validate pogo, true
-                    if (!validationResults.isSuccess()) {
-                        error.invalid validationResults.messages.toString()
-                    }
-
-                    req.metaClass.data = pogo
-                }
-            }
-
-            spark.Spark.after(pathName){ req, res ->
-                res.status defaultCodes[req.requestMethod()]
-                //res.type "application/json"
-                //res.body JsonOutput.toJson(res.body())
-            }
-        }
-
-        pathVisitor.visitPath spec.paths, visitor
-    }
-
-    private def recursePath(Path pathSet, Closure visitor) {
-        pathSet.paths.each { path ->
-            recursePath path.value, path.key, visitor
-        }
-    }
-
-    private def recursePath(PathSpec path, String pathName, Closure visitor) {
-        visitor(path, pathName)
-
-        path.children.each {
-            recursePath it.value, pathName + it.key, visitor
-        }
-    }
-
 }
 
