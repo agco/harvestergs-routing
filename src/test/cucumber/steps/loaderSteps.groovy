@@ -18,10 +18,14 @@ import static groovyx.net.http.ContentType.JSON
 
 def resources = []
 def comments = [
-    [ body: 'First!', author: [ name: 'John Doe' ], tags: [ [name: 'TEST'], [name: 'DUMMY'] ]],
-    [ body: 'Really, John?', author: [ name: 'Jane Doe' ], tags: [ [name: 'TEST'], [name: 'DUMMY'] ]],
-    [ body: 'Next!', author: [ name: 'Jack Doe' ], tags: [ [name: 'TEST'], [name: 'DUMMY'] ]],
+    [ body: 'First!', author: [ name: 'John Doe', email: 'john@doe.com' ], tags: [ [name: 'TEST'], [name: 'DUMMY'] ]],
+    [ body: 'Really, John?', author: [ name: 'Jane Doe', email: 'jane@doe.com' ], tags: [ [name: 'TEST'], [name: 'DUMMY'] ]],
+    [ body: 'Next!', author: [ name: 'Jack Doe', email: 'jack@doe.com' ], tags: [ [name: 'TEST'], [name: 'DUMMY'] ]],
 ]
+
+def postComment = comments[2]
+def patchComment = comments[1]
+def getComment = comments[0]
 
 Given(~/^a set of related resources$/) { ->
     def commentResource = new Resource()
@@ -68,7 +72,7 @@ Given(~/^a set of related resources$/) { ->
         }
 
         post { req, res ->
-            return comments[2]
+            return req.data
         }.document { docs ->
             docs.description = "Description for comments.post"
             docs
@@ -77,8 +81,8 @@ Given(~/^a set of related resources$/) { ->
             .skipValidation
 
         "/:id" {
-            get    {req, res -> return comments[0]}
-            patch  {req, res -> return comments[1]}
+            get    {req, res -> return getComment}
+            patch  {req, res -> return req.data }
             //.document { docs -> docs.operationId = "commentUpdate"; docs }
             delete {req, res -> return null }
         }
@@ -98,11 +102,11 @@ def client = new RESTClient('http://localhost:4567')
 def targets = [
         "comments" : [
                 "get" : null,
-                "post": [ body: 'foobar', tags: [ [ name: 'foo' ], [ name: 'bar' ] ] ],
+                "post": postComment,
         ],
         "comments/1": [
                 "get": null,
-                "patch": [ body: 'test'],
+                "patch": patchComment,
                 "delete": null
         ]
 ]
@@ -206,13 +210,13 @@ Then(~/^the response message is (.+)/) { messageContents ->
             assert response.responseData == comments
             break
         case "the updated resource":
-            assert response.responseData == comments[1]
+            assert response.responseData == patchComment
             break
         case "a single resource":
-            assert response.responseData == comments[0]
+            assert response.responseData == getComment
             break
         case "the new resource":
-            assert response.responseData == comments[2]
+            assert response.responseData == postComment
             break
         case "empty":
             assert ! response.responseData

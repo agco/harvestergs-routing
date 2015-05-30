@@ -5,6 +5,7 @@ import com.github.fge.jackson.JsonLoader
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.fge.jsonschema.main.JsonSchemaFactory
 import groovy.json.JsonOutput
+import com.fasterxml.jackson.databind.JsonNode
 
 class ResourceLoader {
     def ResourceLoader(specProperties = null,
@@ -39,8 +40,8 @@ class ResourceLoader {
             error.invalid('Empty request')
         }
         try {
-            def pogo = JsonLoader.fromString(req.body()?: "{}")
-            return pogo
+            req.metaClass.data = objectMapper.readValue(req.body()?: "{}", Map.class)
+            return objectMapper.convertValue(req.data, JsonNode.class)
         }
         catch (IOException e) {
             error.invalid('Could not parse JSON message.')
@@ -53,8 +54,6 @@ class ResourceLoader {
         if (!validationResults.isSuccess()) {
             error.invalid(validationResults.messages.toString())
         }
-
-        req.metaClass.data = pogo
     }
 
     private validators = [
@@ -64,6 +63,10 @@ class ResourceLoader {
             def postSchema = jsonSchemaFactory.getJsonSchema(objectMapper.valueToTree(dslSchema))
 
             return validate(req, postSchema)
+        },
+        'patch': { spec, req ->
+            //todo: add validation here -- schema should ignore 'required' and potentially other default rules
+            getPogo(req)
         }
     ]
 
@@ -80,7 +83,8 @@ class ResourceLoader {
 
                         res.status defaultCodes[req.requestMethod()]
                         def innerRes = path[verb].run(req, res)
-                        JsonOutput.toJson(innerRes)
+                        def rawJson = JsonOutput.toJson(innerRes)
+                        return rawJson
                     }
                 }
             }
