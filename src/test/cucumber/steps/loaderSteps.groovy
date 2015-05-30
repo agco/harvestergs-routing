@@ -121,6 +121,9 @@ Then(~/^the response message is (.+)/) { messageContents ->
         case "a list":
             response.responseData.with {
                 assert body == 'Hello World!'
+                assert tags.size() == 2
+                assert tags[0].name == 'TEST'
+                assert tags[1].name == 'DUMMY'
             }
             break
         case "the updated resource":
