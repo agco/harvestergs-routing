@@ -14,6 +14,22 @@ class ResourceLoader {
         this.docLoader = new DocumentLoader(specProperties)
     }
 
+    def loadResource(Resource spec) {
+        loadPath spec
+        docLoader.loadDocs spec
+
+        spark.Spark.exception(ValidationException.class, { e, request, response ->
+            response.status(400);
+            response.body(JsonOutput.toJson([
+                    id: UUID.randomUUID(),
+                    title: 'Invalid data',
+                    detail: e.validationResults
+            ]))
+
+            response.type "application/json"
+        });
+    }
+
     private final verbs = ['get', 'patch', 'post', 'delete']
     private pathVisitor
     private docLoader
@@ -42,32 +58,14 @@ class ResourceLoader {
     }
 
     private validators = [
-            'post': { spec, req ->
-                def dslSchema = getSchema(spec)
-                objectMapper.setSerializationInclusion Include.NON_NULL
-                def postSchema = jsonSchemaFactory.getJsonSchema(objectMapper.valueToTree(dslSchema))
+        'post': { spec, req ->
+            def dslSchema = getSchema(spec)
+            objectMapper.setSerializationInclusion Include.NON_NULL
+            def postSchema = jsonSchemaFactory.getJsonSchema(objectMapper.valueToTree(dslSchema))
 
-                return validate(req, postSchema)
-            }
+            return validate(req, postSchema)
+        }
     ]
-
-    def loadResource(Resource spec) {
-        loadPath spec
-        docLoader.loadDocs spec
-        //loadValidation spec
-
-        spark.Spark.exception(ValidationException.class, { e, request, response ->
-            response.status(400);
-            response.body(JsonOutput.toJson([
-                    id: UUID.randomUUID(),
-                    title: 'Invalid data',
-                    detail: e.validationResults
-            ]))
-
-            response.type "application/json"
-        });
-
-    }
 
     private def loadPath(Resource spec) {
         def visitor = { path, pathName ->
@@ -93,19 +91,16 @@ class ResourceLoader {
     private def jsonSchemaFactory = JsonSchemaFactory.byDefault()
     private def objectMapper = new ObjectMapper()
 
-
-    // todo: extract this method (and exception) so it can be broadly used
-    def error = [
+    private error = [
             invalid: { results -> throw new ValidationException( validationResults: results ) }
     ]
 
-    class ValidationException extends RuntimeException {
+    private class ValidationException extends RuntimeException {
         String validationResults
     }
 
     private def getSchema(Resource spec) {
-        // todo: refactor for a more robust approach to getting the main schema -- should the containing class be an array?
-        def dslSchema = spec.definitions.schemas[spec.definitions.mainSchemaName]
+        spec.definitions.schemas[spec.definitions.mainSchemaName]
     }
 
     private def defaultCodes = [
@@ -113,25 +108,6 @@ class ResourceLoader {
             POST: 201,
             PATCH: 200,
             DELETE: 204
-    ]
-
-    private def verbHandling = [
-            GET: [
-                    defaultCode: 200,
-                    hasBody: false
-            ],
-            POST: [
-                    defaultCode: 201,
-                    hasBody: true
-            ],
-            PATCH: [
-                    defaultCode: 200,
-                    hasBody: true
-            ],
-            DELETE: [
-                    defaultCode: 204,
-                    hasBody: false
-            ]
     ]
 }
 

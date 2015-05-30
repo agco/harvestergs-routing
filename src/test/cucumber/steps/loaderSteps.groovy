@@ -2,13 +2,98 @@ package com.agcocorp.harvester.routing
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.fge.jsonschema.main.JsonSchemaFactory
-import cucumber.api.PendingException
 import groovy.json.JsonOutput
+
+import static cucumber.api.groovy.EN.*
+import groovyx.net.http.RESTClient
+import groovyx.net.http.*
+
+import cucumber.api.PendingException
 import groovy.json.JsonSlurper
 
 import static cucumber.api.groovy.EN.*
 import groovyx.net.http.RESTClient
 import groovyx.net.http.*
+import static groovyx.net.http.ContentType.JSON
+
+def resources = []
+def comments = [
+    [ body: 'First!', author: [ name: 'John Doe' ], tags: [ [name: 'TEST'], [name: 'DUMMY'] ]],
+    [ body: 'Really, John?', author: [ name: 'Jane Doe' ], tags: [ [name: 'TEST'], [name: 'DUMMY'] ]],
+    [ body: 'Next!', author: [ name: 'Jack Doe' ], tags: [ [name: 'TEST'], [name: 'DUMMY'] ]],
+]
+
+Given(~/^a set of related resources$/) { ->
+    // Write code here that turns the phrase above into concrete actions
+    def commentResource = new Resource()
+
+    commentResource
+        .definitions
+        .Comment {
+        properties {
+            body {
+                type 'string'
+                description 'Comments contents'
+            }
+
+            author {
+                type 'object'
+                properties {
+                    name { type 'string'}
+                    email { type 'string'}
+                    url { type 'string'}
+                }
+                required 'name', 'email'
+            }
+
+            tags {
+                type 'array'
+                items {
+                    type 'object'
+                    properties {
+                        name { type 'string' }
+                        size { type 'integer' }
+                    }
+                    required 'name'
+                }
+            }
+        }
+        required 'body'
+    }
+
+    commentResource
+        .paths
+        ."/comments" {
+        get { req, res ->
+            return comments
+        }
+
+        post { req, res ->
+            return comments[2]
+        }.document { docs ->
+            docs.description = "Description for comments.post"
+            docs
+        }
+        .skipAuth
+            .skipValidation
+
+        "/:id" {
+            get    {req, res -> return comments[0]}
+            patch  {req, res -> return comments[1]}
+            //.document { docs -> docs.operationId = "commentUpdate"; docs }
+            delete {req, res -> return null }
+        }
+    }
+
+    resources << commentResource
+}
+
+Given(~/^these resources are loaded into an API$/) { ->
+    def loader = new ResourceLoader([ "title": "testApp" ])
+    resources.each {
+        loader.loadResource it
+    }
+}
 
 def client = new RESTClient('http://localhost:4567')
 def targets = [
@@ -119,21 +204,16 @@ def slurper = new JsonSlurper()
 Then(~/^the response message is (.+)/) { messageContents ->
     switch (messageContents) {
         case "a list":
-            response.responseData.with {
-                assert body == 'Hello World!'
-                assert tags.size() == 2
-                assert tags[0].name == 'TEST'
-                assert tags[1].name == 'DUMMY'
-            }
+            assert response.responseData == comments
             break
         case "the updated resource":
-            assert response.responseData == "comments/1.patch"
+            assert response.responseData == comments[1]
             break
         case "a single resource":
-            assert response.responseData == "comments/1.get"
+            assert response.responseData == comments[0]
             break
         case "the new resource":
-            assert response.responseData == "comments.post"
+            assert response.responseData == comments[2]
             break
         case "empty":
             assert ! response.responseData
