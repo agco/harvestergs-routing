@@ -24,7 +24,6 @@ def comments = [
 ]
 
 Given(~/^a set of related resources$/) { ->
-    // Write code here that turns the phrase above into concrete actions
     def commentResource = new Resource()
 
     commentResource
