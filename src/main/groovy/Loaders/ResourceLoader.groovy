@@ -18,10 +18,43 @@ class ResourceLoader {
     private pathVisitor
     private docLoader
 
+    private getPogo(req) {
+        if (! req.body()) {
+            error.invalid('Empty request')
+        }
+        try {
+            def pogo = JsonLoader.fromString(req.body()?: "{}")
+            return pogo
+        }
+        catch (IOException e) {
+            error.invalid('Could not parse JSON message.')
+        }
+    }
+
+    private validate(req, schema) {
+        def pogo = getPogo(req)
+        def validationResults = schema.validate pogo, true
+        if (!validationResults.isSuccess()) {
+            error.invalid(validationResults.messages.toString())
+        }
+
+        req.metaClass.data = pogo
+    }
+
+    private validators = [
+            'post': { spec, req ->
+                def dslSchema = getSchema(spec)
+                objectMapper.setSerializationInclusion Include.NON_NULL
+                def postSchema = jsonSchemaFactory.getJsonSchema(objectMapper.valueToTree(dslSchema))
+
+                return validate(req, postSchema)
+            }
+    ]
+
     def loadResource(Resource spec) {
-        loadPath spec.paths
+        loadPath spec
         docLoader.loadDocs spec
-        loadValidation spec
+        //loadValidation spec
 
         spark.Spark.exception(ValidationException.class, { e, request, response ->
             response.status(400);
@@ -36,19 +69,25 @@ class ResourceLoader {
 
     }
 
-    private def loadPath(Path pathSet) {
+    private def loadPath(Resource spec) {
         def visitor = { path, pathName ->
             verbs.each { verb ->
                 if (path[verb]) {
+                    def validate = validators[verb]
                     spark.Spark."$verb" pathName, { req, res ->
                         res.type "application/json"
+                        if (validate) {
+                            validate(spec, req)
+                        }
+
+                        res.status defaultCodes[req.requestMethod()]
                         def innerRes = path[verb].run(req, res)
                         JsonOutput.toJson(innerRes)
                     }
                 }
             }
         }
-        pathVisitor.visitPath pathSet, visitor
+        pathVisitor.visitPath spec.paths, visitor
     }
 
     private def loadDocs(Resource spec) {
@@ -114,6 +153,8 @@ class ResourceLoader {
                     if (!validationResults.isSuccess()) {
                         error.invalid validationResults.messages.toString()
                     }
+
+                    req.metaClass.data = pogo
                 }
             }
 

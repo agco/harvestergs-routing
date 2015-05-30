@@ -34,9 +34,9 @@ def error
 
 When(~/^I post a resource that is missing mandatory fields$/) { ->
     // Write code here that turns the phrase above into concrete actions
-    def resource = '{}'
+    def resource = [ author: [ name: 'John Doe' ] ]
     try {
-        response = client.post(path: '/comments', requestContentType: ContentType.JSON)
+        response = client.post(path: '/comments', requestContentType: ContentType.JSON, body: resource)
         fail("HTTP action should have returned an error")
     }
     catch(HttpResponseException e) {
