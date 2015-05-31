@@ -7,9 +7,8 @@ import org.junit.runner.RunWith
 @RunWith(Cucumber.class)
 @CucumberOptions(
         format=["pretty", "html:build/reports/cucumber"],
-        tags=["~@manual", "~@review"],
-        features=["src/test/cucumber"],
-        glue=["src/test/cucumber/steps", "src/test/cucumber/support"]
+        features=["src/test/resources/com/agcocorp/harvestergs/routing"],
+        glue=["src/test/groovy/com/agcocorp/harvestergs/routing/"]
 )
 public class RunCukesTest {
 //leave me empty!

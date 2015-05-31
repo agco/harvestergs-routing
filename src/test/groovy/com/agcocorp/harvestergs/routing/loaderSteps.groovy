@@ -230,7 +230,7 @@ def jsonSchemaFactory = JsonSchemaFactory.byDefault()
 def objectMapper = new ObjectMapper()
 
 Then(~/^it is swagger-compliant response$/) { ->
-    def schema = jsonSchemaFactory.getJsonSchema("resource:/swagger-schema.json")
+    def schema = jsonSchemaFactory.getJsonSchema("resource:/com/agcocorp/harvestergs/routing/swagger-schema.json")
     def data = objectMapper.valueToTree(response.responseData)
     def valResults = schema.validate(data)
     assert valResults.isSuccess()
