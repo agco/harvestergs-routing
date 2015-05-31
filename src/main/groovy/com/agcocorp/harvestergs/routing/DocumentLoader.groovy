@@ -1,4 +1,4 @@
-package com.agcocorp.harvester.routing
+package com.agcocorp.harvestergs.routing
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
