@@ -1,5 +1,8 @@
-package com.agcocorp.harvestergs.routing
+package com.agcocorp.harvestergs.routing.loaders
 
+import com.agcocorp.harvestergs.routing.PathVisitor
+import com.agcocorp.harvestergs.routing.Resource
+import com.agcocorp.harvestergs.routing.VerbSpec
 import groovy.json.JsonSlurper
 import groovy.text.SimpleTemplateEngine
 import com.fasterxml.jackson.annotation.JsonInclude.Include;

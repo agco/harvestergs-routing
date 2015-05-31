@@ -1,5 +1,7 @@
-package com.agcocorp.harvestergs.routing
+package com.agcocorp.harvestergs.routing.loaders
 
+import com.agcocorp.harvestergs.routing.PathVisitor
+import com.agcocorp.harvestergs.routing.Resource
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.fge.jsonschema.main.JsonSchemaFactory

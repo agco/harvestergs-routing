@@ -1,20 +1,15 @@
 package com.agcocorp.harvestergs.routing
 
+import com.agcocorp.harvestergs.routing.loaders.ResourceLoader
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.fge.jsonschema.main.JsonSchemaFactory
 import groovy.json.JsonOutput
-
-import static cucumber.api.groovy.EN.*
-import groovyx.net.http.RESTClient
-import groovyx.net.http.*
-
 import cucumber.api.PendingException
 import groovy.json.JsonSlurper
 
 import static cucumber.api.groovy.EN.*
 import groovyx.net.http.RESTClient
 import groovyx.net.http.*
-import static groovyx.net.http.ContentType.JSON
 
 def resources = []
 def comments = [
