@@ -5,10 +5,10 @@ import groovy.transform.Canonical
 @Canonical
 class PathSpec {
     private parentPath
-    private builder
+    private delegateTo
 
-    def PathSpec(PathSpec parentPath = null, Object builder = null) {
-        this.builder = builder
+    def PathSpec(PathSpec parentPath = null, Object delegateTo = null) {
+        this.delegateTo = delegateTo
         this.parentPath = parentPath
     }
 
@@ -18,7 +18,7 @@ class PathSpec {
 
     def methodMissing(String name, args) {
         if (name.startsWith('/')) {
-            def innerSpec = new PathSpec(parentPath: this, builder: builder)
+            def innerSpec = new PathSpec(parentPath: this, delegateTo: delegateTo)
             Definition.runClosure(args[0], innerSpec, this)
             children[name] = innerSpec
             return innerSpec
@@ -30,6 +30,10 @@ class PathSpec {
             return verb
         }
 
-        return builder."$name"(args)
+        if ((!delegateTo) || (! delegateTo.hasProperty(name))) {
+            throw new MissingMethodException(name, this.class, args)
+        }
+
+        return delegateTo."$name"(args)
     }
 }

@@ -4,10 +4,10 @@ import groovy.transform.Canonical
 
 @Canonical
 class Path {
-    private builder
+    private delegateTo
 
-    def Path(builder = null) {
-        this.builder = builder
+    def Path(Object delegateTo = null) {
+        this.delegateTo = delegateTo
     }
 
     Map<String, PathSpec> paths = [:]
@@ -15,7 +15,7 @@ class Path {
     def getrootPathEndpoint() { _rootPathEndpoint }
 
     def methodMissing(String name, args) {
-        def spec = new PathSpec(parentPath: null, builder: builder)
+        def spec = new PathSpec(parentPath: null, delegateTo: delegateTo)
         if (! paths) {
             _rootPathEndpoint = name
         }

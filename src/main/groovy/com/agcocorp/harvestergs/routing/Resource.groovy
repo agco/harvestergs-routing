@@ -7,8 +7,8 @@ class Resource {
     Definition definitions
     Path paths
 
-    def Resource(builder) {
-        paths = new Path(builder)
+    def Resource(delegateTo) {
+        paths = new Path(delegateTo)
         definitions = new Definition()
     }
 
