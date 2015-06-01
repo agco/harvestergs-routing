@@ -83,11 +83,9 @@ def definePath(builder) {
 }
 
 def defineResource(builder) {
-    def input = new Resource()
-    input.definitions = defineSchema(builder.definitions)
-    input.paths = definePath(builder.paths)
-    input
-
+    defineSchema(builder.definitions)
+    definePath(builder.paths)
+    builder
 }
 
 def checkSchema(schema) {

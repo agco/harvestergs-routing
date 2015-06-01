@@ -4,10 +4,12 @@ import groovy.transform.Canonical
 
 @Canonical
 class PathSpec {
-    private PathSpec parent
+    private parentPath
+    private builder
 
-    PathSpec(parent = null) {
-        this.parent = parent
+    def PathSpec(PathSpec parentPath = null, Object builder = null) {
+        this.builder = builder
+        this.parentPath = parentPath
     }
 
     Map<String, PathSpec> children = [:]
@@ -16,13 +18,18 @@ class PathSpec {
 
     def methodMissing(String name, args) {
         if (name.startsWith('/')) {
-            def innerSpec = new PathSpec(this)
+            def innerSpec = new PathSpec(parentPath: this, builder: builder)
             Definition.runClosure(args[0], innerSpec, this)
             children[name] = innerSpec
             return innerSpec
         }
-        def verb = new VerbSpec(args[0])
-        Definition.setProperty(this, name, verb)
-        verb
+
+        if (this.hasProperty(name)) {
+            def verb = new VerbSpec(args[0])
+            Definition.setProperty(this, name, verb)
+            return verb
+        }
+
+        return builder."$name"(args)
     }
 }

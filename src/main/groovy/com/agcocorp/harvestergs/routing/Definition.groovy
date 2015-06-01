@@ -34,5 +34,6 @@ class Definition {
         if (throwOnMiss) {
             throw new MissingPropertyException(property, obj.class)
         }
+        return false
     }
 }

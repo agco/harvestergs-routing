@@ -4,8 +4,13 @@ import groovy.transform.Canonical
 
 @Canonical
 class Resource {
-    Definition definitions = new Definition()
-    Path paths = new Path()
+    Definition definitions
+    Path paths
+
+    def Resource(builder) {
+        paths = new Path(builder)
+        definitions = new Definition()
+    }
 
     def definition(Closure cl) {
         Definition.runClosure(cl, definitions, this)
@@ -13,7 +18,7 @@ class Resource {
     }
 
     def path(Closure cl) {
-        Definition.runClosure(cl, path, this)
+        Definition.runClosure(cl, paths, this)
         this
     }
 }
