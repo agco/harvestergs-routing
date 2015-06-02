@@ -4,7 +4,7 @@ import groovy.transform.Canonical
 
 @Canonical
 class Schema {
-    PropertyList properties
+    PropertyList attributes
     List<String> required
     String type
     String description
@@ -12,9 +12,9 @@ class Schema {
 
     def methodMissing(String name, args) {
         switch (name) {
-            case "properties":
-                properties = new PropertyList()
-                Definition.runClosure(args[0], properties, this);
+            case "attributes":
+                attributes = new PropertyList()
+                Definition.runClosure(args[0], attributes, this);
                 break;
             case "items":
                 items = new Schema()

@@ -1,0 +1,13 @@
+{
+    "properties":{
+        "data": {
+            "type": "object",
+            "properties": {
+                "id": { "type": "$idType" },
+                "type": { "type": "string" },
+                "attributes": { "type": "object" },
+                "relationships": { "type": "object" }
+            }
+        }
+    }
+}

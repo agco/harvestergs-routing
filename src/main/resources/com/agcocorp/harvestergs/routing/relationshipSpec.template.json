@@ -1,0 +1,8 @@
+{
+    "$name": {
+        "data": {
+            "type": "$type",
+            "id": "$idType"
+        }
+    }
+}

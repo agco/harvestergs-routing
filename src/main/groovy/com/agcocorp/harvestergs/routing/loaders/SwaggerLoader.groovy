@@ -1,6 +1,5 @@
 package com.agcocorp.harvestergs.routing.loaders
 
-import com.agcocorp.harvestergs.routing.PathVisitor
 import com.agcocorp.harvestergs.routing.Resource
 import com.agcocorp.harvestergs.routing.VerbSpec
 import groovy.json.JsonSlurper
@@ -9,14 +8,14 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-class DocumentLoader {
+class SwaggerLoader {
     private slurper = new JsonSlurper()
     private specProperties
     private engine = new SimpleTemplateEngine()
     private templates = [:]
     private final defaultProps = ['host': 'localhost', 'version': '0.1.0', 'description': 'api description', 'title': 'api title']
 
-    def DocumentLoader(specProperties = null,
+    def SwaggerLoader(specProperties = null,
                        PathVisitor pathVisitor = new PathVisitor()) {
         this.pathVisitor = pathVisitor
         this.specProperties = defaultProps
@@ -39,7 +38,7 @@ class DocumentLoader {
         slurper.parseText(spec)
     }
 
-    def PathVisitor pathVisitor
+    final PathVisitor pathVisitor
 
     def camelCase(str) {
         str[0].toLowerCase() + str.substring(1)
@@ -75,7 +74,10 @@ class DocumentLoader {
 
         pathVisitor.visitPath spec.paths, visitor
 
-        root.definitions = spec.definitions.schemas
+        spec.definitions.schemas.each {
+            // todo: properly handle uuids as IDs, instead of strings -- this is a json schema limitation
+            root.definitions[it.key] = loadSpec('definition', [ 'plural': plural, 'idType': 'string' ])
+        }
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);

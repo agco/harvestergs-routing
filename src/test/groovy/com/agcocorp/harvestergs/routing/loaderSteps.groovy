@@ -1,6 +1,6 @@
 package com.agcocorp.harvestergs.routing
 
-import com.agcocorp.harvestergs.routing.loaders.ResourceLoader
+import com.agcocorp.harvestergs.routing.loaders.SparkLoader
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.fge.jsonschema.main.JsonSchemaFactory
 import groovy.json.JsonOutput
@@ -28,7 +28,7 @@ Given(~/^a set of related resources$/) { ->
 }
 
 Given(~/^these resources are loaded into an API$/) { ->
-    def loader = new ResourceLoader([ "title": "testApp" ])
+    def loader = new SparkLoader([ "title": "testApp" ])
     resources.each {
         loader.loadResource it
     }
@@ -99,9 +99,11 @@ Then(~/^the response correctly describes the resource$/) { ->
         assert info.title == "testApp"
 
         assert definitions."Comment"
-        definitions."Comment".with {
-            assert properties
-            assert required
+        assert definitions."Comment".properties.data
+        definitions."Comment".properties.data.with {
+            assert type
+            //assert attributes
+            //assert required
         }
 
         assert paths."/comments"

@@ -10,7 +10,7 @@ def target
 
 def defineSchema(builder) {
     builder.Comment {
-        properties {
+        attributes {
             id {
                 type 'integer'
                 description 'The comment id'
@@ -25,7 +25,7 @@ def defineSchema(builder) {
 }
 def defineNestedSchema(builder) {
     builder.Comment {
-        properties {
+        attributes {
             id {
                 type 'integer'
                 description 'The comment id'
@@ -36,10 +36,10 @@ def defineNestedSchema(builder) {
             }
             pingback {
                 type 'object'
-                properties {
+                attributes {
                     author {
                         type 'object'
-                        properties {
+                        attributes {
                             name {
                                 type 'string'
                             }
@@ -89,19 +89,19 @@ def defineResource(builder) {
 }
 
 def checkSchema(schema) {
-    assert schema.Comment.properties.size() == 2
-    assert schema.Comment.properties.id.type == 'integer'
+    assert schema.Comment.attributes.size() == 2
+    assert schema.Comment.attributes.id.type == 'integer'
 }
 
 def checkNestedSchema(schema) {
-    assert schema.Comment.properties.size() == 3
-    assert schema.Comment.properties.id.type == 'integer'
-    assert schema.Comment.properties.pingback
-    assert schema.Comment.properties.pingback.properties.size() == 2
-    assert schema.Comment.properties.pingback.properties.quote.type == 'string'
-    assert schema.Comment.properties.pingback.properties.author.type == 'object'
-    assert schema.Comment.properties.pingback.properties.author.properties.size() == 2
-    assert schema.Comment.properties.pingback.properties.author.properties.email.type == 'string'
+    assert schema.Comment.attributes.size() == 3
+    assert schema.Comment.attributes.id.type == 'integer'
+    assert schema.Comment.attributes.pingback
+    assert schema.Comment.attributes.pingback.attributes.size() == 2
+    assert schema.Comment.attributes.pingback.attributes.quote.type == 'string'
+    assert schema.Comment.attributes.pingback.attributes.author.type == 'object'
+    assert schema.Comment.attributes.pingback.attributes.author.attributes.size() == 2
+    assert schema.Comment.attributes.pingback.attributes.author.attributes.email.type == 'string'
 }
 
 def checkPath(path) {

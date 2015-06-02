@@ -1,4 +1,7 @@
-package com.agcocorp.harvestergs.routing
+package com.agcocorp.harvestergs.routing.loaders
+
+import com.agcocorp.harvestergs.routing.Path
+import com.agcocorp.harvestergs.routing.PathSpec
 
 class PathVisitor {
     def visitPath(Path pathSet, Closure visitor) {

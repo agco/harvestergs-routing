@@ -14,7 +14,7 @@ class CommentResourceBuilder {
         resource
             .definitions
             .Comment {
-            properties {
+            attributes {
                 body {
                     type 'string'
                     description 'Comments contents'
@@ -22,7 +22,7 @@ class CommentResourceBuilder {
 
                 author {
                     type 'object'
-                    properties {
+                    attributes {
                         name { type 'string'}
                         email { type 'string'}
                         url { type 'string'}
@@ -34,7 +34,7 @@ class CommentResourceBuilder {
                     type 'array'
                     items {
                         type 'object'
-                        properties {
+                        attributes {
                             name { type 'string' }
                             size { type 'integer' }
                         }
@@ -59,7 +59,7 @@ class CommentResourceBuilder {
                 docs
             }
             .skipAuth
-                .skipValidation
+            .skipValidation
 
             "/:id" {
                 get    {req, res -> return getById(req.params(':id')) }
