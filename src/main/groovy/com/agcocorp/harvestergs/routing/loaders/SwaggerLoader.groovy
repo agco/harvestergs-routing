@@ -1,6 +1,7 @@
 package com.agcocorp.harvestergs.routing.loaders
 
 import com.agcocorp.harvestergs.routing.Resource
+import com.agcocorp.harvestergs.routing.Schema
 import com.agcocorp.harvestergs.routing.VerbSpec
 import groovy.json.JsonSlurper
 import groovy.text.SimpleTemplateEngine
@@ -48,6 +49,20 @@ class SwaggerLoader {
         def match = (endPoint =~ ~/\\/([\w-]+)/)
         match[0][1]
     }
+
+    private final uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
+
+    private setIfNotNull(obj, prop, value) {
+        if (value) {
+            obj[prop] = value
+        }
+    }
+
+    private convertToSwagger(Schema schema) {
+        def swaggerSpec = [:]
+        setIfNotNull(swaggerSpec, 'properties', schema.attributes)
+    }
+
     def loadDocs(Resource spec) {
         def root = loadSpec 'api', specProperties
         def resource = spec.definitions.mainSchemaName
@@ -73,10 +88,13 @@ class SwaggerLoader {
         }
 
         pathVisitor.visitPath spec.paths, visitor
-
         spec.definitions.schemas.each {
-            // todo: properly handle uuids as IDs, instead of strings -- this is a json schema limitation
-            root.definitions[it.key] = loadSpec('definition', [ 'plural': plural, 'idType': 'string' ])
+            // todo: create proper tests to validate the id UUID pattern
+            root.definitions[it.key] = loadSpec('definition', [
+                'plural': plural,
+                'idType': 'string',
+                'idPattern': uuidPattern ])
+            root.definitions[it.key].properties.data.properties.attributes.properties = it.value.attributes
         }
 
         ObjectMapper mapper = new ObjectMapper();

@@ -3,10 +3,13 @@
         "data": {
             "type": "object",
             "properties": {
-                "id": { "type": "$idType" },
                 "type": { "type": "string" },
-                "attributes": { "type": "object" },
-                "relationships": { "type": "object" }
+                "attributes": {
+                    "type": "object",
+                    "properties": {}
+                },
+                "relationships": { "type": "object" },
+                "id": { "type": "$idType" ${idPattern? /, "pattern": "$idPattern" /:""} }
             }
         }
     }

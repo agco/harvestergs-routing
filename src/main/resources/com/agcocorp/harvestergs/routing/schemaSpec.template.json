@@ -1,0 +1,9 @@
+{
+    "properties":{
+        "id": "idType",
+        "type":"$type"
+    },
+    "type": "object",
+    "description":"$description",
+    "items": {}
+}

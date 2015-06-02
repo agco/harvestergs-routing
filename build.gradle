@@ -25,6 +25,8 @@ dependencies {
     def cucumberVersion ='1.2.2'
     testCompile "info.cukes:cucumber-groovy:$cucumberVersion"
     testCompile "info.cukes:cucumber-junit:$cucumberVersion"
+
+    testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
 }
 
 codenarc {
