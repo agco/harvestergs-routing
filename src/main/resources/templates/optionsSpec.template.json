@@ -1,0 +1,10 @@
+{
+    "description": "Returns a collection of $plural the user has access to.",
+    "tags": ["$plural"],
+    "responses": {
+        "200": {
+            "description": "An array of $plural"
+            }
+        }
+    }
+}

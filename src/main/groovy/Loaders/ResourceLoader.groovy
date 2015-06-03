@@ -74,7 +74,8 @@ class ResourceLoader {
             GET: 200,
             POST: 201,
             PATCH: 200,
-            DELETE: 204
+            DELETE: 204,
+            OPTIONS: 200
     ]
 
     private def verbHandling = [
@@ -92,6 +93,10 @@ class ResourceLoader {
             ],
             DELETE: [
                     defaultCode: 204,
+                    hasBody: false
+            ],
+            OPTIONS:[
+                    defaultCode: 200,
                     hasBody: false
             ]
     ]
