@@ -47,7 +47,7 @@ class SwaggerSchemaMapperTest extends Specification {
                     ]
                 ]
             ]
-        ],/*
+        ],
         'deep schema': [
             type: 'comment',
             attributes: [
@@ -85,6 +85,12 @@ class SwaggerSchemaMapperTest extends Specification {
                                         name: [type: 'string'],
                                         email: [type: 'string'],
                                         avatars: [
+                                            type: 'object',
+                                            properties: [
+                                                small: [ type: 'string'],
+                                                medium: [ type: 'string'],
+                                                large: [ type: 'string']
+                                            ]
                                         ]
                                     ]
                                 ]
@@ -93,7 +99,7 @@ class SwaggerSchemaMapperTest extends Specification {
                     ]
                 ]
             ]
-        ],*/
+        ],
         'empty schema': [ : ],
         'empty swagger': [ properties: [ data: [ : ] ] ]
     ]
@@ -123,5 +129,6 @@ class SwaggerSchemaMapperTest extends Specification {
             'typed schema'      |   'typed swagger'
             'simple schema'     |   'simple swagger'
             'nested schema'     |   'nested swagger'
+            'deep schema'       |   'deep swagger'
     }
 }
