@@ -27,24 +27,53 @@ class SwaggerSchemaMapper {
 
     private setNotNull(obj, prop, value) {
         if (!value) {
-            // todo: proper exception throw here
+            // todo: throw proper exception here
             throw new RuntimeException()
         }
         setInnerProp obj, prop, value
     }
 
-    def map(schema) {
-        def swagger = [ properties: [ data: [:] ] ]
-        def data = swagger.properties.data
-        setIfNotNull data, 'properties.type', schema.type
-        if (schema.attributes) {
-            setNotNull data, 'properties.attributes', [properties:[:]]
-            def attr = data.properties.attributes
-            attr.type = 'object'
-            schema.attributes.each {
-                attr.properties[it.key] = it.value
+    private mapToSwagger(parent, level = 0) {
+        def swagger = [:]
+
+        //todo: switch this to parent.properties.each once the DSL objects start being used
+        parent.each {
+            switch (it.key) {
+                case 'attributes':
+                    def attr
+                    if (level == 0) {
+                        setNotNull swagger, 'properties.attributes', [properties:[:]]
+                        attr = swagger.properties.attributes
+                    }
+                    else {
+                        swagger['properties'] = [:]
+                        attr = swagger
+                    }
+                    //attr.type = 'object'
+                    parent.attributes.each {
+                        attr.properties[it.key] = mapToSwagger(it.value, level + 1)
+                    }
+                    break;
+                default:
+                    if (level > 0) {
+                        setIfNotNull swagger, "${it.key}", it.value
+                    }
+                    else {
+                        setIfNotNull swagger, "properties.${it.key}", it.value
+                    }
+                    break;
             }
         }
+
+        swagger
+    }
+
+    def map(schema) {
+        def swagger = [
+            properties: [
+                data: mapToSwagger(schema)
+            ]
+        ]
         return swagger
     }
 }
