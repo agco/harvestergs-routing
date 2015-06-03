@@ -60,6 +60,47 @@ class SwaggerSchemaMapperTest extends Specification {
                 ]
             ]
         ],
+        'array schema': [
+            attributes: [
+                body: [ type: 'string'],
+                author: [
+                    attributes: [
+                        name: [ type: 'string' ],
+                        email: [ type: 'string']
+                    ]
+                ],
+                tags: [
+                    type: 'array',
+                    items: [
+                         type: 'string'
+                    ]
+                ]
+            ]
+        ],
+        'array swagger': [
+            properties: [
+                data: [
+                    properties: [
+                        // todo: add type and id
+                        attributes: [
+                            properties: [
+                                body: [ type: 'string' ],
+                                author: [
+                                    properties: [
+                                        name: [type: 'string'],
+                                        email: [type: 'string']
+                                    ]
+                                ],
+                                tags: [
+                                    type: 'array',
+                                    items: [ type: 'string' ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ],
         'deep schema': [
             attributes: [
                 body: [ type: 'string'],
@@ -122,8 +163,7 @@ class SwaggerSchemaMapperTest extends Specification {
         true
     }
 
-    def "jsonapi schema to swagger mapping"(String schema, swagger) {
-        def sut = new SwaggerSchemaMapper()
+    def "jsonapi schema to swagger mapping"(String schema, String swagger) {
         expect:
             testMatch(testData[schema], testData[swagger])
             //checkSwagger(swagger)
@@ -131,9 +171,9 @@ class SwaggerSchemaMapperTest extends Specification {
         where:
             schema              |      swagger
             'empty schema'      |   'empty swagger'
-            //'typed schema'      |   'typed swagger'
             'simple schema'     |   'simple swagger'
             'nested schema'     |   'nested swagger'
             'deep schema'       |   'deep swagger'
+            'array schema'      |   'array swagger'
     }
 }
