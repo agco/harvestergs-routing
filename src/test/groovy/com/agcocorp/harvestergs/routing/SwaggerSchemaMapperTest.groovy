@@ -72,7 +72,11 @@ class SwaggerSchemaMapperTest extends Specification {
                 tags: [
                     type: 'array',
                     items: [
-                         type: 'string'
+                        type: 'object',
+                        attributes: [
+                            name: [ type: 'string' ],
+                            size: [ type: 'integer' ]
+                        ]
                     ]
                 ]
             ]
@@ -93,7 +97,13 @@ class SwaggerSchemaMapperTest extends Specification {
                                 ],
                                 tags: [
                                     type: 'array',
-                                    items: [ type: 'string' ]
+                                    items: [
+                                        type: 'object',
+                                        properties: [
+                                            name: [ type: 'string' ],
+                                            size: [ type : 'integer']
+                                        ]
+                                    ]
                                 ]
                             ]
                         ]

@@ -54,6 +54,9 @@ class SwaggerSchemaMapper {
                         attr.properties[it.key] = mapToSwagger(it.value, level + 1)
                     }
                     break;
+                case 'items':
+                    setIfNotNull swagger, 'items', mapToSwagger(it.value, level + 1)
+                    break;
                 default:
                     if (level > 0) {
                         setIfNotNull swagger, "${it.key}", it.value
