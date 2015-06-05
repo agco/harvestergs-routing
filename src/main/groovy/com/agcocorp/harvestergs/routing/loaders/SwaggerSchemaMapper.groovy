@@ -63,7 +63,7 @@ class SwaggerSchemaMapper {
                         if (level > 0) {
                             setIfNotNull swagger, "$name", value
                         } else {
-                            setIfNotNull swagger, "properties.$name", value
+                            setIfNotNull swagger, "properties.attributes.$name", value
                         }
                         break;
                 }

@@ -152,31 +152,15 @@ Then(~/^the response correctly describes the resource$/) { ->
                                     ],
                                     type: 'array'
                                 ]
-                            ]
-                        ],
-                        required: ['body']
+                            ],
+                            required: ['body']
+                        ]
                     ]
                 ]
             ]
         ]
 
         assert definitions.Comment == expectedSchema
-
-        /*
-        checkProperties(definitions."Comment", 'data').with {
-            assert type
-            checkProperties(it, 'attributes').with {
-                checkProperties(it, )
-            }
-        }
-
-        definitions."Comment".properties.data.with {
-            assert type
-            //assert response.responseData.definitions.Comment.properties.data.properties.attributes
-            assert properties.attributes
-            //assert relationships
-        }
-        */
     }
 }
 
@@ -223,7 +207,6 @@ def jsonSchemaFactory = JsonSchemaFactory.byDefault()
 def objectMapper = new ObjectMapper()
 
 Then(~/^it is swagger-compliant response$/) { ->
-    throw new PendingException();
     def schema = jsonSchemaFactory.getJsonSchema("resource:/com/agcocorp/harvestergs/routing/swagger-schema.json")
     def data = objectMapper.valueToTree(response.responseData)
     def valResults = schema.validate(data)
