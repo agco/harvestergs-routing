@@ -14,36 +14,34 @@ class CommentResourceBuilder {
         resource
             .definitions
             .Comment {
-            properties {
-                body {
-                    type 'string'
-                    description 'Comments contents'
-                }
-
-                author {
-                    type 'object'
-                    properties {
-                        name { type 'string'}
-                        email { type 'string'}
-                        url { type 'string'}
+                attributes {
+                    body {
+                        type 'string'
+                        description 'Comments contents'
                     }
-                    required 'name', 'email'
-                }
-
-                tags {
-                    type 'array'
-                    items {
+                    author {
                         type 'object'
-                        properties {
-                            name { type 'string' }
-                            size { type 'integer' }
+                        attributes {
+                            name { type 'string'}
+                            email { type 'string'}
+                            url { type 'string'}
                         }
-                        required 'name'
+                        required 'name', 'email'
+                    }
+                    tags {
+                        type 'array'
+                        items {
+                            type 'object'
+                            attributes {
+                                name { type 'string' }
+                                size { type 'integer' }
+                            }
+                            required 'name'
+                        }
                     }
                 }
+                required 'body'
             }
-            required 'body'
-        }
 
         resource
             .paths
@@ -59,7 +57,7 @@ class CommentResourceBuilder {
                 docs
             }
             .skipAuth
-                .skipValidation
+            .skipValidation
 
             "/:id" {
                 get    {req, res -> return getById(req.params(':id')) }

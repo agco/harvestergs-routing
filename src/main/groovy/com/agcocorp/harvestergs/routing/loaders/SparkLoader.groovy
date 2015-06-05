@@ -1,6 +1,5 @@
 package com.agcocorp.harvestergs.routing.loaders
 
-import com.agcocorp.harvestergs.routing.PathVisitor
 import com.agcocorp.harvestergs.routing.Resource
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -8,18 +7,18 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory
 import groovy.json.JsonOutput
 import com.fasterxml.jackson.databind.JsonNode
 
-class ResourceLoader {
+class SparkLoader {
     private final jsonSchemaFactory = JsonSchemaFactory.byDefault()
     private final objectMapper
     private final verbs = ['get', 'patch', 'post', 'delete']
     private final pathVisitor
     private final docLoader
 
-    def ResourceLoader(specProperties = null,
+    def SparkLoader(specProperties = null,
                        PathVisitor pathVisitor = null,
-                       DocumentLoader docLoader = null) {
+                       SwaggerLoader docLoader = null) {
         this.pathVisitor = pathVisitor?: new PathVisitor()
-        this.docLoader = docLoader?: new DocumentLoader(specProperties)
+        this.docLoader = docLoader?: new SwaggerLoader(specProperties)
         this.objectMapper = new ObjectMapper()
         this.objectMapper.setSerializationInclusion Include.NON_NULL
     }

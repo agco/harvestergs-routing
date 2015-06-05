@@ -1,6 +1,6 @@
 package com.agcocorp.harvestergs.routing
 
-import com.agcocorp.harvestergs.routing.loaders.ResourceLoader
+import com.agcocorp.harvestergs.routing.loaders.SparkLoader
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.fge.jsonschema.main.JsonSchemaFactory
 import groovy.json.JsonOutput
@@ -28,7 +28,7 @@ Given(~/^a set of related resources$/) { ->
 }
 
 Given(~/^these resources are loaded into an API$/) { ->
-    def loader = new ResourceLoader([ "title": "testApp" ])
+    def loader = new SparkLoader([ "title": "testApp" ])
     resources.each {
         loader.loadResource it
     }
@@ -90,6 +90,13 @@ When(~/^I get the documentation for it$/) { ->
     response = client.get(path: '/swagger', requestContentType: ContentType.JSON)
 }
 
+def checkProperties(context, name) {
+    assert context
+    assert context.properties
+    assert context.properties[name]
+    context.properties[name]
+}
+
 Then(~/^the response correctly describes the resource$/) { ->
     assert response
     assert response.responseData
@@ -97,12 +104,6 @@ Then(~/^the response correctly describes the resource$/) { ->
         assert swagger == "2.0"
         assert info.version == "0.1.0"
         assert info.title == "testApp"
-
-        assert definitions."Comment"
-        definitions."Comment".with {
-            assert properties
-            assert required
-        }
 
         assert paths."/comments"
         paths."/comments".with {
@@ -120,6 +121,46 @@ Then(~/^the response correctly describes the resource$/) { ->
             assert patch
             assert delete
         }
+
+        def expectedSchema = [
+            properties: [
+                data: [
+                    properties: [
+                        attributes: [
+                            properties: [
+                                author: [
+                                    properties: [
+                                        email: [ type: 'string' ],
+                                        name:  [ type: 'string' ],
+                                        url:   [ type: 'string' ]
+                                    ],
+                                    required: [ 'name', 'email' ],
+                                    type: 'object'
+                                ],
+                                body: [
+                                    description: 'Comments contents',
+                                    type: 'string'
+                                ],
+                                tags: [
+                                    items: [
+                                        properties: [
+                                            name: [type: 'string' ],
+                                            size: [type: 'integer' ]
+                                        ],
+                                        required: [ 'name' ],
+                                        type: 'object'
+                                    ],
+                                    type: 'array'
+                                ]
+                            ],
+                            required: ['body']
+                        ]
+                    ]
+                ]
+            ]
+        ]
+
+        assert definitions.Comment == expectedSchema
     }
 }
 
