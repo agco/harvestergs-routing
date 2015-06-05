@@ -1,5 +1,7 @@
 package com.agcocorp.harvestergs.routing.loaders
 
+import com.fasterxml.jackson.databind.ObjectMapper
+
 class SwaggerSchemaMapper {
     private setInnerProp(obj, prop, value) {
         def current = obj
@@ -37,34 +39,34 @@ class SwaggerSchemaMapper {
         def swagger = [:]
 
         //todo: switch this to parent.properties.each once the DSL objects start being used
-        parent.each {
-            switch (it.key) {
-                case 'attributes':
-                    def attr
-                    if (level == 0) {
-                        setNotNull swagger, 'properties.attributes', [properties:[:]]
-                        attr = swagger.properties.attributes
-                    }
-                    else {
-                        swagger['properties'] = [:]
-                        attr = swagger
-                    }
-                    //attr.type = 'object'
-                    parent.attributes.each {
-                        attr.properties[it.key] = mapToSwagger(it.value, level + 1)
-                    }
-                    break;
-                case 'items':
-                    setIfNotNull swagger, 'items', mapToSwagger(it.value, level + 1)
-                    break;
-                default:
-                    if (level > 0) {
-                        setIfNotNull swagger, "${it.key}", it.value
-                    }
-                    else {
-                        setIfNotNull swagger, "properties.${it.key}", it.value
-                    }
-                    break;
+        parent.each { name, value ->
+            if (value) {
+                switch (name) {
+                    case 'attributes':
+                        def attr
+                        if (level == 0) {
+                            setNotNull swagger, 'properties.attributes', [properties: [:]]
+                            attr = swagger.properties.attributes
+                        } else {
+                            swagger['properties'] = [:]
+                            attr = swagger
+                        }
+                        //attr.type = 'object'
+                        parent.attributes.each {
+                            attr.properties[it.key] = mapToSwagger(it.value, level + 1)
+                        }
+                        break;
+                    case 'items':
+                        setIfNotNull swagger, 'items', mapToSwagger(value, level + 1)
+                        break;
+                    default:
+                        if (level > 0) {
+                            setIfNotNull swagger, "$name", value
+                        } else {
+                            setIfNotNull swagger, "properties.$name", value
+                        }
+                        break;
+                }
             }
         }
 
@@ -72,9 +74,11 @@ class SwaggerSchemaMapper {
     }
 
     def map(schema) {
+        // todo: converting to a map removes awkward closure handling -- but aren't there any better ideas?
+        def s = new ObjectMapper().convertValue(schema, Map.class)
         def swagger = [
             properties: [
-                data: mapToSwagger(schema)
+                data: mapToSwagger(s)
             ]
         ]
         return swagger

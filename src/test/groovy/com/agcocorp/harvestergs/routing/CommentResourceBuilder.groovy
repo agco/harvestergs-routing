@@ -19,7 +19,6 @@ class CommentResourceBuilder {
                         type 'string'
                         description 'Comments contents'
                     }
-
                     author {
                         type 'object'
                         attributes {
@@ -29,7 +28,6 @@ class CommentResourceBuilder {
                         }
                         required 'name', 'email'
                     }
-
                     tags {
                         type 'array'
                         items {

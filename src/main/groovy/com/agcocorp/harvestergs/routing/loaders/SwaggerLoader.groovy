@@ -15,12 +15,17 @@ class SwaggerLoader {
     private engine = new SimpleTemplateEngine()
     private templates = [:]
     private final defaultProps = ['host': 'localhost', 'version': '0.1.0', 'description': 'api description', 'title': 'api title']
+    private final mapSchemaToSwagger
 
-    def SwaggerLoader(specProperties = null,
-                       PathVisitor pathVisitor = new PathVisitor()) {
+    def SwaggerLoader(
+        specProperties = null,
+        //todo: turn this into a closure
+        PathVisitor pathVisitor = new PathVisitor(),
+        Closure mapSchemaToSwagger = new SwaggerSchemaMapper().&map) {
         this.pathVisitor = pathVisitor
         this.specProperties = defaultProps
         this.specProperties << (specProperties?:[:])
+        this.mapSchemaToSwagger = mapSchemaToSwagger
     }
 
     private getTemplate(specName) {
@@ -90,11 +95,14 @@ class SwaggerLoader {
         pathVisitor.visitPath spec.paths, visitor
         spec.definitions.schemas.each {
             // todo: create proper tests to validate the id UUID pattern
+            /*
             root.definitions[it.key] = loadSpec('definition', [
                 'plural': plural,
                 'idType': 'string',
                 'idPattern': uuidPattern ])
             root.definitions[it.key].properties.data.properties.attributes.properties = it.value.attributes
+            */
+            root.definitions[it.key] = mapSchemaToSwagger(it.value)
         }
 
         ObjectMapper mapper = new ObjectMapper();

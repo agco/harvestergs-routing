@@ -105,21 +105,6 @@ Then(~/^the response correctly describes the resource$/) { ->
         assert info.version == "0.1.0"
         assert info.title == "testApp"
 
-        //assert definitions."Comment"
-        //assert definitions."Comment".properties.data
-        def data = checkProperties(definitions."Comment", 'data')
-        data.with {
-            assert type
-        }
-        throw new PendingException();
-        /*
-        definitions."Comment".properties.data.with {
-            assert type
-            //assert response.responseData.definitions.Comment.properties.data.properties.attributes
-            assert properties.attributes
-            //assert relationships
-        }
-        */
         assert paths."/comments"
         paths."/comments".with {
             assert get
@@ -136,6 +121,62 @@ Then(~/^the response correctly describes the resource$/) { ->
             assert patch
             assert delete
         }
+
+        def expectedSchema = [
+            properties: [
+                data: [
+                    properties: [
+                        attributes: [
+                            properties: [
+                                author: [
+                                    properties: [
+                                        email: [ type: 'string' ],
+                                        name:  [ type: 'string' ],
+                                        url:   [ type: 'string' ]
+                                    ],
+                                    required: [ 'name', 'email' ],
+                                    type: 'object'
+                                ],
+                                body: [
+                                    description: 'Comments contents',
+                                    type: 'string'
+                                ],
+                                tags: [
+                                    items: [
+                                        properties: [
+                                            name: [type: 'string' ],
+                                            size: [type: 'integer' ]
+                                        ],
+                                        required: [ 'name' ],
+                                        type: 'object'
+                                    ],
+                                    type: 'array'
+                                ]
+                            ]
+                        ],
+                        required: ['body']
+                    ]
+                ]
+            ]
+        ]
+
+        assert definitions.Comment == expectedSchema
+
+        /*
+        checkProperties(definitions."Comment", 'data').with {
+            assert type
+            checkProperties(it, 'attributes').with {
+                checkProperties(it, )
+            }
+        }
+
+        definitions."Comment".properties.data.with {
+            assert type
+            //assert response.responseData.definitions.Comment.properties.data.properties.attributes
+            assert properties.attributes
+            //assert relationships
+        }
+        */
     }
 }
 
