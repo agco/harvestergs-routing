@@ -13,7 +13,7 @@ class CommentResourceBuilder {
         def resource = new Resource(this)
         resource
             .definitions
-            .Comment {
+            .comment {
                 attributes {
                     body {
                         type 'string'
@@ -41,6 +41,11 @@ class CommentResourceBuilder {
                     }
                 }
                 required 'body'
+                relationships {
+                    post {
+                        type 'posts'
+                    }
+                }
             }
 
         resource

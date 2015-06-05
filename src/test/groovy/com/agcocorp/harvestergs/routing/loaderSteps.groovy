@@ -160,7 +160,7 @@ Then(~/^the response correctly describes the resource$/) { ->
             ]
         ]
 
-        assert definitions.Comment == expectedSchema
+        assert definitions.comment == expectedSchema
     }
 }
 

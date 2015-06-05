@@ -13,7 +13,7 @@ class PostResourceBuilder {
         def resource = new Resource(this)
         resource
             .definitions
-            .Post {
+            .posts {
             attributes {
                 title {
                     type 'string'
@@ -36,7 +36,7 @@ class PostResourceBuilder {
 
         resource
             .paths
-            ."/comments" {
+            ."/posts" {
             get { req, res ->
                 return  getAll()
             }

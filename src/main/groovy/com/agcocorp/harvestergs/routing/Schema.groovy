@@ -9,12 +9,17 @@ class Schema {
     String type
     String description
     Schema items
+    RelationshipList relationships
 
     def methodMissing(String name, args) {
         switch (name) {
             case "attributes":
                 attributes = new PropertyList()
                 Definition.runClosure(args[0], attributes, this);
+                break;
+            case "relationships":
+                relationships = new RelationshipList()
+                Definition.runClosure(args[0], relationships, this);
                 break;
             case "items":
                 items = new Schema()

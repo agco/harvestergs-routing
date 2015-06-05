@@ -42,6 +42,8 @@ class SwaggerSchemaMapper {
         parent.each { name, value ->
             if (value) {
                 switch (name) {
+                    case 'relationships':
+                        break;
                     case 'attributes':
                         def attr
                         if (level == 0) {
