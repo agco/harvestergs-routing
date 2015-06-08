@@ -1,6 +1,7 @@
 // todo: uncomment after refactoring is done
 package com.agcocorp.harvestergs.routing
 
+import spock.lang.Specification
 import spock.lang.*
 import com.agcocorp.harvestergs.routing.loaders.SwaggerSchemaMapper
 
