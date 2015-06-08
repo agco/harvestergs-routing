@@ -23,9 +23,11 @@ def postComment = comments[2]
 def patchComment = comments[1]
 def getComment = comments[0]
 
+
 Given(~/^a set of related resources$/) { ->
     def commentBuilder = new CommentResourceBuilder( { comments }, { getComment })
-    resources << commentBuilder.build()
+    def postBuilder = new PostResourceBuilder( { null }, { null })
+    resources = [ commentBuilder.build(), postBuilder.build() ]
 }
 
 Given(~/^these resources are loaded into an API$/) { ->
@@ -56,7 +58,6 @@ Given(~/^the aforementioned resource definition$/) { ->
 def error
 
 When(~/^I post a resource that is missing mandatory fields$/) { ->
-    // Write code here that turns the phrase above into concrete actions
     def resource = [ author: [name: 'John Doe']]
     try {
         response = client.post(path: '/comments', requestContentType: ContentType.JSON, body: resource)
@@ -105,8 +106,8 @@ Then(~/^the response correctly describes the resource$/) { ->
         assert info.title == "testApp"
 
         assert definitions.comment
-        //assert definitions."Post"
-        //assert definitions."Post".properties
+        assert definitions.post
+        assert definitions.post.properties
 
         assert paths."/comments"
         paths."/comments".with {
