@@ -1,5 +1,6 @@
 package com.agcocorp.harvestergs.routing
 
+import com.agcocorp.harvestergs.routing.CommentResourceBuilder
 import com.agcocorp.harvestergs.routing.loaders.SparkLoader
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.fge.jsonschema.main.JsonSchemaFactory
@@ -22,16 +23,16 @@ def postComment = comments[2]
 def patchComment = comments[1]
 def getComment = comments[0]
 
+
 Given(~/^a set of related resources$/) { ->
     def commentBuilder = new CommentResourceBuilder( { comments }, { getComment })
-    resources << commentBuilder.build()
+    def postBuilder = new PostResourceBuilder( { null }, { null })
+    resources = [ commentBuilder.build(), postBuilder.build() ]
 }
 
 Given(~/^these resources are loaded into an API$/) { ->
     def loader = new SparkLoader([ "title": "testApp" ])
-    resources.each {
-        loader.loadResource it
-    }
+    loader.loadResources resources
 }
 
 def client = new RESTClient('http://localhost:4567')
@@ -57,8 +58,7 @@ Given(~/^the aforementioned resource definition$/) { ->
 def error
 
 When(~/^I post a resource that is missing mandatory fields$/) { ->
-    // Write code here that turns the phrase above into concrete actions
-    def resource = [ author: [ name: 'John Doe' ] ]
+    def resource = [ author: [name: 'John Doe']]
     try {
         response = client.post(path: '/comments', requestContentType: ContentType.JSON, body: resource)
         fail("HTTP action should have returned an error")
@@ -104,6 +104,10 @@ Then(~/^the response correctly describes the resource$/) { ->
         assert swagger == "2.0"
         assert info.version == "0.1.0"
         assert info.title == "testApp"
+
+        assert definitions.comment
+        assert definitions.post
+        assert definitions.post.properties
 
         assert paths."/comments"
         paths."/comments".with {
@@ -212,3 +216,4 @@ Then(~/^it is swagger-compliant response$/) { ->
     def valResults = schema.validate(data)
     assert valResults.isSuccess()
 }
+

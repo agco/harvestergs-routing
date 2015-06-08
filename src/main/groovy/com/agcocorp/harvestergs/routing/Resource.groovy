@@ -12,12 +12,12 @@ class Resource {
         definitions = new Definition()
     }
 
-    def definition(Closure cl) {
+    def definitions(Closure cl) {
         Definition.runClosure(cl, definitions, this)
         this
     }
 
-    def path(Closure cl) {
+    def paths(Closure cl) {
         Definition.runClosure(cl, paths, this)
         this
     }

@@ -1,6 +1,7 @@
 package com.agcocorp.harvestergs.routing.loaders
 
 import com.agcocorp.harvestergs.routing.Resource
+import com.agcocorp.harvestergs.routing.SwaggerLoader
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.fge.jsonschema.main.JsonSchemaFactory
@@ -23,9 +24,14 @@ class SparkLoader {
         this.objectMapper.setSerializationInclusion Include.NON_NULL
     }
 
-    def loadResource(Resource spec) {
-        loadPath spec
-        docLoader.loadDocs spec
+    def loadResources(Iterable<Resource> specs) {
+        def docs = null
+        specs.each {
+            loadPath it
+            docs = docLoader.loadDocs(it, docs)
+        }
+
+        docLoader.registerDocs docs
 
         spark.Spark.exception(ValidationException.class, { e, request, response ->
             response.status(400);

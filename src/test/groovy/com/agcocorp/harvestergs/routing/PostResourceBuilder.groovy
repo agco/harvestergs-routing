@@ -13,7 +13,7 @@ class PostResourceBuilder {
         def resource = new Resource(this)
         resource
             .definitions
-            .posts {
+            .post {
             attributes {
                 title {
                     type 'string'
