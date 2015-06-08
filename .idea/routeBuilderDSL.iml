@@ -67,5 +67,6 @@
     <orderEntry type="library" scope="TEST" name="Gradle: net.sf.ezmorph:ezmorph:1.0.6" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: xerces:xercesImpl:2.9.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: info.cukes:cucumber-html:0.2.3" level="project" />
+    <orderEntry type="library" name="Gradle: info.cukes:cucumber-core:1.2.2" level="project" />
   </component>
 </module>

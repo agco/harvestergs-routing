@@ -1,12 +1,6 @@
 package com.agcocorp.harvester.routing
 
-import cucumber.api.PendingException
-import groovy.json.JsonSlurper
-
 import static cucumber.api.groovy.EN.*
-import groovyx.net.http.RESTClient
-import groovyx.net.http.*
-import static groovyx.net.http.ContentType.JSON
 
 def resources
 
@@ -75,19 +69,27 @@ Given(~/^a set of related resources$/) { ->
         }
 
     def postResource = new Resource()
-    postResource.definitions {
-        Post {
-            properties {
-                title { type 'string' }
-                body { type 'string' }
+    postResource
+        .definitions {
+            Post {
+                properties {
+                    title { type 'string' }
+                    body { type 'string' }
+                }
             }
         }
-    }
+
+    postResource
+        .paths
+            ."/posts" {
+                get { req, res -> "posts.get" }
+            }
+
 
     resources = [ commentResource, postResource ]
 }
 
 Given(~/^these resources are loaded into an API$/) { ->
     def loader = new ResourceLoader([ "title": "testApp" ])
-    loader.loadResource resources
+    loader.loadResources resources
 }
