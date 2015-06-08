@@ -27,9 +27,8 @@ class SparkLoader {
     def loadResources(Iterable<Resource> specs) {
         def docs = null
         specs.each {
-            loadPath it.paths
+            loadPath it
             docs = docLoader.loadDocs(it, docs)
-            loadValidation it
         }
 
         docLoader.registerDocs docs

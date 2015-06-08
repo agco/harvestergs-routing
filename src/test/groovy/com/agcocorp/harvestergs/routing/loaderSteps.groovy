@@ -1,4 +1,4 @@
-package com.agcocorp.harvester.routing
+package com.agcocorp.harvestergs.routing
 
 import com.agcocorp.harvestergs.routing.CommentResourceBuilder
 import com.agcocorp.harvestergs.routing.loaders.SparkLoader
@@ -30,20 +30,18 @@ Given(~/^a set of related resources$/) { ->
 
 Given(~/^these resources are loaded into an API$/) { ->
     def loader = new SparkLoader([ "title": "testApp" ])
-    resources.each {
-        loader.loadResource it
-    }
+    loader.loadResources resources
 }
 
 def client = new RESTClient('http://localhost:4567')
 def targets = [
         "comments" : [
                 "get" : null,
-                "post": [ body: 'foobar', tags: [ [ name: 'foo' ], [ name: 'bar' ] ] ],
+                "post": postComment,
         ],
         "comments/1": [
                 "get": null,
-                "patch": [ body: 'test'],
+                "patch": patchComment,
                 "delete": null
         ]
 ]
@@ -59,9 +57,9 @@ def error
 
 When(~/^I post a resource that is missing mandatory fields$/) { ->
     // Write code here that turns the phrase above into concrete actions
-    def resource = '{}'
+    def resource = [ author: [name: 'John Doe']]
     try {
-        response = client.post(path: '/comments', requestContentType: ContentType.JSON)
+        response = client.post(path: '/comments', requestContentType: ContentType.JSON, body: resource)
         fail("HTTP action should have returned an error")
     }
     catch(HttpResponseException e) {
@@ -106,14 +104,9 @@ Then(~/^the response correctly describes the resource$/) { ->
         assert info.version == "0.1.0"
         assert info.title == "testApp"
 
-        assert definitions."Comment"
-        definitions."Comment".with {
-            assert properties
-            assert required
-        }
-
-        assert definitions."Post"
-        assert definitions."Post".properties
+        assert definitions.comment
+        //assert definitions."Post"
+        //assert definitions."Post".properties
 
         assert paths."/comments"
         paths."/comments".with {
@@ -170,7 +163,7 @@ Then(~/^the response correctly describes the resource$/) { ->
             ]
         ]
 
-        assert definitions.Comment == expectedSchema
+        assert definitions.comment == expectedSchema
     }
 }
 

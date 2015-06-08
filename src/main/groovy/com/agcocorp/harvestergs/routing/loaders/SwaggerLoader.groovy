@@ -109,7 +109,7 @@ class SwaggerLoader {
             root.definitions[it.key] = mapSchemaToSwagger(it.value)
         }
 
-        root.definitions << spec.definitions.schemas
+        //root.definitions << spec.definitions.schemas
 
         return root
     }
