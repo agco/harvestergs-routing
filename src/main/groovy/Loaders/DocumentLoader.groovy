@@ -52,11 +52,18 @@ class DocumentLoader {
     }
 
     def getPlural(endPoint) {
-        def match = (endPoint =~ ~/\\/([\w-]+)/)
-        match[0][1]
+        if (endPoint) {
+            def match = (endPoint =~ ~/\\/([\w-]+)/)
+            match[0][1]
+        }
+        else {
+            // todo: try to pluralize first. Also, incorporate a plural override elsewhere in the DSL
+            null
+        }
     }
-    def loadDocs(Resource spec) {
-        def root = loadSpec 'api', specProperties
+
+    def loadDocs(Resource spec, Map current = null) {
+        def root = current?: loadSpec('api', specProperties)
         def resource = spec.definitions.mainSchemaName
         def singular = camelCase(resource)
         def plural = getPlural(spec.paths.rootPathEndpoint)
@@ -81,12 +88,16 @@ class DocumentLoader {
 
         pathVisitor.visitPath spec.paths, visitor
 
-        root.definitions = spec.definitions.schemas
+        root.definitions << spec.definitions.schemas
 
+        return root
+    }
+
+    def registerDocs(docs) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
         mapper.setSerializationInclusion(Include.NON_NULL);
-        def json = mapper.writeValueAsString(root);
+        def json = mapper.writeValueAsString(docs);
 
         spark.Spark.get("/swagger"){ req, res ->
             res.type "application/json"

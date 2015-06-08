@@ -79,6 +79,9 @@ Then(~/^the response correctly describes the resource$/) { ->
             assert required
         }
 
+        assert definitions."Post"
+        assert definitions."Post".properties
+
         assert paths."/comments"
         paths."/comments".with {
             assert get
