@@ -18,7 +18,7 @@ class ResourceLoader {
     private pathVisitor
     private docLoader
 
-    def loadResource(Resource[] specs) {
+    def loadResource(Iterable<Resource> specs) {
         def docs = null
         specs.each {
             loadPath it.paths

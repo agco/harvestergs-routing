@@ -52,8 +52,14 @@ class DocumentLoader {
     }
 
     def getPlural(endPoint) {
-        def match = (endPoint =~ ~/\\/([\w-]+)/)
-        match[0][1]
+        if (endPoint) {
+            def match = (endPoint =~ ~/\\/([\w-]+)/)
+            match[0][1]
+        }
+        else {
+            // todo: try to pluralize first. Also, incorporate a plural override elsewhere in the DSL
+            null
+        }
     }
 
     def loadDocs(Resource spec, Map current = null) {

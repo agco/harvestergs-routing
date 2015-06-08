@@ -7,13 +7,13 @@ class Resource {
     Definition definitions = new Definition()
     Path paths = new Path()
 
-    def definition(Closure cl) {
+    def definitions(Closure cl) {
         Definition.runClosure(cl, definitions, this)
-        this
+        this.definitions
     }
 
-    def path(Closure cl) {
-        Definition.runClosure(cl, path, this)
+    def paths(Closure cl) {
+        Definition.runClosure(cl, paths, this)
         this
     }
 }
