@@ -97,14 +97,6 @@ class SwaggerLoader {
 
         visitPath spec.paths, visitor
         spec.definitions.schemas.each {
-            // todo: create proper tests to validate the id UUID pattern
-            /*
-            root.definitions[it.key] = loadSpec('definition', [
-                'plural': plural,
-                'idType': 'string',
-                'idPattern': uuidPattern ])
-            root.definitions[it.key].properties.data.properties.attributes.properties = it.value.attributes
-            */
             root.definitions[it.key] = mapSchemaToSwagger(it.value)
         }
 

@@ -15,6 +15,7 @@ class SwaggerSchemaMapperTest extends Specification {
             properties: [
                 data: [
                     properties: [
+                        id: [type: 'string'],
                         attributes: [
                             properties: [
                                 body: [type: 'string' ]
@@ -40,6 +41,7 @@ class SwaggerSchemaMapperTest extends Specification {
                 data: [
                     properties: [
                         // todo: add type and id
+                        id: [type: 'string'],
                         attributes: [
                             properties: [
                                 body: [ type: 'string' ],
@@ -81,6 +83,7 @@ class SwaggerSchemaMapperTest extends Specification {
                 data: [
                     properties: [
                         // todo: add type and id
+                        id: [ type: 'string' ],
                         attributes: [
                             properties: [
                                 body: [ type: 'string' ],
@@ -129,6 +132,7 @@ class SwaggerSchemaMapperTest extends Specification {
             properties: [
                 data: [
                     properties: [
+                        id: [type: 'string'],
                         attributes: [
                             properties: [
                                 body: [ type: 'string' ],

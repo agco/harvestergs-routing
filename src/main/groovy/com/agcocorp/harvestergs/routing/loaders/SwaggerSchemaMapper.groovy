@@ -48,6 +48,14 @@ class SwaggerSchemaMapper {
         def attr
         if (level == 0) {
             setNotNull swagger, 'properties.attributes', [properties: [:]]
+            /*
+            root.definitions[it.key] = loadSpec('definition', [
+                'plural': plural,
+                'idType': 'string',
+                'idPattern': uuidPattern ])
+            root.definitions[it.key].properties.data.properties.attributes.properties = it.value.attributes
+            */
+            swagger.properties.id = [ type: 'string' ]
             attr = swagger.properties.attributes
         } else {
             swagger['properties'] = [:]

@@ -121,6 +121,7 @@ Then(~/^the response correctly describes the resource$/) { ->
             properties: [
                 data: [
                     properties: [
+                        id: [ type: 'string' ],
                         attributes: [
                             properties: [
                                 author: [
