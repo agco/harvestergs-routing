@@ -35,16 +35,25 @@ class SwaggerSchemaMapper {
         setInnerProp obj, prop, value
     }
 
+    private mapRelationships(swagger, value) {
+        setNotNull swagger, 'properties.relationships', [properties: [:]]
+        def relationships = swagger.properties.relationships.properties
+        value.each {
+            def description = "Id reference to a ${it.value.type} object"
+            relationships[it.key] = [ type: 'string', description: description.toString() ]
+        }
+    }
+
     private mapToSwagger(parent, level = 0) {
         def swagger = [:]
-
-        //todo: switch this to parent.properties.each once the DSL objects start being used
         parent.each { name, value ->
             if (value) {
                 switch (name) {
                     case 'relationships':
+                        mapRelationships swagger, value
                         break;
                     case 'attributes':
+                        // todo: extract the code within the cases
                         def attr
                         if (level == 0) {
                             setNotNull swagger, 'properties.attributes', [properties: [:]]

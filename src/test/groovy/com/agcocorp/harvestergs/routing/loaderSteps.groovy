@@ -1,12 +1,10 @@
 package com.agcocorp.harvestergs.routing
 
-import com.agcocorp.harvestergs.routing.CommentResourceBuilder
 import com.agcocorp.harvestergs.routing.loaders.SparkLoader
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.fge.jsonschema.main.JsonSchemaFactory
 import groovy.json.JsonOutput
 import cucumber.api.PendingException
-import groovy.json.JsonSlurper
 
 import static cucumber.api.groovy.EN.*
 import groovyx.net.http.RESTClient
@@ -90,13 +88,6 @@ When(~/^I get the documentation for it$/) { ->
     response = client.get(path: '/swagger', requestContentType: ContentType.JSON)
 }
 
-def checkProperties(context, name) {
-    assert context
-    assert context.properties
-    assert context.properties[name]
-    context.properties[name]
-}
-
 Then(~/^the response correctly describes the resource$/) { ->
     assert response
     assert response.responseData
@@ -158,6 +149,14 @@ Then(~/^the response correctly describes the resource$/) { ->
                                 ]
                             ],
                             required: ['body']
+                        ],
+                        relationships: [
+                            properties: [
+                                post: [
+                                    type: 'string',
+                                    description: 'Id reference to a posts object'
+                                ]
+                            ]
                         ]
                     ]
                 ]
@@ -182,8 +181,6 @@ When(~/^I run a (\w+) at path (.+)$/) { verb, path ->
 Then(~/^I receive a (\d+) response code$/) { int code ->
     assert response.status == code
 }
-
-def slurper = new JsonSlurper()
 
 Then(~/^the response message is (.+)/) { messageContents ->
     switch (messageContents) {
