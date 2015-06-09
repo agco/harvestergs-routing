@@ -44,6 +44,8 @@ class SwaggerSchemaMapper {
         }
     }
 
+    private final uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
+
     def mapAttributes(swagger, value, level) {
         def attr
         if (level == 0) {
@@ -55,7 +57,7 @@ class SwaggerSchemaMapper {
                 'idPattern': uuidPattern ])
             root.definitions[it.key].properties.data.properties.attributes.properties = it.value.attributes
             */
-            swagger.properties.id = [ type: 'string' ]
+            swagger.properties.id = [ type: 'string', pattern: uuidPattern ]
             attr = swagger.properties.attributes
         } else {
             swagger['properties'] = [:]
