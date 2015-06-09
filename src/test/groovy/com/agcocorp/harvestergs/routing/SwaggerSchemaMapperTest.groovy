@@ -1,4 +1,3 @@
-// todo: uncomment after refactoring is done
 package com.agcocorp.harvestergs.routing
 
 import spock.lang.Specification

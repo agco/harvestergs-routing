@@ -44,6 +44,22 @@ class SwaggerSchemaMapper {
         }
     }
 
+    def mapAttributes(swagger, value, level) {
+        def attr
+        if (level == 0) {
+            setNotNull swagger, 'properties.attributes', [properties: [:]]
+            attr = swagger.properties.attributes
+        } else {
+            swagger['properties'] = [:]
+            attr = swagger
+        }
+
+        //attr.type = 'object'
+        value.each {
+            attr.properties[it.key] = mapToSwagger(it.value, level + 1)
+        }
+    }
+
     private mapToSwagger(parent, level = 0) {
         def swagger = [:]
         parent.each { name, value ->
@@ -54,18 +70,7 @@ class SwaggerSchemaMapper {
                         break;
                     case 'attributes':
                         // todo: extract the code within the cases
-                        def attr
-                        if (level == 0) {
-                            setNotNull swagger, 'properties.attributes', [properties: [:]]
-                            attr = swagger.properties.attributes
-                        } else {
-                            swagger['properties'] = [:]
-                            attr = swagger
-                        }
-                        //attr.type = 'object'
-                        parent.attributes.each {
-                            attr.properties[it.key] = mapToSwagger(it.value, level + 1)
-                        }
+                        mapAttributes swagger, value, level
                         break;
                     case 'items':
                         setIfNotNull swagger, 'items', mapToSwagger(value, level + 1)
