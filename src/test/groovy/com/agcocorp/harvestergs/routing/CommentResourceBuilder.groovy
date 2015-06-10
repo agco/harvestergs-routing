@@ -41,6 +41,11 @@ class CommentResourceBuilder {
                     }
                 }
                 required 'body'
+                relationships {
+                    post {
+                        type 'posts'
+                    }
+                }
             }
 
         resource

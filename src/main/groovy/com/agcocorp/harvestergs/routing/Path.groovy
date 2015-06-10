@@ -11,13 +11,14 @@ class Path {
     }
 
     Map<String, PathSpec> paths = [:]
-    private _rootPathEndpoint
-    def getrootPathEndpoint() { _rootPathEndpoint }
+
+    private rootPathEndpoint
+    def getRootPathEndpoint() { rootPathEndpoint }
 
     def methodMissing(String name, args) {
         def spec = new PathSpec(parentPath: null, delegateTo: delegateTo)
         if (! paths) {
-            _rootPathEndpoint = name
+            rootPathEndpoint = name
         }
 
         paths[name] = spec

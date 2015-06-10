@@ -14,13 +14,14 @@ class SwaggerLoader {
     private templates = [:]
     private final defaultProps = ['host': 'localhost', 'version': '0.1.0', 'description': 'api description', 'title': 'api title']
     private final mapSchemaToSwagger
+    private final visitPath
+
 
     def SwaggerLoader(
         specProperties = null,
-        //todo: turn this into a closure
-        PathVisitor pathVisitor = new PathVisitor(),
+        Closure visitPath = new PathVisitor().&visitPath,
         Closure mapSchemaToSwagger = new SwaggerSchemaMapper().&map) {
-        this.pathVisitor = pathVisitor
+        this.visitPath = visitPath
         this.specProperties = defaultProps
         this.specProperties << (specProperties?:[:])
         this.mapSchemaToSwagger = mapSchemaToSwagger
@@ -42,8 +43,6 @@ class SwaggerLoader {
         slurper.parseText(spec)
     }
 
-    final PathVisitor pathVisitor
-
     def camelCase(str) {
         str[0].toLowerCase() + str.substring(1)
     }
@@ -58,8 +57,6 @@ class SwaggerLoader {
             null
         }
     }
-
-    private final uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
 
     private setIfNotNull(obj, prop, value) {
         if (value) {
@@ -96,20 +93,10 @@ class SwaggerLoader {
             }
         }
 
-        pathVisitor.visitPath spec.paths, visitor
+        visitPath spec.paths, visitor
         spec.definitions.schemas.each {
-            // todo: create proper tests to validate the id UUID pattern
-            /*
-            root.definitions[it.key] = loadSpec('definition', [
-                'plural': plural,
-                'idType': 'string',
-                'idPattern': uuidPattern ])
-            root.definitions[it.key].properties.data.properties.attributes.properties = it.value.attributes
-            */
-            root.definitions[it.key] = mapSchemaToSwagger(it.value)
+            root.definitions[it.key] = mapSchemaToSwagger(it.value, it.key)
         }
-
-        //root.definitions << spec.definitions.schemas
 
         return root
     }
