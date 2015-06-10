@@ -21,6 +21,47 @@ def postComment = comments[2]
 def patchComment = comments[1]
 def getComment = comments[0]
 
+def deepCompare(m1, m2, currentPath = 'it') {
+    def diffs = []
+    println "Comparing $m1 and $m2"
+    if (m1 != m2) {
+        def currentDiffs = [:]
+        currentDiffs."$currentPath" = []
+        m1keys = m1 instanceof Map? m1*.key : null
+        m2keys = m2 instanceof Map? m2*.key : null
+        if (m1keys && m2keys) {
+            // todo: this key diff is computationally innefficient. Refactor if better speed is needed
+            def m1only = m1keys - m2keys
+            def m2only = m2keys - m1keys
+            def common = m1keys - m1only - m2only
+
+            m1only.each {
+                currentDiffs."$currentPath" << [ ["$it": m1[it]], null ]
+            }
+            m2only.each {
+                currentDiffs."$currentPath" << [ null, ["$it": m1[it]] ]
+                //diffs << [ "$currentPath": [ null, ["$it": m2[it]] ] ]
+            }
+            common.each {
+                def v1 = m1[it]
+                def v2 = m2[it]
+                if (v1 != v2) {
+                    def deepDiff = deepCompare(m1[it], m2[it], "$currentPath.$it")
+                    if (deepDiff) {
+                        diffs << deepDiff
+                    }
+                }
+            }
+        }
+        else {
+            //diffs << [ "$currentPath": [ m1, m2 ] ]
+            currentDiffs."$currentPath" << [ m1, m2 ]
+        }
+        diffs << currentDiffs
+    }
+
+    return diffs
+}
 
 Given(~/^a set of related resources$/) { ->
     def commentBuilder = new CommentResourceBuilder( { comments }, { getComment })
@@ -121,6 +162,9 @@ Then(~/^the response correctly describes the resource$/) { ->
             properties: [
                 data: [
                     properties: [
+                        type: [
+                            enum: [ 'comment' ]
+                        ],
                         id: [
                             type: 'string',
                             pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
@@ -167,7 +211,7 @@ Then(~/^the response correctly describes the resource$/) { ->
             ]
         ]
 
-        assert definitions.comment == expectedSchema
+        assert definitions.comment == expectedSchema : deepCompare(definitions.comment, expectedSchema)
     }
 }
 
@@ -217,4 +261,3 @@ Then(~/^it is swagger-compliant response$/) { ->
     def valResults = schema.validate(data)
     assert valResults.isSuccess()
 }
-

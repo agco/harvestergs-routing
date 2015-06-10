@@ -19,6 +19,9 @@ class SwaggerSchemaMapperTest extends Specification {
                             type: 'string',
                             pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
                         ],
+                        type: [
+                            enum: [ 'testType' ]
+                        ],
                         attributes: [
                             properties: [
                                 body: [type: 'string' ]
@@ -43,10 +46,12 @@ class SwaggerSchemaMapperTest extends Specification {
             properties: [
                 data: [
                     properties: [
-                        // todo: add type and id
                         id: [
                             type: 'string',
                             pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
+                        ],
+                        type: [
+                            enum: [ 'testType' ]
                         ],
                         attributes: [
                             properties: [
@@ -88,10 +93,12 @@ class SwaggerSchemaMapperTest extends Specification {
             properties: [
                 data: [
                     properties: [
-                        // todo: add type and id
                         id: [
                             type: 'string',
                             pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
+                        ],
+                        type: [
+                            enum: [ 'testType' ]
                         ],
                         attributes: [
                             properties: [
@@ -126,7 +133,6 @@ class SwaggerSchemaMapperTest extends Specification {
                         name: [ type: 'string' ],
                         email: [ type: 'string'],
                         avatars: [
-                            // todo: allow for null prop type
                             attributes: [
                                 small: [ type: 'string'],
                                 medium: [ type: 'string'],
@@ -144,6 +150,9 @@ class SwaggerSchemaMapperTest extends Specification {
                         id: [
                             type: 'string',
                             pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
+                        ],
+                        type: [
+                            enum: [ 'testType' ]
                         ],
                         attributes: [
                             properties: [
@@ -168,12 +177,23 @@ class SwaggerSchemaMapperTest extends Specification {
             ]
         ],
         'empty schema': [ : ],
-        'empty swagger': [ properties: [ data: [ : ] ] ]
+        'empty swagger': [
+            properties: [
+                data: [
+                    properties: [
+                        type: [
+                            enum: [ 'testType' ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
     ]
 
     def testMatch(Map schema, Map swagger) {
         def sut = new SwaggerSchemaMapper()
-        assert sut.map(schema) == swagger
+        assert sut.map(schema, 'testType') == swagger
+        //assert sut.map(schema) == swagger
         true
     }
 

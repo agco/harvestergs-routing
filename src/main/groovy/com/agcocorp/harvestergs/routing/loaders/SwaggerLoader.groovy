@@ -95,7 +95,7 @@ class SwaggerLoader {
 
         visitPath spec.paths, visitor
         spec.definitions.schemas.each {
-            root.definitions[it.key] = mapSchemaToSwagger(it.value)
+            root.definitions[it.key] = mapSchemaToSwagger(it.value, it.key)
         }
 
         return root

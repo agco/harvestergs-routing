@@ -1,5 +1,6 @@
 package com.agcocorp.harvestergs.routing.loaders
 
+import com.agcocorp.harvestergs.routing.Schema
 import com.fasterxml.jackson.databind.ObjectMapper
 
 class SwaggerSchemaMapper {
@@ -50,13 +51,7 @@ class SwaggerSchemaMapper {
         def attr
         if (level == 0) {
             setNotNull swagger, 'properties.attributes', [properties: [:]]
-            /*
-            root.definitions[it.key] = loadSpec('definition', [
-                'plural': plural,
-                'idType': 'string',
-                'idPattern': uuidPattern ])
-            root.definitions[it.key].properties.data.properties.attributes.properties = it.value.attributes
-            */
+            // todo: test UUID pattern validation
             swagger.properties.id = [ type: 'string', pattern: uuidPattern ]
             attr = swagger.properties.attributes
         } else {
@@ -64,9 +59,16 @@ class SwaggerSchemaMapper {
             attr = swagger
         }
 
-        //attr.type = 'object'
         value.each {
             attr.properties[it.key] = mapToSwagger(it.value, level + 1)
+        }
+    }
+
+    private mapProperties(value, swagger, name, level) {
+        if (level > 0) {
+            setIfNotNull swagger, "$name", value
+        } else {
+            setIfNotNull swagger, "properties.attributes.$name", value
         }
     }
 
@@ -79,18 +81,13 @@ class SwaggerSchemaMapper {
                         mapRelationships swagger, value
                         break;
                     case 'attributes':
-                        // todo: extract the code within the cases
                         mapAttributes swagger, value, level
                         break;
                     case 'items':
                         setIfNotNull swagger, 'items', mapToSwagger(value, level + 1)
                         break;
                     default:
-                        if (level > 0) {
-                            setIfNotNull swagger, "$name", value
-                        } else {
-                            setIfNotNull swagger, "properties.attributes.$name", value
-                        }
+                        mapProperties value, swagger, name, level
                         break;
                 }
             }
@@ -99,7 +96,7 @@ class SwaggerSchemaMapper {
         swagger
     }
 
-    def map(schema) {
+    def map(schema, type = null) {
         // todo: converting to a map removes awkward closure handling -- but aren't there any better ideas?
         def s = new ObjectMapper().convertValue(schema, Map.class)
         def swagger = [
@@ -107,6 +104,9 @@ class SwaggerSchemaMapper {
                 data: mapToSwagger(s)
             ]
         ]
+        if (type) {
+            setNotNull swagger, 'properties.data.properties.type.enum', [ type ]
+        }
         return swagger
     }
 }
