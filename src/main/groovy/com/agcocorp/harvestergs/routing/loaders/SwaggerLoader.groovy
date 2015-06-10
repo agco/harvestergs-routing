@@ -84,6 +84,10 @@ class SwaggerLoader {
                             'singular': singular,
                             'ref'     : '$ref']
 
+                    if (val.document) {
+                        val.document.call(verbSpec)
+                    }
+
                     if (! root.paths."$pathName") {
                         root.paths."$pathName" = [:]
                     }

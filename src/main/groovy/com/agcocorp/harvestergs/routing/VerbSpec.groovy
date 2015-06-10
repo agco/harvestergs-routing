@@ -5,7 +5,7 @@ import groovy.transform.Canonical
 @Canonical
 class VerbSpec {
     Closure run
-    VerbSpec document
+    Closure document
     HashSet<String> flags = new HashSet<>()
 
     VerbSpec(Closure cl) {
@@ -19,8 +19,9 @@ class VerbSpec {
     }
 
     def methodMissing(String name, args) {
-        def verb = new VerbSpec(args[0])
-        Definition.setProperty(this, name, verb)
+        //def verb = new VerbSpec(args[0])
+        //Definition.setProperty(this, name, verb)
+        Definition.setProperty(this, name, args[0])
         // returning 'this' to allow further chaining
         this
     }

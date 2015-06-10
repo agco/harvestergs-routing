@@ -1,4 +1,6 @@
 {
+    "description": "Adds a $singular to the system.",
+    "tags": ["$plural"],
     "parameters": [
         {
             "name": "$singular",

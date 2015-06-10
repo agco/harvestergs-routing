@@ -108,11 +108,11 @@ def checkPath(path) {
     assert path."/comments"
     assert path."/comments".get.run(null, null) == "comments.get"
     assert path."/comments".post.run(null, null) == "comments.post"
-    assert path."/comments".post.document.run([ summary: "Summary for comments.post"]) ==
-            [ summary: "Summary for comments.post", description: "Description for comments.post"]
+    assert path."/comments".post.document([ summary: "Summary for comments.post"]) ==
+        [ summary: "Summary for comments.post", description: "Description for comments.post"]
 
     assert path."/comments".children."/:id".get.run(null, null) == "comments/1.get"
-    assert path."/comments".children."/:id".patch.document.run([:]) == [ operationId: "commentUpdate" ]
+    assert path."/comments".children."/:id".patch.document([:]) == [ operationId: "commentUpdate" ]
 
     assert path."/comments".post.flags.contains('skipAuth')
     assert path."/comments".post.flags.contains('skipValidation')

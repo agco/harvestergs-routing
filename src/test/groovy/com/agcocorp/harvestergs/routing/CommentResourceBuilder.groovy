@@ -58,7 +58,7 @@ class CommentResourceBuilder {
             post { req, res ->
                 return req.data
             }.document { docs ->
-                docs.description = "Description for comments.post"
+                docs.description = "Custom description for comments.post"
                 docs
             }
             .skipAuth

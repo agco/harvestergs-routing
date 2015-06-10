@@ -146,6 +146,7 @@ Then(~/^the response correctly describes the resource$/) { ->
             assert get
             assert get.description ==
                     "Returns a collection of comments the user has access to."
+            assert post.description == "Custom description for comments.post"
         }
 
         assert paths."/comments/:id"
