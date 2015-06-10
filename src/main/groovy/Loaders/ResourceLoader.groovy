@@ -18,10 +18,15 @@ class ResourceLoader {
     private pathVisitor
     private docLoader
 
-    def loadResource(Resource spec) {
-        loadPath spec.paths
-        docLoader.loadDocs spec
-        loadValidation spec
+    def loadResources(Iterable<Resource> specs) {
+        def docs = null
+        specs.each {
+            loadPath it.paths
+            docs = docLoader.loadDocs(it, docs)
+            loadValidation it
+        }
+
+        docLoader.registerDocs docs
 
         spark.Spark.exception(ValidationException.class, { e, request, response ->
             response.status(400);
@@ -111,7 +116,7 @@ class ResourceLoader {
                 if (req.requestMethod() == 'POST') {
                     def pogo = JsonLoader.fromString(req.body()?: "{}")
                     // todo: handle parsing errors -- shouldn't they all return a 400?
-                    def validationResults = postSchema.validate pogo
+                    def validationResults = postSchema.validate pogo, true
                     if (!validationResults.isSuccess()) {
                         error.invalid validationResults.messages.toString()
                     }

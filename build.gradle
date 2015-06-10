@@ -1,4 +1,4 @@
-version = '0.4.1-alpha'
+version = '0.4.2-alpha'
 
 apply plugin: 'groovy'
 apply plugin: 'jacoco'
@@ -28,6 +28,5 @@ dependencies {
 }
 
 codenarc {
-    maxPriority2Violations 30
-    maxPriority3Violations 30
+    ignoreFailures true
 }

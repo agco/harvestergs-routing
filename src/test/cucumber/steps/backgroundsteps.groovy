@@ -1,47 +1,48 @@
 package com.agcocorp.harvester.routing
 
-import cucumber.api.PendingException
-import groovy.json.JsonSlurper
-
 import static cucumber.api.groovy.EN.*
-import groovyx.net.http.RESTClient
-import groovyx.net.http.*
-import static groovyx.net.http.ContentType.JSON
 
-def resources = []
+def resources
 
 Given(~/^a set of related resources$/) { ->
     // Write code here that turns the phrase above into concrete actions
     def commentResource = new Resource()
 
     commentResource
-            .definitions
-            .Comment {
-                properties {
-                    body {
-                        type 'string'
-                        description 'Comments contents'
-                    }
+        .definitions {
+        Comment {
+            properties {
+                body {
+                    type 'string'
+                    description 'Comments contents'
+                }
 
-                    author {
+                author {
+                    type 'object'
+                    properties {
+                        name { type 'string'}
+                        email { type 'string'}
+                        url { type 'string'}
+                    }
+                    required 'name', 'email'
+                }
+
+                tags {
+                    type 'array'
+                    items {
                         type 'object'
                         properties {
-                            name { type 'string'}
-                            email { type 'string'}
-                            url { type 'string'}
+                            name { type 'string' }
+                            size { type 'integer' }
                         }
-                        required 'name', 'email'
-                    }
-
-                    tags {
-                        type 'array'
-                        items {
-                            type 'string'
-                        }
+                        required 'name'
                     }
                 }
-                required 'body'
             }
+            required 'body'
+        }
+
+    }
 
     commentResource
         .paths
@@ -67,12 +68,28 @@ Given(~/^a set of related resources$/) { ->
             }
         }
 
-    resources << commentResource
+    def postResource = new Resource()
+    postResource
+        .definitions {
+            Post {
+                properties {
+                    title { type 'string' }
+                    body { type 'string' }
+                }
+            }
+        }
+
+    postResource
+        .paths
+            ."/posts" {
+                get { req, res -> "posts.get" }
+            }
+
+
+    resources = [ commentResource, postResource ]
 }
 
 Given(~/^these resources are loaded into an API$/) { ->
     def loader = new ResourceLoader([ "title": "testApp" ])
-    resources.each {
-        loader.loadResource it
-    }
+    loader.loadResources resources
 }
