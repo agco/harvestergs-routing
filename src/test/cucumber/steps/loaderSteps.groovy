@@ -52,13 +52,14 @@ def msg
 Then(~/^the response is a valid jsonapi error$/) { ->
     assert error.response.responseData
     msg = error.response.responseData
-    assert msg.id
-    assert msg.title
-    assert msg.detail
+    assert msg.errors
+    assert msg.errors[0].id
+    assert msg.errors[0].title
+    assert msg.errors[0].detail
 }
 
 Then(~/^the details list all missing fields$/) { ->
-    assert msg.detail.contains('body')
+    assert msg.errors[0].detail.contains('body')
 }
 
 When(~/^I get the documentation for it$/) { ->

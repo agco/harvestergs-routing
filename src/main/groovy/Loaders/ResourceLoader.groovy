@@ -1,5 +1,6 @@
 package com.agcocorp.harvester.routing
 
+import Helpers.ValidationSchemaHelper
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.fge.jackson.JsonLoader
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -30,11 +31,7 @@ class ResourceLoader {
 
         spark.Spark.exception(ValidationException.class, { e, request, response ->
             response.status(400);
-            response.body(JsonOutput.toJson([
-                    id: UUID.randomUUID(),
-                    title: 'Invalid data',
-                    detail: e.validationResults
-            ]))
+            response.body(e.validationResults)
 
             response.type "application/json"
         });
@@ -118,7 +115,8 @@ class ResourceLoader {
                     // todo: handle parsing errors -- shouldn't they all return a 400?
                     def validationResults = postSchema.validate pogo, true
                     if (!validationResults.isSuccess()) {
-                        error.invalid validationResults.messages.toString()
+                        def errorMessage = ValidationSchemaHelper.SchemaError(title:'Invalid data',status:400, messages: validationResults.messages)
+                        error.invalid errorMessage
                     }
                 }
             }
