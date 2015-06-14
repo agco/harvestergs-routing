@@ -23,18 +23,14 @@ Given(~/^a valid path definition$/) { ->
         }
 }
 
-When(~/^it is fully defined$/) { ->
+When(~/^I request its expanded list of paths$/) { ->
     // Write code here that turns the phrase above into concrete actions
     throw new PendingException()
 }
 
-Then(~/^it correctly maps into a set of objects$/) { ->
+Then(~/^I get a correct list of paths and handlers$/) { ->
     // Write code here that turns the phrase above into concrete actions
     throw new PendingException()
 }
 
-Given(~/^a valid resource definition$/) { ->
-    // Write code here that turns the phrase above into concrete actions
-    throw new PendingException()
-}
 

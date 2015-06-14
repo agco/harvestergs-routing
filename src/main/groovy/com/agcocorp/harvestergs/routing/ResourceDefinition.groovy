@@ -5,7 +5,7 @@ class ResourceDefinition {
     final private resourceName
     final private attributes = new AttributeDefinition()
     final private relationships = new RelationshipDefinition()
-    final private paths
+    final private paths = new PathDefinition()
 
     ResourceDefinition(String name) {
         attributes = new AttributeDefinition();
@@ -34,6 +34,7 @@ class ResourceDefinition {
     }
 
     def paths(Closure cl) {
+        //run cl, paths
         this
     }
 
@@ -45,5 +46,9 @@ class ResourceDefinition {
         return schema
 
         return attributes.toJsonSchema();
+    }
+
+    def getPaths() {
+        return null
     }
 }
