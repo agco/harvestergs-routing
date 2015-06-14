@@ -4,10 +4,9 @@ import cucumber.api.PendingException
 import static cucumber.api.groovy.EN.*
 
 ResourceDefinition definition
-def schema
+def paths
 
 Given(~/^a valid path definition$/) { ->
-    // Write code here that turns the phrase above into concrete actions
     definition = new ResourceDefinition('person')
         .paths {
             '/people' {
@@ -24,12 +23,10 @@ Given(~/^a valid path definition$/) { ->
 }
 
 When(~/^I request its expanded list of paths$/) { ->
-    // Write code here that turns the phrase above into concrete actions
-    throw new PendingException()
+    paths = definition.getPaths()
 }
 
 Then(~/^I get a correct list of paths and handlers$/) { ->
-    // Write code here that turns the phrase above into concrete actions
     throw new PendingException()
 }
 

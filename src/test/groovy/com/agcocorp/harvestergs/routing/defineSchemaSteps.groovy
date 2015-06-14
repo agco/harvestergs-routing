@@ -2,6 +2,7 @@ package com.agcocorp.harvestergs.routing
 
 import cucumber.api.PendingException
 import static cucumber.api.groovy.EN.*
+import static testHelpers.*
 
 ResourceDefinition definition
 def schema
@@ -34,16 +35,6 @@ Given(~/^a complete schema definition$/) { ->
 
 When(~/^I get its corresponding JSON schema$/) { ->
     schema = definition.toJsonSchema()
-}
-
-def assertWith(who, Closure cl) {
-    assert who
-    // using delegate to enforce 'with' behavior
-    cl.delegate = who
-    cl.resolveStrategy = Closure.DELEGATE_FIRST
-
-    // passing who, so 'it' can be used, for whatever reason
-    cl.call(who)
 }
 
 Then(~/^the schema correctly maps all definitions$/) { ->
