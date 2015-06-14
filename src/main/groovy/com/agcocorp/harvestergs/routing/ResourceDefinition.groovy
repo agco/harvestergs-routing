@@ -34,7 +34,7 @@ class ResourceDefinition {
     }
 
     def paths(Closure cl) {
-        //run cl, paths
+        run cl, paths
         this
     }
 
@@ -48,7 +48,7 @@ class ResourceDefinition {
         return attributes.toJsonSchema();
     }
 
-    def getPaths() {
-        return null
+    def getAllPaths() {
+        return paths.getAllPaths()
     }
 }

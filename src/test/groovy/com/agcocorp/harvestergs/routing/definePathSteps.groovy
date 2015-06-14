@@ -2,6 +2,7 @@ package com.agcocorp.harvestergs.routing
 
 import cucumber.api.PendingException
 import static cucumber.api.groovy.EN.*
+import static testHelpers.*
 
 ResourceDefinition definition
 def paths
@@ -23,11 +24,21 @@ Given(~/^a valid path definition$/) { ->
 }
 
 When(~/^I request its expanded list of paths$/) { ->
-    paths = definition.getPaths()
+    paths = definition.getAllPaths()
 }
 
 Then(~/^I get a correct list of paths and handlers$/) { ->
-    throw new PendingException()
+    assert paths
+    assertWith paths['/people'], {
+        assert get
+        assert post
+    }
+
+    assertWith paths['/people/:id'], {
+        assert get
+        assert patch
+        assert delete
+    }
 }
 
 
