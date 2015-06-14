@@ -1,10 +1,6 @@
 Feature: Define a schema
-  Scenario: Single valid schema
-    Given a valid schema definition
-    When it is fully defined
-    Then it correctly maps into a set of objects
-
-  Scenario: Single, nested schema
-    Given a valid nested schema definition
-    When it is fully defined
-    Then it correctly maps into a set of objects
+  Scenario: Complete schema
+      Given a complete schema definition
+       When I get its corresponding JSON schema
+       Then the schema correctly maps all definitions
+        And is a JSON schema compliant
