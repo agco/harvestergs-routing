@@ -5,6 +5,7 @@ class ResourceDefinition {
     final private resourceName
     final private attributes = new AttributeDefinition()
     final private relationships = new RelationshipDefinition()
+    final private paths
 
     ResourceDefinition(String name) {
         attributes = new AttributeDefinition();
@@ -29,6 +30,10 @@ class ResourceDefinition {
 
     def propertyMissing(String name, args) {
         println "method missing: $name"
+        this
+    }
+
+    def paths(Closure cl) {
         this
     }
 
