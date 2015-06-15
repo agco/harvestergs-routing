@@ -13,7 +13,7 @@ Given(~/^a valid path definition$/) { ->
                 //todo: add document override support
                 get { req, res -> 'people.get' }
                     .document {
-                        it.description "people.get overriden description"
+                        it.description = "people.get overriden description"
                         return it
                     }
                 post { req, res -> 'people.post' }
@@ -33,14 +33,18 @@ When(~/^I request its expanded list of paths$/) { ->
 Then(~/^I get a correct list of paths and handlers$/) { ->
     assert paths
     assertWith paths['/people'], {
-        assert get
-        assert post
+        assertWith it['get'], {
+            assert handler
+            assert document
+            assert document([:]) == [ description: 'people.get overriden description' ]
+        }
+        assert post.handler
     }
 
     assertWith paths['/people/:id'], {
-        assert get
-        assert patch
-        assert delete
+        assert get.handler
+        assert patch.handler
+        assert delete.handler
     }
 }
 
