@@ -1,5 +1,8 @@
 package com.agcocorp.harvestergs.routing
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.fge.jsonschema.main.JsonSchemaFactory
 import cucumber.api.PendingException
 import static cucumber.api.groovy.EN.*
 import static testHelpers.*
@@ -90,6 +93,15 @@ Then(~/^the schema correctly maps all definitions$/) { ->
     }
 }
 
+def jsonSchemaFactory = JsonSchemaFactory.byDefault()
+def objectMapper = new ObjectMapper()
+
+
 Then(~/^is a JSON schema compliant$/) { ->
-    throw new PendingException()
+    // loading JSON schema's core meta schema
+    def jsonSchema = jsonSchemaFactory.getJsonSchema("resource:/com/agcocorp/harvestergs/routing/meta-coreschema.json")
+    def schemaNode = objectMapper.valueToTree(schema)
+    // running the generated schema against the core JSON meta schema
+    def result = jsonSchema.validate(schemaNode)
+    assert result.isSuccess()
 }
