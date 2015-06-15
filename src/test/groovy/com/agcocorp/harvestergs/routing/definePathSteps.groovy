@@ -16,6 +16,7 @@ Given(~/^a valid path definition$/) { ->
                         it.description = "people.get overriden description"
                         return it
                     }
+                    .skipAuth
                 post { req, res -> 'people.post' }
                 '/:id' {
                     get { req, res -> 'people/:id.get' }
@@ -37,6 +38,7 @@ Then(~/^I get a correct list of paths and handlers$/) { ->
             assert handler
             assert document
             assert document([:]) == [ description: 'people.get overriden description' ]
+            assert skipAuth
         }
         assert post.handler
     }

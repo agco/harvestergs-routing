@@ -13,19 +13,19 @@ class PathDefinition {
     }
 
     def get(Closure handler) {
-        handlers['get'] = new VerbHandlerSpec(handler)
+        handlers['get'] = new VerbDefinition(handler)
     }
 
     def post(Closure handler) {
-        handlers['post'] = new VerbHandlerSpec(handler)
+        handlers['post'] = new VerbDefinition(handler)
     }
 
     def patch(Closure handler) {
-        handlers['patch'] = new VerbHandlerSpec(handler)
+        handlers['patch'] = new VerbDefinition(handler)
     }
 
     def delete(Closure handler) {
-        handlers['delete'] = new VerbHandlerSpec(handler)
+        handlers['delete'] = new VerbDefinition(handler)
     }
 
     def methodMissing(String name, args) {
