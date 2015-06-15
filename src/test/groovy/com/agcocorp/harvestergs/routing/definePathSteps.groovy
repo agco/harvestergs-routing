@@ -12,6 +12,10 @@ Given(~/^a valid path definition$/) { ->
             '/people' {
                 //todo: add document override support
                 get { req, res -> 'people.get' }
+                    .document {
+                        it.description "people.get overriden description"
+                        return it
+                    }
                 post { req, res -> 'people.post' }
                 '/:id' {
                     get { req, res -> 'people/:id.get' }
