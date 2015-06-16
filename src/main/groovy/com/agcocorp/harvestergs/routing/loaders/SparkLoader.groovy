@@ -1,6 +1,6 @@
 package com.agcocorp.harvestergs.routing.loaders
 
-import com.agcocorp.harvestergs.routing.Resource
+import com.agcocorp.harvestergs.routing.ResourceDefinition
 import com.agcocorp.harvestergs.routing.SwaggerLoader
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -15,16 +15,13 @@ class SparkLoader {
     private final pathVisitor
     private final docLoader
 
-    def SparkLoader(specProperties = null,
-                       PathVisitor pathVisitor = null,
-                       SwaggerLoader docLoader = null) {
-        this.pathVisitor = pathVisitor?: new PathVisitor()
+    def SparkLoader(specProperties = null) {
         this.docLoader = docLoader?: new SwaggerLoader(specProperties)
         this.objectMapper = new ObjectMapper()
         this.objectMapper.setSerializationInclusion Include.NON_NULL
     }
 
-    def loadResources(Iterable<Resource> specs) {
+    def loadResources(Iterable<ResourceDefinition> specs) {
         def docs = null
         specs.each {
             loadPath it
@@ -79,7 +76,7 @@ class SparkLoader {
         }
     ]
 
-    private def loadPath(Resource spec) {
+    private def loadPath(ResourceDefinition spec) {
         def visitor = { path, pathName ->
             verbs.each { verb ->
                 if (path[verb]) {
@@ -109,7 +106,7 @@ class SparkLoader {
         String validationResults
     }
 
-    private def getSchema(Resource spec) {
+    private def getSchema(ResourceDefinition spec) {
         spec.definitions.schemas[spec.definitions.mainSchemaName]
     }
 

@@ -1,11 +1,11 @@
 package com.agcocorp.harvestergs.routing
-import com.agcocorp.harvestergs.routing.loaders.PathVisitor
-import com.agcocorp.harvestergs.routing.loaders.SwaggerSchemaMapper
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import groovy.json.JsonSlurper
 import groovy.text.SimpleTemplateEngine
+
+import javax.annotation.Resource
 
 class SwaggerLoader {
     private slurper = new JsonSlurper()
@@ -13,18 +13,11 @@ class SwaggerLoader {
     private engine = new SimpleTemplateEngine()
     private templates = [:]
     private final defaultProps = ['host': 'localhost', 'version': '0.1.0', 'description': 'api description', 'title': 'api title']
-    private final mapSchemaToSwagger
-    private final visitPath
-
 
     def SwaggerLoader(
-        specProperties = null,
-        Closure visitPath = new PathVisitor().&visitPath,
-        Closure mapSchemaToSwagger = new SwaggerSchemaMapper().&map) {
-        this.visitPath = visitPath
+        specProperties = null) {
         this.specProperties = defaultProps
         this.specProperties << (specProperties?:[:])
-        this.mapSchemaToSwagger = mapSchemaToSwagger
     }
 
     private getTemplate(specName) {
@@ -64,12 +57,12 @@ class SwaggerLoader {
         }
     }
 
-    private convertToSwagger(Schema schema) {
+    private convertToSwagger(ResourceDefinition schema) {
         def swaggerSpec = [:]
         setIfNotNull(swaggerSpec, 'properties', schema.attributes)
     }
 
-    def loadDocs(Resource spec, Map current = null) {
+    def loadDocs(ResourceDefinition spec, Map current = null) {
         def root = current?: loadSpec('api', specProperties)
         def resource = spec.definitions.mainSchemaName
         def singular = camelCase(resource)

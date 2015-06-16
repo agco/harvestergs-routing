@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.fge.jsonschema.main.JsonSchemaFactory
 import cucumber.api.PendingException
+import groovy.json.JsonOutput
+
 import static cucumber.api.groovy.EN.*
 import static testHelpers.*
 
@@ -45,7 +47,7 @@ Then(~/^the schema correctly maps all definitions$/) { ->
     assertWith schema.person.properties.data.properties, {
         assertWith attributes.properties, {
             assert firstName == [type: 'string', description: "User's first name"]
-            assert id == [ type: 'string', pattern: 'uuidPattern', description: 'User ID. Do not send it when posting or patching.' ]
+            assert id == [ type: 'string', pattern: TypeMapper.UUID_PATTERN, description: 'User ID. Do not send it when posting or patching.' ]
             assert lastName == [type: 'string']
             assert email.type == 'string'
             assert email.pattern
