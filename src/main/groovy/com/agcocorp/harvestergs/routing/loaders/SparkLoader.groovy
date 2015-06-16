@@ -77,6 +77,23 @@ class SparkLoader {
     ]
 
     private def loadPath(APIResource spec) {
+        spec.allPaths.each { path, pathSpec ->
+            pathSpec.handlers.each { verb, verbSpec ->
+                // todo: refactor for better composition (eg: use currying to pass the verb as first argument)
+                spark.Spark."$verb" path, { req, res ->
+                    res.type "application/json"
+                    if (validate) {
+                        validate(spec, req)
+                    }
+
+                    res.status defaultCodes[req.requestMethod()]
+                    def innerRes = path[verb].run(req, res)
+                    def rawJson = JsonOutput.toJson(innerRes)
+                    return rawJson
+                }
+            }
+        }
+        /*
         def visitor = { path, pathName ->
             verbs.each { verb ->
                 if (path[verb]) {
@@ -96,6 +113,7 @@ class SparkLoader {
             }
         }
         pathVisitor.visitPath spec.paths, visitor
+        */
     }
 
     private error = [

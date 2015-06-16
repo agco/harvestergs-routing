@@ -62,10 +62,13 @@ class SwaggerLoader {
 
     def loadDocs(APIResource spec, Map current = null) {
         def root = current?: loadSpec('api', specProperties)
-        def resource = spec.definitions.mainSchemaName
+        def resource = spec.resourceName
         def singular = camelCase(resource)
-        def plural = getPlural(spec.paths.rootPathEndpoint)
+        def plural = getPlural(spec.paths.root)
 
+        def schema = spec.toJsonSchema()
+        root.definitions << schema
+        /*
         def visitor = { path, pathName ->
             path.properties.each { prop, val ->
                 if ((val) && (val.class == VerbSpec)) {
@@ -92,7 +95,7 @@ class SwaggerLoader {
         spec.definitions.schemas.each {
             root.definitions[it.key] = mapSchemaToSwagger(it.value, it.key)
         }
-
+        */
         return root
     }
 

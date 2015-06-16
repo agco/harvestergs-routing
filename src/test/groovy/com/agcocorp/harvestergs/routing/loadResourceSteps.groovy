@@ -1,3 +1,4 @@
+/*
 package com.agcocorp.harvestergs.routing
 
 import com.agcocorp.harvestergs.routing.loaders.SparkLoader
@@ -262,3 +263,4 @@ Then(~/^it is swagger-compliant response$/) { ->
     def valResults = schema.validate(data)
     assert valResults.isSuccess()
 }
+*/

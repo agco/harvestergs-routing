@@ -1,7 +1,7 @@
 package com.agcocorp.harvestergs.routing
 
 class PathDefinition {
-    private root
+    private String root
     final handlers = [:]
     final children = []
 
@@ -10,6 +10,10 @@ class PathDefinition {
         definition.resolveStrategy = Closure.DELEGATE_ONLY //DELEGATE_FIRST
         definition.call()
         null
+    }
+
+    String getRoot() {
+        return root
     }
 
     def get(Closure handler) {

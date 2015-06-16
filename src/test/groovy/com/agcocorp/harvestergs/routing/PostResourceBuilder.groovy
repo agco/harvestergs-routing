@@ -14,7 +14,7 @@ class PostResourceBuilder {
             .attributes {
                 title string.required
                 body string.description('Post contents').required
-                tags arrayof(string)
+                tags arrayOf(string)
             }
             .paths {
                 "/posts" {
