@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import groovy.json.JsonSlurper
 import groovy.text.SimpleTemplateEngine
 
-import javax.annotation.Resource
-
 class SwaggerLoader {
     private slurper = new JsonSlurper()
     private specProperties
@@ -57,12 +55,12 @@ class SwaggerLoader {
         }
     }
 
-    private convertToSwagger(ResourceDefinition schema) {
+    private convertToSwagger(APIResource schema) {
         def swaggerSpec = [:]
         setIfNotNull(swaggerSpec, 'properties', schema.attributes)
     }
 
-    def loadDocs(ResourceDefinition spec, Map current = null) {
+    def loadDocs(APIResource spec, Map current = null) {
         def root = current?: loadSpec('api', specProperties)
         def resource = spec.definitions.mainSchemaName
         def singular = camelCase(resource)

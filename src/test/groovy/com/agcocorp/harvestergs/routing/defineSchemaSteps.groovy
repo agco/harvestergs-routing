@@ -1,19 +1,16 @@
 package com.agcocorp.harvestergs.routing
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.fge.jsonschema.main.JsonSchemaFactory
-import cucumber.api.PendingException
-import groovy.json.JsonOutput
 
 import static cucumber.api.groovy.EN.*
 import static testHelpers.*
 
-ResourceDefinition definition
+APIResource definition
 def schema
 
 Given(~/^a complete schema definition$/) { ->
-    definition = new ResourceDefinition('person')
+    definition = new APIResource('person')
         .attributes {
             id uuid.description('User ID. Do not send it when posting or patching.')
             firstName string.required.description("User's first name")

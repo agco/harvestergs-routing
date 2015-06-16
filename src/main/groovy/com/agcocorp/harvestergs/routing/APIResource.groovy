@@ -1,13 +1,13 @@
 package com.agcocorp.harvestergs.routing
 
 //todo: rename this to 'Resource' as the last refactoring step
-class ResourceDefinition {
+class APIResource {
     final private resourceName
     final private attributes = new AttributeDefinition()
     final private relationships = new RelationshipDefinition()
     final private paths = new PathDefinition()
 
-    ResourceDefinition(String name) {
+    APIResource(String name) {
         attributes = new AttributeDefinition();
         this.resourceName = name
     }

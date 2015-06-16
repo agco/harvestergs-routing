@@ -10,7 +10,7 @@ class CommentResourceBuilder {
     }
 
     def build() {
-        def resource = new ResourceDefinition('comment')
+        def resource = new APIResource('comment')
             .attributes {
                 body string.description('Comments contents').required
                 author {

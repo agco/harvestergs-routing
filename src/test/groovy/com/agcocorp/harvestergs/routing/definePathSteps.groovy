@@ -3,11 +3,11 @@ package com.agcocorp.harvestergs.routing
 import static cucumber.api.groovy.EN.*
 import static testHelpers.*
 
-ResourceDefinition definition
+APIResource definition
 def paths
 
 Given(~/^a valid path definition$/) { ->
-    definition = new ResourceDefinition('person')
+    definition = new APIResource('person')
         .paths {
             '/people' {
                 //todo: add document override support

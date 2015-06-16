@@ -1,6 +1,6 @@
 package com.agcocorp.harvestergs.routing.loaders
 
-import com.agcocorp.harvestergs.routing.ResourceDefinition
+import com.agcocorp.harvestergs.routing.APIResource
 import com.agcocorp.harvestergs.routing.SwaggerLoader
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -21,7 +21,7 @@ class SparkLoader {
         this.objectMapper.setSerializationInclusion Include.NON_NULL
     }
 
-    def loadResources(Iterable<ResourceDefinition> specs) {
+    def loadResources(Iterable<APIResource> specs) {
         def docs = null
         specs.each {
             loadPath it
@@ -76,7 +76,7 @@ class SparkLoader {
         }
     ]
 
-    private def loadPath(ResourceDefinition spec) {
+    private def loadPath(APIResource spec) {
         def visitor = { path, pathName ->
             verbs.each { verb ->
                 if (path[verb]) {
@@ -106,7 +106,7 @@ class SparkLoader {
         String validationResults
     }
 
-    private def getSchema(ResourceDefinition spec) {
+    private def getSchema(APIResource spec) {
         spec.definitions.schemas[spec.definitions.mainSchemaName]
     }
 

@@ -10,7 +10,7 @@ class PostResourceBuilder {
     }
 
     def build() {
-        def resource = new ResourceDefinition('post')
+        def resource = new APIResource('post')
             .attributes {
                 title string.required
                 body string.description('Post contents').required
