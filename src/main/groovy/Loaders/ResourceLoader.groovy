@@ -1,6 +1,5 @@
 package com.agcocorp.harvester.routing
 
-import Helpers.ValidationSchemaHelper
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.fge.jackson.JsonLoader
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -34,6 +33,7 @@ class ResourceLoader {
             response.body(e.validationResults)
 
             response.type "application/json"
+            response.body()
         });
 
     }
@@ -115,8 +115,8 @@ class ResourceLoader {
                     // todo: handle parsing errors -- shouldn't they all return a 400?
                     def validationResults = postSchema.validate pogo, true
                     if (!validationResults.isSuccess()) {
-                        def errorMessage = ValidationSchemaHelper.SchemaError(title:'Invalid data',status:400, messages: validationResults.messages)
-                        error.invalid errorMessage
+                        def errors = convertErrors(validationResults.messages)
+                        error.invalid JsonOutput.toJson(errors)
                     }
                 }
             }
@@ -129,6 +129,31 @@ class ResourceLoader {
         }
 
         pathVisitor.visitPath spec.paths, visitor
+    }
+
+    private def convertErrors(messages){
+        def obj =[errors:[]];
+
+        for(item in messages)
+        {
+            obj.errors.add([
+                    id:UUID.randomUUID(),
+                    status:400,
+                    title: 'Invalid data',
+                    detail: item.map.message._value,
+                    paths:[
+                            level: item.map.level._value,
+                            schema:item.map.schema._children.pointer._value,
+                            instance:item.map.instance._children.pointer._value,
+                            domain:item.map.domain._value,
+                            keyword:item.map.keyword._value,
+                            message:item.map.message._value,
+                            found:item.map.found?item.map.found._value:null,
+                            expected:item.map.expected?item.map.expected._children.toString():null
+                    ]
+            ])
+        }
+        obj
     }
 
     private def recursePath(Path pathSet, Closure visitor) {

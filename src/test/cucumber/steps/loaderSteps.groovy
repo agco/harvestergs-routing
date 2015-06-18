@@ -44,6 +44,7 @@ When(~/^I post a resource that is missing mandatory fields$/) { ->
 }
 
 Then(~/^I receive a (\d+) code$/) { code ->
+    println error
     assert error.statusCode.toString() == code
 }
 
@@ -53,9 +54,10 @@ Then(~/^the response is a valid jsonapi error$/) { ->
     assert error.response.responseData
     msg = error.response.responseData
     assert msg.errors
-    assert msg.errors[0].id
     assert msg.errors[0].title
-    assert msg.errors[0].detail
+    assert msg.errors[0].id
+    assert msg.errors[0].paths
+    assert msg.errors[0].paths.message
 }
 
 Then(~/^the details list all missing fields$/) { ->
