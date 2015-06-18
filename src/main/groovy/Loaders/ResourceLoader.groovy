@@ -30,13 +30,10 @@ class ResourceLoader {
 
         spark.Spark.exception(ValidationException.class, { e, request, response ->
             response.status(400);
-            response.body(JsonOutput.toJson([
-                    id: UUID.randomUUID(),
-                    title: 'Invalid data',
-                    detail: e.validationResults
-            ]))
+            response.body(e.validationResults)
 
             response.type "application/json"
+            response.body()
         });
 
     }
@@ -79,7 +76,8 @@ class ResourceLoader {
             GET: 200,
             POST: 201,
             PATCH: 200,
-            DELETE: 204
+            DELETE: 204,
+            OPTIONS: 200
     ]
 
     private def verbHandling = [
@@ -98,6 +96,10 @@ class ResourceLoader {
             DELETE: [
                     defaultCode: 204,
                     hasBody: false
+            ],
+            OPTIONS:[
+                    defaultCode: 200,
+                    hasBody: false
             ]
     ]
 
@@ -113,7 +115,8 @@ class ResourceLoader {
                     // todo: handle parsing errors -- shouldn't they all return a 400?
                     def validationResults = postSchema.validate pogo, true
                     if (!validationResults.isSuccess()) {
-                        error.invalid validationResults.messages.toString()
+                        def errors = convertErrors(validationResults.messages)
+                        error.invalid JsonOutput.toJson(errors)
                     }
                 }
             }
@@ -126,6 +129,31 @@ class ResourceLoader {
         }
 
         pathVisitor.visitPath spec.paths, visitor
+    }
+
+    private def convertErrors(messages){
+        def obj =[errors:[]];
+
+        for(item in messages)
+        {
+            obj.errors.add([
+                    id:UUID.randomUUID(),
+                    status:400,
+                    title: 'Invalid data',
+                    detail: item.map.message._value,
+                    paths:[
+                            level: item.map.level._value,
+                            schema:item.map.schema._children.pointer._value,
+                            instance:item.map.instance._children.pointer._value,
+                            domain:item.map.domain._value,
+                            keyword:item.map.keyword._value,
+                            message:item.map.message._value,
+                            found:item.map.found?item.map.found._value:null,
+                            expected:item.map.expected?item.map.expected._children.toString():null
+                    ]
+            ])
+        }
+        obj
     }
 
     private def recursePath(Path pathSet, Closure visitor) {

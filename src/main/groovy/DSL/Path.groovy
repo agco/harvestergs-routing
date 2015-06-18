@@ -30,7 +30,7 @@ class PathSpec {
 
     Map<String, PathSpec> children = [:]
 
-    VerbSpec get, post, patch, delete
+    VerbSpec get, post, patch, delete, options
 
     def methodMissing(String name, args) {
         if (name.startsWith('/')) {
