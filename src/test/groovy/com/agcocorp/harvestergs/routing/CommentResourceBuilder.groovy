@@ -29,13 +29,12 @@ class CommentResourceBuilder {
             .paths {
                 "/comments" {
                     get { req, res ->
-                        //return this.getAll()
-                        return []
+                        return this.getAll()
+                        //return []
                     }
 
                     post { req, res ->
-                        //return req.data
-                        return []
+                        return req.data
                     }.document { docs ->
                         docs.description = "Custom description for comments.post"
                         docs
@@ -44,20 +43,14 @@ class CommentResourceBuilder {
                     .skipValidation
 
                     "/:id" {
-                        get    {req, res -> return "getById(req.params(':id'))" }
+                        // todo: remove the need for the 'this' prefix when using closures.
+                        get    {req, res -> return this.getById(req.params(':id')) }
                         patch  {req, res -> return req.data }
                         //.document { docs -> docs.operationId = "commentUpdate"; docs }
                         delete {req, res -> return null }
-                        /*
-                        get    {req, res -> return getById(req.params(':id')) }
-                        patch  {req, res -> return req.data }
-                        //.document { docs -> docs.operationId = "commentUpdate"; docs }
-                        delete {req, res -> return null }
-                        */
                     }
                 }
             }
-        //resource.paths.owner = this
         return resource
     }
 }

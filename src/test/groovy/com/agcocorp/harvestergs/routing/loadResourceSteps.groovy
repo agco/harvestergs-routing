@@ -128,6 +128,7 @@ Then(~/^the details list all missing fields$/) { ->
 
 When(~/^I get the documentation for it$/) { ->
     throw new PendingException()
+    // todo: move these tests -- spark loaded should not depend on swagger loader, and vice-versa
     response = client.get(path: '/swagger', requestContentType: ContentType.JSON)
 }
 
@@ -235,7 +236,6 @@ Then(~/^I receive a (\d+) response code$/) { int code ->
 
 Then(~/^the response message is (.+)/) { messageContents ->
     switch (messageContents) {
-        /*
         case "a list":
             assert response.responseData == comments
             break
@@ -245,7 +245,6 @@ Then(~/^the response message is (.+)/) { messageContents ->
         case "the new resource":
             assert response.responseData == postComment
             break
-        */
         case "the updated resource":
             assert response.responseData == patchComment
             break

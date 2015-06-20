@@ -19,13 +19,11 @@ class PostResourceBuilder {
             .paths {
                 "/posts" {
                     get { req, res ->
-                        //return getAll()
-                        return []
+                        return getAll()
                     }
 
                     post { req, res ->
-                        //return req.data
-                        return [:]
+                        return req.data
                     }
 
                     "/:id" {
