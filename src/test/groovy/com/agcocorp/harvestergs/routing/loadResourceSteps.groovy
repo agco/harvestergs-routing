@@ -1,4 +1,3 @@
-/*
 package com.agcocorp.harvestergs.routing
 
 import com.agcocorp.harvestergs.routing.loaders.SparkLoader
@@ -41,7 +40,6 @@ def deepCompare(m1, m2, currentPath = 'it') {
             }
             m2only.each {
                 currentDiffs."$currentPath" << [ null, ["$it": m1[it]] ]
-                //diffs << [ "$currentPath": [ null, ["$it": m2[it]] ] ]
             }
             common.each {
                 def v1 = m1[it]
@@ -98,6 +96,7 @@ Given(~/^the aforementioned resource definition$/) { ->
 def error
 
 When(~/^I post a resource that is missing mandatory fields$/) { ->
+    throw new PendingException()
     def resource = [ author: [name: 'John Doe']]
     try {
         response = client.post(path: '/comments', requestContentType: ContentType.JSON, body: resource)
@@ -109,6 +108,7 @@ When(~/^I post a resource that is missing mandatory fields$/) { ->
 }
 
 Then(~/^I receive a (\d+) code$/) { code ->
+    throw new PendingException()
     assert error.statusCode.toString() == code
 }
 
@@ -127,6 +127,7 @@ Then(~/^the details list all missing fields$/) { ->
 }
 
 When(~/^I get the documentation for it$/) { ->
+    throw new PendingException()
     response = client.get(path: '/swagger', requestContentType: ContentType.JSON)
 }
 
@@ -234,17 +235,19 @@ Then(~/^I receive a (\d+) response code$/) { int code ->
 
 Then(~/^the response message is (.+)/) { messageContents ->
     switch (messageContents) {
+        /*
         case "a list":
             assert response.responseData == comments
-            break
-        case "the updated resource":
-            assert response.responseData == patchComment
             break
         case "a single resource":
             assert response.responseData == getComment
             break
         case "the new resource":
             assert response.responseData == postComment
+            break
+        */
+        case "the updated resource":
+            assert response.responseData == patchComment
             break
         case "empty":
             assert ! response.responseData
@@ -263,4 +266,3 @@ Then(~/^it is swagger-compliant response$/) { ->
     def valResults = schema.validate(data)
     assert valResults.isSuccess()
 }
-*/

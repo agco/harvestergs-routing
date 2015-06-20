@@ -29,11 +29,13 @@ class CommentResourceBuilder {
             .paths {
                 "/comments" {
                     get { req, res ->
-                        return getAll()
+                        //return this.getAll()
+                        return []
                     }
 
                     post { req, res ->
-                        return req.data
+                        //return req.data
+                        return []
                     }.document { docs ->
                         docs.description = "Custom description for comments.post"
                         docs
@@ -42,14 +44,20 @@ class CommentResourceBuilder {
                     .skipValidation
 
                     "/:id" {
+                        get    {req, res -> return "getById(req.params(':id'))" }
+                        patch  {req, res -> return req.data }
+                        //.document { docs -> docs.operationId = "commentUpdate"; docs }
+                        delete {req, res -> return null }
+                        /*
                         get    {req, res -> return getById(req.params(':id')) }
                         patch  {req, res -> return req.data }
                         //.document { docs -> docs.operationId = "commentUpdate"; docs }
                         delete {req, res -> return null }
+                        */
                     }
                 }
             }
-
+        //resource.paths.owner = this
         return resource
     }
 }

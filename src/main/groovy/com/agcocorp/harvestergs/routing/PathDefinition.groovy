@@ -4,10 +4,15 @@ class PathDefinition {
     private String root
     final handlers = [:]
     final children = []
+    private owner
+    private thisObject
 
     private run(Closure definition, delegate = this) {
+        this.owner = definition.owner
+        this.thisObject = definition.thisObject
         definition.delegate = delegate
-        definition.resolveStrategy = Closure.DELEGATE_ONLY //DELEGATE_FIRST
+        //definition = definition.rehydrate(delegate, definition.owner, this)
+        definition.resolveStrategy = Closure.DELEGATE_FIRST
         definition.call()
         null
     }
@@ -16,20 +21,26 @@ class PathDefinition {
         return root
     }
 
+    private registerHandler(String verb, Closure handler) {
+        //def cl = handler.rehydrate(this.owner, this.owner, this.thisObject)
+        //handlers[verb] = new VerbDefinition(cl)
+        handlers[verb] = new VerbDefinition(handler)
+    }
+
     def get(Closure handler) {
-        handlers['get'] = new VerbDefinition(handler)
+        registerHandler 'get', handler
     }
 
     def post(Closure handler) {
-        handlers['post'] = new VerbDefinition(handler)
+        registerHandler 'post', handler
     }
 
     def patch(Closure handler) {
-        handlers['patch'] = new VerbDefinition(handler)
+        registerHandler 'patch', handler
     }
 
     def delete(Closure handler) {
-        handlers['delete'] = new VerbDefinition(handler)
+        registerHandler 'delete', handler
     }
 
     def methodMissing(String name, args) {
