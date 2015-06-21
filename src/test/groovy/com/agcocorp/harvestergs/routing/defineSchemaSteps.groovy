@@ -77,14 +77,14 @@ Then(~/^the schema correctly maps all definitions$/) { ->
 
         assertWith relationships.properties, {
             assertWith spouse.properties.data.properties, {
-                assert type == [type: [enum: ['person']]]
+                assert type == [enum: ['person']]
                 assert id == [type: 'string']
             }
 
             assertWith posts.properties.data, {
                 assert type == 'array'
                 assertWith items.properties, {
-                    assert type == [type: [enum: ['post']]]
+                    assert type ==[enum: ['post']]
                     assert id == [type: 'string']
                 }
             }

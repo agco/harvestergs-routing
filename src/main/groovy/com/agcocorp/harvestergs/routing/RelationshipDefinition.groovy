@@ -6,7 +6,7 @@ class RelationshipDefinition {
     def propertyMissing(String relationship) {
         // todo: support other kind of 'fk' types besides string
         // todo: consider pattern for 'fk' uuids
-        return [ properties: [ type: [ type: [enum: [relationship]]], id: [ type: 'string' ] ] ]
+        return [ properties: [ type: [enum: [relationship]], id: [ type: 'string' ] ] ]
     }
 
     def arrayOf(relationship){

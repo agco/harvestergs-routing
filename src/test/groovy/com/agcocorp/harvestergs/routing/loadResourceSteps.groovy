@@ -96,8 +96,7 @@ Given(~/^the aforementioned resource definition$/) { ->
 def error
 
 When(~/^I post a resource that is missing mandatory fields$/) { ->
-    throw new PendingException()
-    def resource = [ author: [name: 'John Doe']]
+    def resource = [data: [type: 'comment', attributes: [author: [name: 'John Doe']]]]
     try {
         response = client.post(path: '/comments', requestContentType: ContentType.JSON, body: resource)
         fail("HTTP action should have returned an error")

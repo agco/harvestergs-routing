@@ -126,7 +126,7 @@ class SparkLoader {
     }
 
     private def getSchema(APIResource spec) {
-        spec.toJsonSchema()
+        spec.toJsonSchema()[spec.resourceName]
     }
 
     private def defaultCodes = [

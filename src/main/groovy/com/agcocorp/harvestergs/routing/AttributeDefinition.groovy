@@ -10,6 +10,7 @@ class AttributeDefinition {
     }
 
     def toJsonSchema() {
+        // todo: make schema strict by default. Provide ability to override.
         if (props) {
             return [attributes: getPropsJsonSchema()]
         }
