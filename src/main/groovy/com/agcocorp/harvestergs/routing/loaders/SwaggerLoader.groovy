@@ -60,7 +60,7 @@ class SwaggerLoader {
         setIfNotNull(swaggerSpec, 'properties', schema.attributes)
     }
 
-    def loadDocs(APIResource spec, Map current = null) {
+    private lodSpec(APIResource spec, Map current = null) {
         def root = current?: loadSpec('api', specProperties)
         def resource = spec.resourceName
         def singular = camelCase(resource)
@@ -99,7 +99,7 @@ class SwaggerLoader {
         return root
     }
 
-    def registerDocs(docs) {
+    private registerDocs(docs) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
         mapper.setSerializationInclusion(Include.NON_NULL);
@@ -109,5 +109,14 @@ class SwaggerLoader {
             res.type "application/json"
             json
         }
+    }
+
+    def loadDocs(Iterable<APIResource> specs) {
+        def docs = null
+        specs.each {
+            docs = this.lodSpec it, docs
+        }
+
+        registerDocs docs
     }
 }

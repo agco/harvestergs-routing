@@ -21,47 +21,6 @@ def postComment = comments[2]
 def patchComment = comments[1]
 def getComment = comments[0]
 
-def deepCompare(m1, m2, currentPath = 'it') {
-    def diffs = []
-    println "Comparing $m1 and $m2"
-    if (m1 != m2) {
-        def currentDiffs = [:]
-        currentDiffs."$currentPath" = []
-        m1keys = m1 instanceof Map? m1*.key : null
-        m2keys = m2 instanceof Map? m2*.key : null
-        if (m1keys && m2keys) {
-            // todo: this key diff is computationally innefficient. Refactor if better speed is needed
-            def m1only = m1keys - m2keys
-            def m2only = m2keys - m1keys
-            def common = m1keys - m1only - m2only
-
-            m1only.each {
-                currentDiffs."$currentPath" << [ ["$it": m1[it]], null ]
-            }
-            m2only.each {
-                currentDiffs."$currentPath" << [ null, ["$it": m1[it]] ]
-            }
-            common.each {
-                def v1 = m1[it]
-                def v2 = m2[it]
-                if (v1 != v2) {
-                    def deepDiff = deepCompare(m1[it], m2[it], "$currentPath.$it")
-                    if (deepDiff) {
-                        diffs << deepDiff
-                    }
-                }
-            }
-        }
-        else {
-            //diffs << [ "$currentPath": [ m1, m2 ] ]
-            currentDiffs."$currentPath" << [ m1, m2 ]
-        }
-        diffs << currentDiffs
-    }
-
-    return diffs
-}
-
 Given(~/^a set of related resources$/) { ->
     def commentBuilder = new CommentResourceBuilder( { comments }, { getComment })
     def postBuilder = new PostResourceBuilder( { null }, { null })
@@ -71,6 +30,8 @@ Given(~/^a set of related resources$/) { ->
 Given(~/^these resources are loaded into an API$/) { ->
     def loader = new SparkLoader([ "title": "testApp" ])
     loader.loadResources resources
+    def documenter = new SwaggerLoader()
+    documenter.loadDocs resources
 }
 
 def client = new RESTClient('http://localhost:4567')
@@ -107,7 +68,6 @@ When(~/^I post a resource that is missing mandatory fields$/) { ->
 }
 
 Then(~/^I receive a (\d+) code$/) { code ->
-    throw new PendingException()
     assert error.statusCode.toString() == code
 }
 
@@ -126,8 +86,6 @@ Then(~/^the details list all missing fields$/) { ->
 }
 
 When(~/^I get the documentation for it$/) { ->
-    throw new PendingException()
-    // todo: move these tests -- spark loaded should not depend on swagger loader, and vice-versa
     response = client.get(path: '/swagger', requestContentType: ContentType.JSON)
 }
 
@@ -259,6 +217,7 @@ def jsonSchemaFactory = JsonSchemaFactory.byDefault()
 def objectMapper = new ObjectMapper()
 
 Then(~/^it is swagger-compliant response$/) { ->
+    throw new PendingException()
     def schema = jsonSchemaFactory.getJsonSchema("resource:/com/agcocorp/harvestergs/routing/swagger-schema.json")
     def data = objectMapper.valueToTree(response.responseData)
     def valResults = schema.validate(data)

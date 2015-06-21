@@ -94,27 +94,6 @@ class SparkLoader {
                 }
             }
         }
-        /*
-        def visitor = { path, pathName ->
-            verbs.each { verb ->
-                if (path[verb]) {
-                    def validate = validators[verb]
-                    spark.Spark."$verb" pathName, { req, res ->
-                        res.type "application/json"
-                        if (validate) {
-                            validate(spec, req)
-                        }
-
-                        res.status defaultCodes[req.requestMethod()]
-                        def innerRes = path[verb].run(req, res)
-                        def rawJson = JsonOutput.toJson(innerRes)
-                        return rawJson
-                    }
-                }
-            }
-        }
-        pathVisitor.visitPath spec.paths, visitor
-        */
     }
 
     private error = [
