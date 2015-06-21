@@ -22,13 +22,9 @@ class SparkLoader {
     }
 
     def loadResources(Iterable<APIResource> specs) {
-        //def docs = null
         specs.each {
             loadPath it
-            //docs = docLoader.loadDocs(it, docs)
         }
-
-        //docLoader.registerDocs docs
 
         spark.Spark.exception(ValidationException.class, { e, request, response ->
             response.status(400);

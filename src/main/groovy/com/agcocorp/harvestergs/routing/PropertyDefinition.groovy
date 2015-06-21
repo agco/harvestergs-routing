@@ -49,7 +49,7 @@ class PropertyDefinition {
         schema << propSpec
         schema << getPropsJsonSchema()
         if (itemsSpec) {
-            schema.items = itemsSpec instanceof PropertyDefinition ? itemsSpec.toJsonSchema() : itemsSpec
+            schema.items = itemsSpec instanceof PropertyDefinition ? itemsSpec.toJsonSchema() : [ type: itemsSpec ]
         }
 
         return schema;

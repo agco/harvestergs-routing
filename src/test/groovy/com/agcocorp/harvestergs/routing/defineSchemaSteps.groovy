@@ -58,7 +58,7 @@ Then(~/^the schema correctly maps all definitions$/) { ->
 
             assertWith tags, {
                 assert type == 'array'
-                assert items == 'string'
+                assert items == [ type: 'string' ]
             }
 
             assertWith socialHandles, {

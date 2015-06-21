@@ -28,9 +28,9 @@ Given(~/^a set of related resources$/) { ->
 }
 
 Given(~/^these resources are loaded into an API$/) { ->
-    def loader = new SparkLoader([ "title": "testApp" ])
+    def loader = new SparkLoader()
     loader.loadResources resources
-    def documenter = new SwaggerLoader()
+    def documenter = new SwaggerLoader([ "title": "testApp" ])
     documenter.loadDocs resources
 }
 

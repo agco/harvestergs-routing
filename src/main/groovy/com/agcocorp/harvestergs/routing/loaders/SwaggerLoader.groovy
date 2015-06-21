@@ -28,7 +28,7 @@ class SwaggerLoader {
         templates[specName]
     }
 
-    private def loadSpec(specName, props) {
+    private def loadSpecTemplate(specName, props) {
         def tpl = getTemplate(specName)
         def spec = tpl.make(props).toString()
         slurper.parseText(spec)
@@ -60,50 +60,68 @@ class SwaggerLoader {
         setIfNotNull(swaggerSpec, 'properties', schema.attributes)
     }
 
-    private lodSpec(APIResource spec, Map current = null) {
-        def root = current?: loadSpec('api', specProperties)
+    private loadSpec(APIResource spec, Map current = null) {
+        def root = current?: loadSpecTemplate('api', specProperties)
         def resource = spec.resourceName
         def singular = camelCase(resource)
         def plural = getPlural(spec.paths.root)
 
         def schema = spec.toJsonSchema()
         root.definitions << schema
-        /*
-        def visitor = { path, pathName ->
-            path.properties.each { prop, val ->
-                if ((val) && (val.class == VerbSpec)) {
-                    def verbSpec = loadSpec prop, [
-                            'plural'  : plural,
-                            'resource': resource,
-                            'singular': singular,
-                            'ref'     : '$ref']
 
-                    if (val.document) {
-                        val.document.call(verbSpec)
-                    }
+        spec.allPaths.each { path, pathSpec ->
+            def currentPath = [:]
+            pathSpec.each { verb, verbSpec ->
+                def verbTpl = loadSpecTemplate verb, [
+                    'plural'  : plural,
+                    'resource': resource,
+                    'singular': singular,
+                    'ref'     : '$ref']
 
-                    if (! root.paths."$pathName") {
-                        root.paths."$pathName" = [:]
-                    }
-
-                    root.paths."$pathName"."$prop" = verbSpec
+                if (verbSpec.document) {
+                    verbTpl = verbSpec.document.call(verbTpl)
                 }
-            }
-        }
 
-        visitPath spec.paths, visitor
-        spec.definitions.schemas.each {
-            root.definitions[it.key] = mapSchemaToSwagger(it.value, it.key)
+                currentPath << verbTpl
+            }
+            root.paths[path] = currentPath
         }
-        */
+                /*
+                def visitor = { path, pathName ->
+                    path.properties.each { prop, val ->
+                        if ((val) && (val.class == VerbSpec)) {
+                            def verbSpec = loadSpecTemplate prop, [
+                                    'plural'  : plural,
+                                    'resource': resource,
+                                    'singular': singular,
+                                    'ref'     : '$ref']
+
+                            if (val.document) {
+                                val.document.call(verbSpec)
+                            }
+
+                            if (! root.paths."$pathName") {
+                                root.paths."$pathName" = [:]
+                            }
+
+                            root.paths."$pathName"."$prop" = verbSpec
+                        }
+                    }
+                }
+
+                visitPath spec.paths, visitor
+                spec.definitions.schemas.each {
+                    root.definitions[it.key] = mapSchemaToSwagger(it.value, it.key)
+                }
+                */
         return root
     }
 
     private registerDocs(docs) {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
-        mapper.setSerializationInclusion(Include.NON_NULL);
-        def json = mapper.writeValueAsString(docs);
+        ObjectMapper mapper = new ObjectMapper()
+        mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false)
+        mapper.setSerializationInclusion(Include.NON_NULL)
+        def json = mapper.writeValueAsString(docs)
 
         spark.Spark.get("/swagger"){ req, res ->
             res.type "application/json"
@@ -114,7 +132,7 @@ class SwaggerLoader {
     def loadDocs(Iterable<APIResource> specs) {
         def docs = null
         specs.each {
-            docs = this.lodSpec it, docs
+            docs = this.loadSpec it, docs
         }
 
         registerDocs docs
