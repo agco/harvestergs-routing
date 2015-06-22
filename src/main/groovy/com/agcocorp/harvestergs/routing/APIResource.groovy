@@ -34,7 +34,19 @@ class APIResource {
 
     def toJsonSchema() {
         def schema = [:]
-        schema[resourceName] = [properties: [data: [properties: [:]]]]
+        schema[resourceName] = [
+            properties: [
+                data: [
+                    properties: [
+                        type: [enum: [resourceName]],
+                        id: [
+                            type: 'string',
+                            pattern: TypeMapper.UUID_PATTERN
+                        ]
+                    ]
+                ]
+            ]
+        ]
         schema[resourceName].properties.data.properties << attributes.toJsonSchema()
         schema[resourceName].properties.data.properties << relationships.toJsonSchema()
         return schema

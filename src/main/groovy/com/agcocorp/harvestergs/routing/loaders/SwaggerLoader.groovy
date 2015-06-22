@@ -86,34 +86,7 @@ class SwaggerLoader {
             }
             root.paths[path] = currentPath
         }
-                /*
-                def visitor = { path, pathName ->
-                    path.properties.each { prop, val ->
-                        if ((val) && (val.class == VerbSpec)) {
-                            def verbSpec = loadSpecTemplate prop, [
-                                    'plural'  : plural,
-                                    'resource': resource,
-                                    'singular': singular,
-                                    'ref'     : '$ref']
 
-                            if (val.document) {
-                                val.document.call(verbSpec)
-                            }
-
-                            if (! root.paths."$pathName") {
-                                root.paths."$pathName" = [:]
-                            }
-
-                            root.paths."$pathName"."$prop" = verbSpec
-                        }
-                    }
-                }
-
-                visitPath spec.paths, visitor
-                spec.definitions.schemas.each {
-                    root.definitions[it.key] = mapSchemaToSwagger(it.value, it.key)
-                }
-                */
         return root
     }
 
