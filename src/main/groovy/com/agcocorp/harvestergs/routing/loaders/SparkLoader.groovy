@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.JsonNode
 class SparkLoader {
     private final jsonSchemaFactory = JsonSchemaFactory.byDefault()
     private final objectMapper
-    private final verbs = ['get', 'patch', 'post', 'delete']
 
     def SparkLoader() {
         this.objectMapper = new ObjectMapper()
@@ -63,7 +62,7 @@ class SparkLoader {
             return validate(req, postSchema)
         },
         'patch': { spec, req ->
-            //todo: add validation here -- schema should ignore 'required' and potentially other default rules
+            // todo: add validation here -- schema should ignore 'required' and potentially other default rules
             getPogo(req)
         }
     ]
