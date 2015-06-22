@@ -82,7 +82,7 @@ class SwaggerLoader {
                     verbTpl = verbSpec.document.call(verbTpl)
                 }
 
-                currentPath << verbTpl
+                currentPath[verb] = verbTpl
             }
             root.paths[path] = currentPath
         }

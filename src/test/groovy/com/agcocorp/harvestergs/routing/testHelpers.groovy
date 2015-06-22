@@ -14,7 +14,6 @@ class testHelpers {
 
     static deepCompare(m1, m2, currentPath = 'it') {
         def diffs = []
-        println "Comparing $m1 and $m2"
         if (m1 != m2) {
             def currentDiffs = [:]
             currentDiffs."$currentPath" = []
@@ -44,10 +43,11 @@ class testHelpers {
                 }
             }
             else {
-                //diffs << [ "$currentPath": [ m1, m2 ] ]
                 currentDiffs."$currentPath" << [ m1, m2 ]
             }
-            diffs << currentDiffs
+            if (currentDiffs."$currentPath") {
+                diffs << currentDiffs
+            }
         }
 
         return diffs

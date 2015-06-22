@@ -23,7 +23,6 @@ class RelationshipDefinition {
             def schema = [relationships: [ properties: [:]]]
             props.each {
                 def data = [ properties: [ data: it.value ] ]
-                println "${it.key}: $data"
                 schema.relationships.properties[it.key] = data
             }
             return schema

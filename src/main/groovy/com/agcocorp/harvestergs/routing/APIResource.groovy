@@ -27,11 +27,6 @@ class APIResource {
         this
     }
 
-    def propertyMissing(String name, args) {
-        println "method missing: $name"
-        this
-    }
-
     def paths(Closure cl) {
         run cl, paths
         this

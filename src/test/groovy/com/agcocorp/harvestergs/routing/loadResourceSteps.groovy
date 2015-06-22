@@ -9,6 +9,8 @@ import cucumber.api.PendingException
 import static cucumber.api.groovy.EN.*
 import groovyx.net.http.RESTClient
 import groovyx.net.http.*
+import static testHelpers.*
+
 
 def resources = []
 def comments = [
@@ -123,13 +125,14 @@ Then(~/^the response correctly describes the resource$/) { ->
             properties: [
                 data: [
                     properties: [
+                        /*
                         type: [
                             enum: [ 'comment' ]
                         ],
                         id: [
                             type: 'string',
                             pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
-                        ],
+                        ],*/
                         attributes: [
                             properties: [
                                 author: [
@@ -162,8 +165,14 @@ Then(~/^the response correctly describes the resource$/) { ->
                         relationships: [
                             properties: [
                                 post: [
-                                    type: 'string',
-                                    description: 'Id reference to a posts object'
+                                    properties: [
+                                        data: [
+                                            properties: [
+                                                type: [enum: ['posts']],
+                                                id: [type: 'string' ]
+                                            ]
+                                        ]
+                                    ]
                                 ]
                             ]
                         ]
@@ -172,7 +181,8 @@ Then(~/^the response correctly describes the resource$/) { ->
             ]
         ]
 
-        assert definitions.comment == expectedSchema : deepCompare(definitions.comment, expectedSchema)
+        assert definitions.comment == expectedSchema :
+            JsonOutput.prettyPrint(JsonOutput.toJson(deepCompare(definitions.comment, expectedSchema)))
     }
 }
 
@@ -217,7 +227,6 @@ def jsonSchemaFactory = JsonSchemaFactory.byDefault()
 def objectMapper = new ObjectMapper()
 
 Then(~/^it is swagger-compliant response$/) { ->
-    throw new PendingException()
     def schema = jsonSchemaFactory.getJsonSchema("resource:/com/agcocorp/harvestergs/routing/swagger-schema.json")
     def data = objectMapper.valueToTree(response.responseData)
     def valResults = schema.validate(data)
