@@ -22,8 +22,9 @@ class RelationshipDefinition {
         if (props) {
             def schema = [relationships: [ properties: [:]]]
             props.each {
-                def data = [ properties: [ data: it.value ] ]
+                def data = [ properties: [ data: it.value ], additionalProperties: false ]
                 schema.relationships.properties[it.key] = data
+                schema.relationships.additionalProperties = false
             }
             return schema
         }

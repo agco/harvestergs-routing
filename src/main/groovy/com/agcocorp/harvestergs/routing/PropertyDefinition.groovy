@@ -50,6 +50,7 @@ class PropertyDefinition {
         schema << getPropsJsonSchema()
         if (itemsSpec) {
             schema.items = itemsSpec instanceof PropertyDefinition ? itemsSpec.toJsonSchema() : [ type: itemsSpec ]
+            schema.additionalProperties = false
         }
 
         return schema;

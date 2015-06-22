@@ -140,7 +140,8 @@ Then(~/^the response correctly describes the resource$/) { ->
                                         url:   [ type: 'string' ]
                                     ],
                                     required: [ 'name', 'email' ],
-                                    type: 'object'
+                                    type: 'object',
+                                    additionalProperties: false
                                 ],
                                 body: [
                                     description: 'Comments contents',
@@ -153,12 +154,15 @@ Then(~/^the response correctly describes the resource$/) { ->
                                             size: [type: 'integer' ]
                                         ],
                                         required: [ 'name' ],
-                                        type: 'object'
+                                        type: 'object',
+                                        additionalProperties: false
                                     ],
-                                    type: 'array'
+                                    type: 'array',
+                                    additionalProperties: false
                                 ]
                             ],
-                            required: ['body']
+                            required: ['body'],
+                            additionalProperties: false
                         ],
                         relationships: [
                             properties: [
@@ -170,11 +174,14 @@ Then(~/^the response correctly describes the resource$/) { ->
                                                 id: [type: 'string' ]
                                             ]
                                         ]
-                                    ]
+                                    ],
+                                    additionalProperties: false
                                 ]
-                            ]
+                            ],
+                            additionalProperties: false
                         ]
-                    ]
+                    ],
+                    additionalProperties: false
                 ]
             ]
         ]

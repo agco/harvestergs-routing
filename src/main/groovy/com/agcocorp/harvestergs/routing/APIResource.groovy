@@ -49,6 +49,9 @@ class APIResource {
         ]
         schema[resourceName].properties.data.properties << attributes.toJsonSchema()
         schema[resourceName].properties.data.properties << relationships.toJsonSchema()
+        // todo: Provide ability to override strict schema definition.
+        schema[resourceName].properties.data.additionalProperties = false
+
         return schema
 
         return attributes.toJsonSchema();

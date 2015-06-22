@@ -68,10 +68,12 @@ class TypeMapper {
             schema.properties = [:]
             props.each {
                 schema.properties[it.key] = it.value.toJsonSchema()
+
                 if (it.value.parentSpec['required']) {
                     required << it.key
                 }
             }
+            schema.additionalProperties = false
 
             if (required) {
                 schema.required = required
