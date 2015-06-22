@@ -1,6 +1,6 @@
 package com.agcocorp.harvestergs.routing.loaders
 
-import com.agcocorp.harvestergs.routing.Resource
+import com.agcocorp.harvestergs.routing.APIResource
 import com.agcocorp.harvestergs.routing.SwaggerLoader
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -15,23 +15,16 @@ class SparkLoader {
     private final pathVisitor
     private final docLoader
 
-    def SparkLoader(specProperties = null,
-                       PathVisitor pathVisitor = null,
-                       SwaggerLoader docLoader = null) {
-        this.pathVisitor = pathVisitor?: new PathVisitor()
+    def SparkLoader(specProperties = null) {
         this.docLoader = docLoader?: new SwaggerLoader(specProperties)
         this.objectMapper = new ObjectMapper()
         this.objectMapper.setSerializationInclusion Include.NON_NULL
     }
 
-    def loadResources(Iterable<Resource> specs) {
-        def docs = null
+    def loadResources(Iterable<APIResource> specs) {
         specs.each {
             loadPath it
-            docs = docLoader.loadDocs(it, docs)
         }
-
-        docLoader.registerDocs docs
 
         spark.Spark.exception(ValidationException.class, { e, request, response ->
             response.status(400);
@@ -79,45 +72,43 @@ class SparkLoader {
         }
     ]
 
-    private def loadPath(Resource spec) {
-        def visitor = { path, pathName ->
-            verbs.each { verb ->
-                if (path[verb]) {
-                    def validate = validators[verb]
-                    spark.Spark."$verb" pathName, { req, res ->
-                        res.type "application/json"
-                        if (validate) {
-                            validate(spec, req)
-                        }
-
-                        res.status defaultCodes[req.requestMethod()]
-                        def innerRes = path[verb].run(req, res)
-                        def rawJson = JsonOutput.toJson(innerRes)
-                        return rawJson
+    private def loadPath(APIResource spec) {
+        spec.allPaths.each { path, pathSpec ->
+            pathSpec.each { verb, verbSpec ->
+                def validate = validators[verb]
+                // todo: refactor for better composition (eg: use currying to pass the verb as first argument)
+                spark.Spark."$verb"(path) { req, res ->
+                    res.type "application/json"
+                    if (validate) {
+                        validate(spec, req)
                     }
+
+                    res.status defaultCodes[req.requestMethod()]
+                    def innerRes = verbSpec.handler(req, res)
+                    def rawJson = JsonOutput.toJson(innerRes)
+                    return rawJson
                 }
             }
         }
-        pathVisitor.visitPath spec.paths, visitor
     }
 
     private error = [
-            invalid: { results -> throw new ValidationException( validationResults: results ) }
+        invalid: { results -> throw new ValidationException( validationResults: results ) }
     ]
 
     private class ValidationException extends RuntimeException {
         String validationResults
     }
 
-    private def getSchema(Resource spec) {
-        spec.definitions.schemas[spec.definitions.mainSchemaName]
+    private def getSchema(APIResource spec) {
+        spec.toJsonSchema()[spec.resourceName]
     }
 
     private def defaultCodes = [
-            GET: 200,
-            POST: 201,
-            PATCH: 200,
-            DELETE: 204
+        GET: 200,
+        POST: 201,
+        PATCH: 200,
+        DELETE: 204
     ]
 }
 

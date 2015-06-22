@@ -9,6 +9,8 @@ import cucumber.api.PendingException
 import static cucumber.api.groovy.EN.*
 import groovyx.net.http.RESTClient
 import groovyx.net.http.*
+import static testHelpers.*
+
 
 def resources = []
 def comments = [
@@ -21,48 +23,6 @@ def postComment = comments[2]
 def patchComment = comments[1]
 def getComment = comments[0]
 
-def deepCompare(m1, m2, currentPath = 'it') {
-    def diffs = []
-    println "Comparing $m1 and $m2"
-    if (m1 != m2) {
-        def currentDiffs = [:]
-        currentDiffs."$currentPath" = []
-        m1keys = m1 instanceof Map? m1*.key : null
-        m2keys = m2 instanceof Map? m2*.key : null
-        if (m1keys && m2keys) {
-            // todo: this key diff is computationally innefficient. Refactor if better speed is needed
-            def m1only = m1keys - m2keys
-            def m2only = m2keys - m1keys
-            def common = m1keys - m1only - m2only
-
-            m1only.each {
-                currentDiffs."$currentPath" << [ ["$it": m1[it]], null ]
-            }
-            m2only.each {
-                currentDiffs."$currentPath" << [ null, ["$it": m1[it]] ]
-                //diffs << [ "$currentPath": [ null, ["$it": m2[it]] ] ]
-            }
-            common.each {
-                def v1 = m1[it]
-                def v2 = m2[it]
-                if (v1 != v2) {
-                    def deepDiff = deepCompare(m1[it], m2[it], "$currentPath.$it")
-                    if (deepDiff) {
-                        diffs << deepDiff
-                    }
-                }
-            }
-        }
-        else {
-            //diffs << [ "$currentPath": [ m1, m2 ] ]
-            currentDiffs."$currentPath" << [ m1, m2 ]
-        }
-        diffs << currentDiffs
-    }
-
-    return diffs
-}
-
 Given(~/^a set of related resources$/) { ->
     def commentBuilder = new CommentResourceBuilder( { comments }, { getComment })
     def postBuilder = new PostResourceBuilder( { null }, { null })
@@ -70,8 +30,10 @@ Given(~/^a set of related resources$/) { ->
 }
 
 Given(~/^these resources are loaded into an API$/) { ->
-    def loader = new SparkLoader([ "title": "testApp" ])
+    def loader = new SparkLoader()
     loader.loadResources resources
+    def documenter = new SwaggerLoader([ "title": "testApp" ])
+    documenter.loadDocs resources
 }
 
 def client = new RESTClient('http://localhost:4567')
@@ -93,11 +55,10 @@ Given(~/^the aforementioned resource definition$/) { ->
     // no action needed here -- all the setup occurred in the background steps
 }
 
-
 def error
 
 When(~/^I post a resource that is missing mandatory fields$/) { ->
-    def resource = [ author: [name: 'John Doe']]
+    def resource = [data: [type: 'comment', attributes: [author: [name: 'John Doe']]]]
     try {
         response = client.post(path: '/comments', requestContentType: ContentType.JSON, body: resource)
         fail("HTTP action should have returned an error")
@@ -163,13 +124,14 @@ Then(~/^the response correctly describes the resource$/) { ->
             properties: [
                 data: [
                     properties: [
+                        /*
                         type: [
                             enum: [ 'comment' ]
                         ],
                         id: [
                             type: 'string',
                             pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
-                        ],
+                        ],*/
                         attributes: [
                             properties: [
                                 author: [
@@ -202,8 +164,14 @@ Then(~/^the response correctly describes the resource$/) { ->
                         relationships: [
                             properties: [
                                 post: [
-                                    type: 'string',
-                                    description: 'Id reference to a posts object'
+                                    properties: [
+                                        data: [
+                                            properties: [
+                                                type: [enum: ['posts']],
+                                                id: [type: 'string' ]
+                                            ]
+                                        ]
+                                    ]
                                 ]
                             ]
                         ]
@@ -212,7 +180,8 @@ Then(~/^the response correctly describes the resource$/) { ->
             ]
         ]
 
-        assert definitions.comment == expectedSchema : deepCompare(definitions.comment, expectedSchema)
+        assert definitions.comment == expectedSchema :
+            JsonOutput.prettyPrint(JsonOutput.toJson(deepCompare(definitions.comment, expectedSchema)))
     }
 }
 
@@ -236,14 +205,14 @@ Then(~/^the response message is (.+)/) { messageContents ->
         case "a list":
             assert response.responseData == comments
             break
-        case "the updated resource":
-            assert response.responseData == patchComment
-            break
         case "a single resource":
             assert response.responseData == getComment
             break
         case "the new resource":
             assert response.responseData == postComment
+            break
+        case "the updated resource":
+            assert response.responseData == patchComment
             break
         case "empty":
             assert ! response.responseData

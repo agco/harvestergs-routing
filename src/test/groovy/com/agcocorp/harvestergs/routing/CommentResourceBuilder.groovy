@@ -10,68 +10,47 @@ class CommentResourceBuilder {
     }
 
     def build() {
-        def resource = new Resource(this)
-        resource
-            .definitions
-            .comment {
-                attributes {
-                    body {
-                        type 'string'
-                        description 'Comments contents'
+        def resource = new APIResource('comment')
+            .attributes {
+                body string.description('Comments contents').required
+                author {
+                    name string.required
+                    email string.required
+                    url string
+                }
+                tags arrayOf({
+                    name string.required
+                    size integer
+                })
+            }
+            .relationships {
+                post posts
+            }
+            .paths {
+                "/comments" {
+                    get { req, res ->
+                        return this.getAll()
+                        //return []
                     }
-                    author {
-                        type 'object'
-                        attributes {
-                            name { type 'string'}
-                            email { type 'string'}
-                            url { type 'string'}
-                        }
-                        required 'name', 'email'
+
+                    post { req, res ->
+                        return req.data
+                    }.document { docs ->
+                        docs.description = "Custom description for comments.post"
+                        docs
                     }
-                    tags {
-                        type 'array'
-                        items {
-                            type 'object'
-                            attributes {
-                                name { type 'string' }
-                                size { type 'integer' }
-                            }
-                            required 'name'
-                        }
+                    .skipAuth
+                    .skipValidation
+
+                    "/:id" {
+                        // todo: remove the need for the 'this' prefix when using closures.
+                        get    {req, res -> return this.getById(req.params(':id')) }
+                        patch  {req, res -> return req.data }
+                        //.document { docs -> docs.operationId = "commentUpdate"; docs }
+                        delete {req, res -> return null }
                     }
                 }
-                required 'body'
-                relationships {
-                    post {
-                        type 'posts'
-                    }
-                }
             }
-
-        resource
-            .paths
-            ."/comments" {
-            get { req, res ->
-                return  getAll()
-            }
-
-            post { req, res ->
-                return req.data
-            }.document { docs ->
-                docs.description = "Custom description for comments.post"
-                docs
-            }
-            .skipAuth
-            .skipValidation
-
-            "/:id" {
-                get    {req, res -> return getById(req.params(':id')) }
-                patch  {req, res -> return req.data }
-                //.document { docs -> docs.operationId = "commentUpdate"; docs }
-                delete {req, res -> return null }
-            }
-        }
-
         return resource
     }
 }
