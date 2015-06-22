@@ -5,7 +5,7 @@ class PropertyDefinition {
     @Delegate
     final TypeMapper mapper = new TypeMapper()
 
-    private runClosure(Closure cl, delegate = this) {
+    private void runClosure(Closure cl, delegate = this) {
         if (cl) {
             cl.delegate = delegate
             cl.resolveStrategy = Closure.DELEGATE_FIRST
@@ -17,7 +17,7 @@ class PropertyDefinition {
         this.type = type
         this.itemsSpec = itemType
 
-        runClosure cl
+        runClosure(cl)
     }
 
     def itemsSpec
@@ -26,22 +26,22 @@ class PropertyDefinition {
 
     PropertyDefinition getRequired() {
         parentSpec['required'] = true
-        this
+        return this
     }
 
     PropertyDefinition pattern(String pattern) {
         propSpec['pattern'] = pattern
-        this
+        return this
     }
 
     PropertyDefinition description(String description) {
         propSpec['description'] = description
-        this
+        return this
     }
 
     def methodMissing(String name, args) {
         props[name] = parseArgs(args)
-        this
+        return this
     }
 
     Map toJsonSchema() {

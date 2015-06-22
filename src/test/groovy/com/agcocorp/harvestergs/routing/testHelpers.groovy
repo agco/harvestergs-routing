@@ -20,7 +20,6 @@ class testHelpers {
             def m1keys = m1 instanceof Map? m1*.key : null
             def m2keys = m2 instanceof Map? m2*.key : null
             if (m1keys && m2keys) {
-                // todo: this key diff is computationally innefficient. Refactor if better speed is needed
                 def m1only = m1keys - m2keys
                 def m2only = m2keys - m1keys
                 def common = m1keys - m1only - m2only

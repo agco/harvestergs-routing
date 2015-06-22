@@ -48,11 +48,6 @@ class TypeMapper {
 
     def props = [:]
 
-
-    def propertyMissing(String name) {
-        return new PropertyDefinition(name)
-    }
-
     def parseArgs(args) {
         switch (args[0].class) {
             case PropertyDefinition.class:

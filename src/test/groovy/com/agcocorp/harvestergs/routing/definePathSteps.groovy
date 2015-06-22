@@ -10,7 +10,6 @@ Given(~/^a valid path definition$/) { ->
     definition = new APIResource('person')
         .paths {
             '/people' {
-                //todo: add document override support
                 get { req, res -> 'people.get' }
                     .document {
                         it.description = "people.get overriden description"

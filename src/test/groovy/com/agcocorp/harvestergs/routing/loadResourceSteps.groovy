@@ -55,7 +55,6 @@ Given(~/^the aforementioned resource definition$/) { ->
     // no action needed here -- all the setup occurred in the background steps
 }
 
-
 def error
 
 When(~/^I post a resource that is missing mandatory fields$/) { ->
