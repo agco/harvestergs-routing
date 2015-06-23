@@ -1,8 +1,8 @@
 # Created by .ignore support plugin (hsz.mobi)
 
-.idea/workspace.xml
-.idea/tasks.xml
+.idea
 build
 .gradle
-.idea/libraries
-.idea/gradle.xml
+*.iws
+*.ipr
+*.iml

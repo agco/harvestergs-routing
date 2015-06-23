@@ -1,8 +1,13 @@
-version = '0.4.2-alpha'
+plugins {
+    id "com.jfrog.bintray" version "1.1"
+}
 
 apply plugin: 'groovy'
 apply plugin: 'jacoco'
 apply plugin: 'codenarc'
+apply plugin: 'idea'
+
+version = '0.5.0-beta'
 
 repositories {
     jcenter()
@@ -29,4 +34,15 @@ dependencies {
 
 codenarc {
     ignoreFailures true
+}
+
+bintray {
+    user = "${System.env.BINTRAY_USER}"
+    key = "${System.env.BINTRAY_KEY}"
+    dryRun = true
+    pkg {
+        repo = 'harvester.gs'
+        name = 'harvester-routing'
+        userOrg = 'agco'
+    }
 }
