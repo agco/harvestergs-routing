@@ -5,6 +5,7 @@ plugins {
 apply plugin: 'groovy'
 apply plugin: 'jacoco'
 apply plugin: 'codenarc'
+apply plugin: 'idea'
 
 version = '0.5.0-beta'
 
