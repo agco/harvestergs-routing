@@ -21,7 +21,7 @@ given resource. Paths may be nested (eg: "/:id" within "/paths"). Also maps
 those actions to the closures you provide;
 
 An example:
-```
+```groovy
 // defining a resource named "post"
 def resource = new APIResource('post')
 			// the 'attributes' section contains all properties of a post resource
