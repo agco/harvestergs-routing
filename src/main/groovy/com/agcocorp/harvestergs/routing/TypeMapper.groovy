@@ -24,7 +24,7 @@ class TypeMapper {
         return new PropertyDefinition('integer')
     }
 
-    // todo: support advanced cases such as arrayof(arrayof(...)) and arrayof( { ... })
+    // todo: support advanced cases such as arrayof(arrayof(...))
     def PropertyDefinition arrayOf(PropertyDefinition itemType) {
         return new PropertyDefinition('array', null, itemType.type)
     }
