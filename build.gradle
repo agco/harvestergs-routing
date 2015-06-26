@@ -42,7 +42,7 @@ bintray {
     dryRun = true
     pkg {
         repo = 'harvester.gs'
-        name = 'harvester-routing'
+        name = 'harvestergs-routing'
         userOrg = 'agco'
     }
 }
