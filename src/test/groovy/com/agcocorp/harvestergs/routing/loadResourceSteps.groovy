@@ -159,6 +159,9 @@ Then(~/^the response correctly describes the resource$/) { ->
                                     ],
                                     type: 'array',
                                     additionalProperties: false
+                                ],
+                                kind: [
+                                    enum: [ 'classic', 'picture', 'howto' ]
                                 ]
                             ],
                             required: ['body'],
