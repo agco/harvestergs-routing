@@ -5,8 +5,12 @@ deploy:
   provider: releases
   api_key:
     secure: AboUvRV+9isKijbauZQz8uAlBCJc/PS+v9Kg5s+12hDCU2yvrxpH1XH29XfEBUCLjMoiXalP+AYKiSVf6a9PMd+lo34Bj9OL5fZxx8lrSV8qUHyAdCoQqCFXsOIANCgrBswuQLVhRRkF9btPGQnosnz0ebhZ74WEfGBJXRyvhjzfCAIrwLzARz6OTLWZFbyt+WINKGnOv6tRGLbHDNIjFAnmX7lZJl2BaY74x4GVf1sfYvkRNtdZeIe6lZnsROtsmLh+QmE47TkNLGxrumEuQMuhp+EXzca/3bMw/3Bm98O1ZhSacPsBZQ9mnsvi8WnZZVnT2CWQf+tNsRTnbPhaQaM5VNVoBN+Oomfr2BYELrwAmIiioZMx254Ii6Z7SOuywlhMJk5N8/i9xPKo81w+lcNa/c82cpNcZZFTUAnjBlHo3oMNbzUZI8BwnP/SMvKr4ffHIKurHX2DYQbfXTquQnQSnWk8OApc63i+Od6oE9dYs+0u58fofNU8hxMJeqyukofVgqO6HF5jyG1t0LNNEl1LcQkLYfSvFlvgrKRtDQ58MhkBfGJg7+7o82+P5D+rZTLwLWvzQapx+bZgXCJz3SoTt/6hKHVDIpmIvePgUquyDk4Rl2XnjMXFY+iBl8/RdfARefoH51yJtQI3PQXEasAyWVZm1u7zsK5jZRQCKBU=
-  file: build/libs/*
+  file: build/libs/
   on:
     repo: agco/harvestergs-routing
     branch: develop
     tags: true
+    file_glob: true
+deploy:
+  provider: bintray
+  edge: true
