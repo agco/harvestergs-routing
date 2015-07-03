@@ -39,6 +39,11 @@ class PropertyDefinition {
         return this
     }
 
+    PropertyDefinition format(String format) {
+        propSpec['format'] = format
+        return this
+    }
+
     PropertyDefinition description(String description) {
         propSpec['description'] = description
         return this

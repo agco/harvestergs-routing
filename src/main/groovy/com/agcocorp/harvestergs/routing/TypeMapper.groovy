@@ -35,14 +35,26 @@ class TypeMapper {
     }
 
     def PropertyDefinition getUuid() {
-        def prop = new PropertyDefinition('string' )
+        def prop = new PropertyDefinition('string')
         prop.pattern(UUID_PATTERN)
         return prop
     }
 
     def PropertyDefinition getEmail() {
-        def prop = new PropertyDefinition('string' )
-        prop.pattern(EMAIL_PATTERN)
+        def prop = new PropertyDefinition('string')
+        prop.format('email')
+        return prop
+    }
+
+    def PropertyDefinition getDatetime() {
+        def prop = new PropertyDefinition('string')
+        prop.format('date-time')
+        return prop
+    }
+
+    def PropertyDefinition getUri() {
+        def prop = new PropertyDefinition('string')
+        prop.format('uri')
         return prop
     }
 

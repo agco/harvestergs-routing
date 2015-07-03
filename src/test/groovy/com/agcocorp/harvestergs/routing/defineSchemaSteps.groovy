@@ -47,7 +47,7 @@ Then(~/^the schema correctly maps all definitions$/) { ->
             assert id == [ type: 'string', pattern: TypeMapper.UUID_PATTERN, description: 'User ID. Do not send it when posting or patching.' ]
             assert lastName == [type: 'string']
             assert email.type == 'string'
-            assert email.pattern
+            assert email.format
             assert url.type == 'string'
             assert url.pattern
             assertWith avatars.properties, {
@@ -94,7 +94,6 @@ Then(~/^the schema correctly maps all definitions$/) { ->
 
 def jsonSchemaFactory = JsonSchemaFactory.byDefault()
 def objectMapper = new ObjectMapper()
-
 
 Then(~/^is a JSON schema compliant$/) { ->
     // loading JSON schema's core meta schema
