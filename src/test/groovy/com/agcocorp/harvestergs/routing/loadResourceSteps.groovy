@@ -161,7 +161,6 @@ Then(~/^the response correctly describes the resource$/) { ->
                                     additionalProperties: false
                                 ],
                                 kind: [
-                                    type: 'string',
                                     enum: [ 'classic', 'picture', 'howto' ]
                                 ]
                             ],

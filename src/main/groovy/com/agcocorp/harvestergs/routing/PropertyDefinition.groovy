@@ -69,8 +69,8 @@ class PropertyDefinition {
             case null:
                 break;
             case ArrayList:
-                // todo: omit this explicit type definition
-                schema.type = 'string'
+                // todo: refactor for a more elegant solution -- perhaps some mapping?
+                schema.remove('type')
                 schema.enum = itemsSpec
                 break;
             case PropertyDefinition:
