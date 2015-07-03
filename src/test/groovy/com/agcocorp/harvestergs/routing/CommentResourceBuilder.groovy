@@ -15,7 +15,7 @@ class CommentResourceBuilder {
                 body string.description('Comments contents').required
                 author {
                     name string.required
-                    email string.required
+                    email string.required.pattern(/.*@.*/)
                     url string
                 }
                 tags arrayOf({

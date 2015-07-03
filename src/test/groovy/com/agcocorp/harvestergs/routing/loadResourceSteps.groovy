@@ -135,7 +135,7 @@ Then(~/^the response correctly describes the resource$/) { ->
                             properties: [
                                 author: [
                                     properties: [
-                                        email: [ type: 'string' ],
+                                        email: [ type: 'string', pattern: /.*@.*/ ],
                                         name:  [ type: 'string' ],
                                         url:   [ type: 'string' ]
                                     ],
