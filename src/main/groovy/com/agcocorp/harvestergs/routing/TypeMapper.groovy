@@ -2,13 +2,12 @@ package com.agcocorp.harvestergs.routing
 
 class TypeMapper {
     static final UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
-    static final EMAIL_PATTERN = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/
 
     def PropertyDefinition getString() {
         return new PropertyDefinition('string')
     }
 
-    def PropertyDefinition getBoolean() {
+    def PropertyDefinition getBool() {
         return new PropertyDefinition('boolean')
     }
 

@@ -15,6 +15,12 @@ class PostResourceBuilder {
                 title string.required
                 body string.description('Post contents').required
                 tags arrayOf(string)
+                createdOn datetime
+                published bool
+                coordinates {
+                    latitude number
+                    longitude number
+                }
             }
             .paths {
                 "/posts" {
