@@ -49,17 +49,6 @@ class SwaggerLoader {
         }
     }
 
-    private setIfNotNull(obj, prop, value) {
-        if (value) {
-            obj[prop] = value
-        }
-    }
-
-    private convertToSwagger(APIResource schema) {
-        def swaggerSpec = [:]
-        setIfNotNull(swaggerSpec, 'properties', schema.attributes)
-    }
-
     private loadSpec(APIResource spec, Map current = null) {
         def root = current?: loadSpecTemplate('api', specProperties)
         def resource = spec.resourceName
