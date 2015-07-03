@@ -49,15 +49,39 @@ class PropertyDefinition {
         return this
     }
 
+    def propertyMissing(String name) {
+        if (! this.type == 'enum') {
+            throw new MissingPropertyException()
+        }
+
+        if (! itemsSpec) {
+            itemsSpec = []
+        }
+        itemsSpec << name
+    }
+
     Map toJsonSchema() {
         def schema = [type: type]
         schema << propSpec
         schema << getPropsJsonSchema()
-        if (itemsSpec) {
-            schema.items = itemsSpec instanceof PropertyDefinition ? itemsSpec.toJsonSchema() : [ type: itemsSpec ]
-            schema.additionalProperties = false
-        }
 
+        switch (itemsSpec) {
+            case null:
+                break;
+            case ArrayList:
+                // todo: omit this explicit type definition
+                schema.type = 'string'
+                schema.enum = itemsSpec
+                break;
+            case PropertyDefinition:
+                schema.items = itemsSpec.toJsonSchema()
+                schema.additionalProperties = false
+                break;
+            default:
+                schema.items = [ type: itemsSpec ]
+                schema.additionalProperties = false
+                break;
+        }
         return schema;
     }
 }

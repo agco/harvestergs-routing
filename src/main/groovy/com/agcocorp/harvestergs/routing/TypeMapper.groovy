@@ -46,6 +46,11 @@ class TypeMapper {
         return prop
     }
 
+    def PropertyDefinition enumOf(Closure cl) {
+        def prop = new PropertyDefinition('enum', cl)
+        return prop
+    }
+
     def props = [:]
 
     def parseArgs(args) {
