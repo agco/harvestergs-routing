@@ -9,3 +9,4 @@ deploy:
   on:
     repo: agco/harvestergs-routing
     branch: develop
+    tags: true
