@@ -151,7 +151,7 @@ Then(~/^the response correctly describes the resource$/) { ->
                                     items: [
                                         properties: [
                                             name: [type: 'string' ],
-                                            size: [type: 'integer' ]
+                                            size: [type: 'integer', readOnly: true ]
                                         ],
                                         required: [ 'name' ],
                                         type: 'object',

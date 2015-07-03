@@ -20,7 +20,7 @@ class CommentResourceBuilder {
                 }
                 tags arrayOf({
                     name string.required
-                    size integer
+                    size integer.readOnly
                 })
             }
             .relationships {

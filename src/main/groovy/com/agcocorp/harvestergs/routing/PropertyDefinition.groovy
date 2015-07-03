@@ -29,6 +29,11 @@ class PropertyDefinition {
         return this
     }
 
+    PropertyDefinition getReadOnly() {
+        propSpec['readOnly'] = true
+        return this
+    }
+
     PropertyDefinition pattern(String pattern) {
         propSpec['pattern'] = pattern
         return this
