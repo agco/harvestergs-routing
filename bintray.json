@@ -13,7 +13,7 @@
     },
     "files":
         [
-        {"includePattern": "build/libs/.*", "uploadPattern": "binaries/"}
+        {"includePattern": "build/libs/(.*)", "uploadPattern": "binaries/"}
         ],
     "publish": true
 }
