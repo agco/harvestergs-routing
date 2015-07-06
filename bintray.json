@@ -13,7 +13,7 @@
     },
     "files":
         [
-        {"includePattern": "build/libs/(.*)", "uploadPattern": "$1"}
+        {"includePattern": "build/libs/(.*)", "uploadPattern": "com/agcocorp/harvestergs/harvestergs-routing/0.6.0-beta/$1"}
         ],
     "publish": true
 }
