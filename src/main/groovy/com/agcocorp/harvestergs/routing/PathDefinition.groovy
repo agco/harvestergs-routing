@@ -11,7 +11,6 @@ class PathDefinition {
         this.owner = definition.owner
         this.thisObject = definition.thisObject
         definition.delegate = delegate
-        //definition = definition.rehydrate(delegate, definition.owner, this)
         definition.resolveStrategy = Closure.DELEGATE_FIRST
         definition.call()
         null

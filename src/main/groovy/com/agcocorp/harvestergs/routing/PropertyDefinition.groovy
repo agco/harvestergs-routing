@@ -29,8 +29,18 @@ class PropertyDefinition {
         return this
     }
 
+    PropertyDefinition getReadOnly() {
+        propSpec['readOnly'] = true
+        return this
+    }
+
     PropertyDefinition pattern(String pattern) {
         propSpec['pattern'] = pattern
+        return this
+    }
+
+    PropertyDefinition format(String format) {
+        propSpec['format'] = format
         return this
     }
 
@@ -44,15 +54,39 @@ class PropertyDefinition {
         return this
     }
 
+    def propertyMissing(String name) {
+        if (! this.type == 'enum') {
+            throw new MissingPropertyException()
+        }
+
+        if (! itemsSpec) {
+            itemsSpec = []
+        }
+        itemsSpec << name
+    }
+
     Map toJsonSchema() {
         def schema = [type: type]
         schema << propSpec
         schema << getPropsJsonSchema()
-        if (itemsSpec) {
-            schema.items = itemsSpec instanceof PropertyDefinition ? itemsSpec.toJsonSchema() : [ type: itemsSpec ]
-            schema.additionalProperties = false
-        }
 
+        switch (itemsSpec) {
+            case null:
+                break;
+            case ArrayList:
+                // todo: refactor for a more elegant solution -- perhaps some mapping?
+                schema.remove('type')
+                schema.enum = itemsSpec
+                break;
+            case PropertyDefinition:
+                schema.items = itemsSpec.toJsonSchema()
+                schema.additionalProperties = false
+                break;
+            default:
+                schema.items = [ type: itemsSpec ]
+                schema.additionalProperties = false
+                break;
+        }
         return schema;
     }
 }

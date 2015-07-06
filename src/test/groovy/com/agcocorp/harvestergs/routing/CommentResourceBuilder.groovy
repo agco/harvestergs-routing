@@ -14,14 +14,19 @@ class CommentResourceBuilder {
             .attributes {
                 body string.description('Comments contents').required
                 author {
-                    name string.required
-                    email string.required
-                    url string
+                    name string.required.pattern(/.+ .+/)
+                    email email.required
+                    url uri
                 }
                 tags arrayOf({
                     name string.required
-                    size integer
+                    size integer.readOnly
                 })
+                kind enumOf {
+                    classic
+                    picture
+                    howto
+                }
             }
             .relationships {
                 post posts

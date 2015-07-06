@@ -1,0 +1,19 @@
+{
+    "package": {
+        "name": "harvestergs-routing",
+        "repo": "harvester.gs",
+        "subject": "agco"
+    },
+    "version": {
+        "name": "0.6.0-beta",
+        "desc": "Upgrades to functionality -- now support for readOnly, bool, enum and format",
+        "released": "2015-07-03",
+        "vcs_tag": "0.6.0-beta",
+        "gpgSign": false
+    },
+    "files":
+        [
+        {"includePattern": "build/libs/(.*)", "uploadPattern": "com/agcocorp/harvestergs/harvestergs-routing/0.6.0-beta/$1"}
+        ],
+    "publish": true
+}

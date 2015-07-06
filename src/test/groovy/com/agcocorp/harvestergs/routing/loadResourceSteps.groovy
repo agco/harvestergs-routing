@@ -135,9 +135,9 @@ Then(~/^the response correctly describes the resource$/) { ->
                             properties: [
                                 author: [
                                     properties: [
-                                        email: [ type: 'string' ],
-                                        name:  [ type: 'string' ],
-                                        url:   [ type: 'string' ]
+                                        email: [ type: 'string', format: 'email' ],
+                                        name:  [ type: 'string', pattern: /.+ .+/ ],
+                                        url:   [ type: 'string', format: 'uri' ]
                                     ],
                                     required: [ 'name', 'email' ],
                                     type: 'object',
@@ -151,7 +151,7 @@ Then(~/^the response correctly describes the resource$/) { ->
                                     items: [
                                         properties: [
                                             name: [type: 'string' ],
-                                            size: [type: 'integer' ]
+                                            size: [type: 'integer', readOnly: true ]
                                         ],
                                         required: [ 'name' ],
                                         type: 'object',
@@ -159,6 +159,9 @@ Then(~/^the response correctly describes the resource$/) { ->
                                     ],
                                     type: 'array',
                                     additionalProperties: false
+                                ],
+                                kind: [
+                                    enum: [ 'classic', 'picture', 'howto' ]
                                 ]
                             ],
                             required: ['body'],
@@ -188,6 +191,20 @@ Then(~/^the response correctly describes the resource$/) { ->
 
         assert definitions.comment == expectedSchema :
             JsonOutput.prettyPrint(JsonOutput.toJson(deepCompare(definitions.comment, expectedSchema)))
+
+        assertWith definitions.post.properties.data.properties, {
+            assertWith attributes.properties, {
+                assert title == [ type: 'string' ]
+                assert body.type == 'string'
+                assert tags
+                assert createdOn == [ type: 'string', format: 'date-time' ]
+                assert published == [ type: 'boolean' ]
+                assertWith coordinates.properties, {
+                    assert latitude
+                    assert longitude
+                }
+            }
+        }
     }
 }
 
