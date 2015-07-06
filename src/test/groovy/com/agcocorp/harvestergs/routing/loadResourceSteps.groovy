@@ -1,6 +1,7 @@
 package com.agcocorp.harvestergs.routing
 
 import com.agcocorp.harvestergs.routing.loaders.SparkLoader
+import com.agcocorp.harvestergs.routing.loaders.SwaggerLoader
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.fge.jsonschema.main.JsonSchemaFactory
 import groovy.json.JsonOutput
