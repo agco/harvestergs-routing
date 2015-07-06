@@ -5,9 +5,8 @@ plugins {
 apply plugin: 'groovy'
 apply plugin: 'jacoco'
 apply plugin: 'codenarc'
-apply plugin: 'idea'
 
-version = '0.6.0-beta'
+version = '0.6.1-beta'
 
 repositories {
     jcenter()
