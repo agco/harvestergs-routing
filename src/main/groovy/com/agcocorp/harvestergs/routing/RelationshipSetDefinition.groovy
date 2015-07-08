@@ -22,11 +22,11 @@ class RelationshipSetDefinition {
 
     def toJsonSchema() {
         if (props) {
-            def schema = [relationships: [ properties: [:]], additionalProperties: false]
+            def schema = [relationships: [properties: [:], additionalProperties: false]]
             props.each {
                 //def data = [ properties: [ data: it.value ], additionalProperties: false ]
                 def data = it.value.toJsonSchema()
-                schema.relationships.properties[it.key] = [properties: data]
+                schema.relationships.properties[it.key] = [properties: data, additionalProperties: false]
             }
             return schema
         }

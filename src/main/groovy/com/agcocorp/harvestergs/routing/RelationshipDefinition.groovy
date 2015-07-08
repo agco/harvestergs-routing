@@ -6,7 +6,7 @@ class RelationshipDefinition extends ItemDefinition {
 
     def RelationshipDefinition(String schemaRef) {
         this.schemaRef = schemaRef
-        this.jsonSchema = [data: [properties: [ type: [enum: [schemaRef]], id: [type: 'string']]]]
+        this.jsonSchema = [data: [properties: [type: [enum: [schemaRef]], id: [type: 'string']]/*, additionalProperties: false*/]]
     }
 
     def RelationshipDefinition(RelationshipDefinition innerRelationship) {

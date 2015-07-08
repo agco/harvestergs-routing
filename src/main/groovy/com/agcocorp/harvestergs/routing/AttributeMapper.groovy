@@ -61,4 +61,16 @@ class AttributeMapper extends ItemDefinition {
         def prop = new AttributeDefinition('enum', cl)
         return prop
     }
+
+    def parseArgs(args) {
+        switch (args[0].class) {
+            case AttributeDefinition.class:
+                return args[0]
+            case Closure.class:
+                def prop = new AttributeDefinition('object', args[0])
+                return prop
+            default:
+                throw new RuntimeException("hey, I don't know what else to throw, I got a '${args[0].class}'!!")
+        }
+    }
 }
