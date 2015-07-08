@@ -5,10 +5,10 @@ class ItemDefinition {
 
     def parseArgs(args) {
         switch (args[0].class) {
-            case PropertyDefinition.class:
+            case AttributeDefinition.class:
                 return args[0]
             case Closure.class:
-                def prop = new PropertyDefinition('object', args[0])
+                def prop = new AttributeDefinition('object', args[0])
                 return prop
             default:
                 throw new RuntimeException("hey, I don't know what else to throw, I got a '${args[0].class}'!!")
@@ -35,5 +35,34 @@ class ItemDefinition {
             }
         }
         return schema;
+    }
+
+    def itemsSpec
+    Map propSpec = [:]
+    Map parentSpec = [:]
+
+    AttributeDefinition getRequired() {
+        parentSpec['required'] = true
+        return this
+    }
+
+    AttributeDefinition getReadOnly() {
+        propSpec['readOnly'] = true
+        return this
+    }
+
+    AttributeDefinition pattern(String pattern) {
+        propSpec['pattern'] = pattern
+        return this
+    }
+
+    AttributeDefinition format(String format) {
+        propSpec['format'] = format
+        return this
+    }
+
+    AttributeDefinition description(String description) {
+        propSpec['description'] = description
+        return this
     }
 }

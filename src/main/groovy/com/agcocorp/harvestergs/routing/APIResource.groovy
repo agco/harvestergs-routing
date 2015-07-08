@@ -41,7 +41,7 @@ class APIResource {
                         type: [enum: [resourceName]],
                         id: [
                             type: 'string',
-                            pattern: TypeMapper.UUID_PATTERN
+                            pattern: AttributeMapper.UUID_PATTERN
                         ]
                     ]
                 ]
