@@ -191,7 +191,7 @@ Then(~/^the response correctly describes the resource$/) { ->
         ]
 
         assert definitions.comment == expectedSchema :
-            JsonOutput.prettyPrint(JsonOutput.toJson(deepCompare(definitions.comment, expectedSchema)))
+            JsonOutput.prettyPrint(JsonOutput.toJson(deepCompare(expectedSchema, definitions.comment)))
 
         assertWith definitions.post.properties.data.properties, {
             assertWith attributes.properties, {
