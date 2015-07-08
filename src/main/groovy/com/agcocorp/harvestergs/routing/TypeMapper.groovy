@@ -1,100 +1,64 @@
 package com.agcocorp.harvestergs.routing
 
-class TypeMapper {
+class TypeMapper extends ItemDefinition {
     static final UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
 
-    def PropertyDefinition getString() {
-        return new PropertyDefinition('string')
+    def AttributeDefinition getString() {
+        return new AttributeDefinition('string')
     }
 
-    def PropertyDefinition getBool() {
-        return new PropertyDefinition('boolean')
+    def AttributeDefinition getBool() {
+        return new AttributeDefinition('boolean')
     }
 
-    def PropertyDefinition getNumber() {
-        return new PropertyDefinition('number')
+    def AttributeDefinition getNumber() {
+        return new AttributeDefinition('number')
     }
 
-    def PropertyDefinition getObject() {
-        return new PropertyDefinition('object')
+    def AttributeDefinition getObject() {
+        return new AttributeDefinition('object')
     }
 
-    def PropertyDefinition getInteger() {
-        return new PropertyDefinition('integer')
+    def AttributeDefinition getInteger() {
+        return new AttributeDefinition('integer')
     }
 
     // todo: support advanced cases such as arrayof(arrayof(...))
-    def PropertyDefinition arrayOf(PropertyDefinition itemType) {
-        return new PropertyDefinition('array', null, itemType.type)
+    def AttributeDefinition arrayOf(AttributeDefinition itemType) {
+        return new AttributeDefinition('array', null, itemType.type)
     }
 
-    def PropertyDefinition arrayOf(Closure itemDefinition) {
-        def innerProp = new PropertyDefinition('object', itemDefinition)
-        return new PropertyDefinition('array', null, innerProp)
+    def AttributeDefinition arrayOf(Closure itemDefinition) {
+        def innerProp = new AttributeDefinition('object', itemDefinition)
+        return new AttributeDefinition('array', null, innerProp)
     }
 
-    def PropertyDefinition getUuid() {
-        def prop = new PropertyDefinition('string')
+    def AttributeDefinition getUuid() {
+        def prop = new AttributeDefinition('string')
         prop.pattern(UUID_PATTERN)
         return prop
     }
 
-    def PropertyDefinition getEmail() {
-        def prop = new PropertyDefinition('string')
+    def AttributeDefinition getEmail() {
+        def prop = new AttributeDefinition('string')
         prop.format('email')
         return prop
     }
 
-    def PropertyDefinition getDatetime() {
-        def prop = new PropertyDefinition('string')
+    def AttributeDefinition getDatetime() {
+        def prop = new AttributeDefinition('string')
         prop.format('date-time')
         return prop
     }
 
-    def PropertyDefinition getUri() {
-        def prop = new PropertyDefinition('string')
+    def AttributeDefinition getUri() {
+        def prop = new AttributeDefinition('string')
         prop.format('uri')
         return prop
     }
 
-    def PropertyDefinition enumOf(Closure cl) {
-        def prop = new PropertyDefinition('enum', cl)
+    def AttributeDefinition enumOf(Closure cl) {
+        def prop = new AttributeDefinition('enum', cl)
         return prop
-    }
-
-    def props = [:]
-
-    def parseArgs(args) {
-        switch (args[0].class) {
-            case PropertyDefinition.class:
-                return args[0]
-            case Closure.class:
-                def prop = new PropertyDefinition('object', args[0])
-                return prop
-            default:
-                throw new RuntimeException("hey, I don't know what else to throw, I got a '${args[0].class}'!!")
-        }
-    }
-
-    Map getPropsJsonSchema()
-    {
-        def schema = [:]
-        def required = []
-        if (props) {
-            schema.properties = [:]
-            props.each {
-                schema.properties[it.key] = it.value.toJsonSchema()
-
-                if (it.value.parentSpec['required']) {
-                    required << it.key
-                }
-            }
-            schema.additionalProperties = false
-
-            if (required) {
-                schema.required = required
-            }
-        }
-        return schema;
     }
 }

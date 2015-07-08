@@ -1,9 +1,7 @@
 package com.agcocorp.harvestergs.routing
 
-class PropertyDefinition {
+class PropertyDefinition extends TypeMapper {
     final type
-    @Delegate
-    final TypeMapper mapper = new TypeMapper()
 
     private void runClosure(Closure cl, delegate = this) {
         if (cl) {

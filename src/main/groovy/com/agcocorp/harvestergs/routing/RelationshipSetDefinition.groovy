@@ -1,6 +1,6 @@
 package com.agcocorp.harvestergs.routing
 
-class RelationshipDefinition {
+class RelationshipSetDefinition {
     final props = [:]
 
     def propertyMissing(String relationship) {
