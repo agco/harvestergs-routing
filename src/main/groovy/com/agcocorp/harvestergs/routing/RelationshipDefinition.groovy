@@ -15,6 +15,10 @@ class RelationshipDefinition extends ItemDefinition {
         this.jsonSchema = [properties: [data: [ type: 'array', items: [properties: [type: [enum: [innerRelationship.schemaRef]], id: [type: 'string']]]]], additionalProperties: false]
     }
 
+    def getIsRequired() {
+        return parentSpec['required']
+    }
+
     Map toJsonSchema() {
         return jsonSchema << propSpec
         //schema << propSpec

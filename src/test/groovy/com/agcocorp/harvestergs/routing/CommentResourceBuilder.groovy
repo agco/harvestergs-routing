@@ -29,7 +29,7 @@ class CommentResourceBuilder {
                 }
             }
             .relationships {
-                post posts.description('Owning post')
+                post posts.description('Owning post').required
             }
             .paths {
                 "/comments" {

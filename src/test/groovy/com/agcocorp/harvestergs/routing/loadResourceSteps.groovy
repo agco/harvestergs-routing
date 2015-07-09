@@ -184,6 +184,7 @@ Then(~/^the response correctly describes the resource$/) { ->
                                     additionalProperties: false
                                 ]
                             ],
+                            required: ['post'],
                             additionalProperties: false
                         ]
                     ],

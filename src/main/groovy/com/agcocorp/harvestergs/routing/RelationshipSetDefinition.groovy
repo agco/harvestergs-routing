@@ -24,6 +24,13 @@ class RelationshipSetDefinition {
             props.each {
                 def data = it.value.toJsonSchema()
                 schema.relationships.properties[it.key] = data
+                if (it.value.isRequired) {
+                    if (! schema.relationships.required) {
+                        schema.relationships.required = []
+                    }
+
+                    schema.relationships.required << it.key
+                }
             }
             return schema
         }
