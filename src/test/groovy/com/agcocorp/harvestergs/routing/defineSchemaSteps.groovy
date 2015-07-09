@@ -42,9 +42,9 @@ When(~/^I get its corresponding JSON schema$/) { ->
 Then(~/^the schema correctly maps all definitions$/) { ->
     assert schema
     assertWith schema.person.properties.data.properties, {
+        assert id == [ type: 'string', pattern: AttributeMapper.UUID_PATTERN, description: 'User ID. Do not send it when posting or patching.' ]
         assertWith attributes.properties, {
             assert firstName == [type: 'string', description: "User's first name"]
-            assert id == [ type: 'string', pattern: AttributeMapper.UUID_PATTERN, description: 'User ID. Do not send it when posting or patching.' ]
             assert lastName == [type: 'string']
             assert email.type == 'string'
             assert email.format

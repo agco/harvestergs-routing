@@ -199,6 +199,7 @@ Then(~/^the response correctly describes the resource$/) { ->
             JsonOutput.prettyPrint(JsonOutput.toJson(deepCompare(expectedSchema, definitions.comment)))
 
         assertWith definitions.post.properties.data.properties, {
+            assert id == [type: 'string', description: 'url-encoded version of the tile, for easy permalinks']
             assertWith attributes.properties, {
                 assert title == [ type: 'string' ]
                 assert body.type == 'string'

@@ -32,6 +32,12 @@ class APIResource {
         this
     }
 
+    /*
+    def id(Closure cl) {
+
+    }
+    */
+
     def toJsonSchema() {
         def schema = [:]
         schema[resourceName] = [
@@ -48,6 +54,11 @@ class APIResource {
             ]
         ]
         schema[resourceName].properties.data.properties << attributes.toJsonSchema()
+        // todo: refactor this in favor of a more elegant approach. Challenge is to avoid side-effects
+        if (attributes && attributes.id) {
+            schema[resourceName].properties.data.properties.id = attributes.id.toJsonSchema()
+        }
+
         schema[resourceName].properties.data.properties << relationships.toJsonSchema()
         // todo: Provide ability to override strict schema definition.
         schema[resourceName].properties.data.additionalProperties = false

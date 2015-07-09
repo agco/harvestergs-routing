@@ -70,11 +70,6 @@ class AttributeMapper extends ItemDefinition {
             case Closure.class:
                 def prop = new AttributeDefinition('object', args[0])
                 return prop
-            /*
-            case ArrayList.class:
-                def prop = new AttributeDefinition('string', null, null)
-                return prop
-               */
             default:
                 throw new RuntimeException("hey, I don't know what else to throw, I got a '${args[0].class}'!!")
         }
@@ -82,17 +77,25 @@ class AttributeMapper extends ItemDefinition {
 
     def props = [:]
 
+    def getId() {
+        return props['id']
+    }
+
     Map getPropsJsonSchema()
     {
         def schema = [:]
         def required = []
+        //def idSchema = [  ]
         if (props) {
             schema.properties = [:]
             props.each {
-                schema.properties[it.key] = it.value.toJsonSchema()
+                if (it.key != 'id') {
+                    schema.properties[it.key] = it.value.toJsonSchema()
 
-                if (it.value.parentSpec['required']) {
-                    required << it.key
+                    if (it.value.parentSpec['required']) {
+                        required << it.key
+                    }
+
                 }
             }
             schema.additionalProperties = false
@@ -101,6 +104,6 @@ class AttributeMapper extends ItemDefinition {
                 schema.required = required
             }
         }
-        return schema;
+        return schema
     }
 }
