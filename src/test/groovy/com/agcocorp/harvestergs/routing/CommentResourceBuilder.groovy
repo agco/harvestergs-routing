@@ -22,20 +22,27 @@ class CommentResourceBuilder {
                     name string.required
                     size integer.readOnly
                 })
-                kind enumOf {
-                    classic
-                    picture
-                    howto
-                }
+                kind enumOf([ classic, picture, howto ])
             }
             .relationships {
-                post posts
+                post posts.description('Owning post').required
             }
             .paths {
+                authenticate { req, res ->
+                    switch(req.headers('my_fake_token'))
+                    {
+                        case null:
+                            error.unauthorized()
+                            break
+                        case 'invalid':
+                            error.forbidden()
+                            break
+                    }
+                    // this is a very bad idea to let all the other cases through, but this is dummy code anyway...
+                }
                 "/comments" {
                     get { req, res ->
                         return this.getAll()
-                        //return []
                     }
 
                     post { req, res ->

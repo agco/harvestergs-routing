@@ -63,7 +63,9 @@ class SwaggerLoader {
         spec.allPaths.each { path, pathSpec ->
             def currentPath = [:]
             pathSpec.each { verb, verbSpec ->
-                def verbTpl = loadSpecTemplate verb, [
+                def tplName = verb == 'get' && path.endsWith('/:id')?
+                    'getById' : verb
+                def verbTpl = loadSpecTemplate tplName, [
                     'plural'  : plural,
                     'resource': resource,
                     'singular': singular,

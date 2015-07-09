@@ -1,33 +1,27 @@
 package com.agcocorp.harvestergs.routing
 
-class RelationshipDefinition {
-    final props = [:]
+class RelationshipDefinition extends ItemDefinition {
+    private final schemaRef
+    private final jsonSchema
 
-    def propertyMissing(String relationship) {
-        // todo: support other kind of 'fk' types besides string
-        // todo: consider pattern for 'fk' uuids
-        return [ properties: [ type: [enum: [relationship]], id: [ type: 'string' ] ] ]
+    def RelationshipDefinition(String schemaRef) {
+        this.schemaRef = schemaRef
+        //todo: make schema strict within data element as well.
+        this.jsonSchema = [properties: [data: [properties: [type: [enum: [schemaRef]], id: [type: 'string']], additionalProperties: false]], additionalProperties: false]
     }
 
-    def arrayOf(relationship){
-        return [ type: 'array', items: relationship ]
+    def RelationshipDefinition(RelationshipDefinition innerRelationship) {
+        this.schemaRef = innerRelationship
+        this.jsonSchema = [properties: [data: [ type: 'array', items: [properties: [type: [enum: [innerRelationship.schemaRef]], id: [type: 'string']]]]], additionalProperties: false]
     }
 
-    def methodMissing(String name, args) {
-        props[name] = args[0]
-        this
+    def getIsRequired() {
+        return parentSpec['required']
     }
 
-    def toJsonSchema() {
-        if (props) {
-            def schema = [relationships: [ properties: [:]]]
-            props.each {
-                def data = [ properties: [ data: it.value ], additionalProperties: false ]
-                schema.relationships.properties[it.key] = data
-                schema.relationships.additionalProperties = false
-            }
-            return schema
-        }
-        return [:]
+    Map toJsonSchema() {
+        return jsonSchema << propSpec
+        //schema << propSpec
+        //schema << getPropsJsonSchema()
     }
 }

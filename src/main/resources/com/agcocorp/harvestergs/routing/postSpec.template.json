@@ -1,5 +1,5 @@
 {
-    "description": "Adds a $singular to the system.",
+    "description": "Adds a new $singular to the system.",
     "tags": ["$plural"],
     "parameters": [
         {
@@ -14,7 +14,7 @@
     ],
     "responses": {
         "200": {
-            "description": "Make a new $singular"
+            "description": "A new $singular has been created"
         }
     }
 }

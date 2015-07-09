@@ -2,12 +2,12 @@ package com.agcocorp.harvestergs.routing
 
 class APIResource {
     final resourceName
-    final private attributes = new AttributeDefinition()
-    final private relationships = new RelationshipDefinition()
+    final private attributes = new AttributeSetDefinition()
+    final private relationships = new RelationshipSetDefinition()
     final private paths = new PathDefinition()
 
     APIResource(String name) {
-        attributes = new AttributeDefinition();
+        attributes = new AttributeSetDefinition();
         this.resourceName = name
     }
 
@@ -32,6 +32,12 @@ class APIResource {
         this
     }
 
+    /*
+    def id(Closure cl) {
+
+    }
+    */
+
     def toJsonSchema() {
         def schema = [:]
         schema[resourceName] = [
@@ -41,13 +47,18 @@ class APIResource {
                         type: [enum: [resourceName]],
                         id: [
                             type: 'string',
-                            pattern: TypeMapper.UUID_PATTERN
+                            pattern: AttributeMapper.UUID_PATTERN
                         ]
                     ]
                 ]
             ]
         ]
         schema[resourceName].properties.data.properties << attributes.toJsonSchema()
+        // todo: refactor this in favor of a more elegant approach. Challenge is to avoid side-effects
+        if (attributes && attributes.id) {
+            schema[resourceName].properties.data.properties.id = attributes.id.toJsonSchema()
+        }
+
         schema[resourceName].properties.data.properties << relationships.toJsonSchema()
         // todo: Provide ability to override strict schema definition.
         schema[resourceName].properties.data.additionalProperties = false

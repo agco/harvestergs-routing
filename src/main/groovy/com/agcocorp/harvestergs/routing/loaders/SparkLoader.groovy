@@ -20,17 +20,6 @@ class SparkLoader {
         specs.each {
             loadPath it
         }
-
-        spark.Spark.exception(ValidationException.class, { e, request, response ->
-            response.status(400);
-            response.body(JsonOutput.toJson([
-                    id: UUID.randomUUID(),
-                    title: 'Invalid data',
-                    detail: e.validationResults
-            ]))
-
-            response.type "application/json"
-        });
     }
 
     private getPogo(req) {
@@ -68,12 +57,21 @@ class SparkLoader {
     ]
 
     private def loadPath(APIResource spec) {
+        def authHandler = spec.paths? spec.paths.authHandler : null
+        if (authHandler) {
+            authHandler.delegate = this
+        }
+
         spec.allPaths.each { path, pathSpec ->
             pathSpec.each { verb, verbSpec ->
                 def validate = validators[verb]
                 // todo: refactor for better composition (eg: use currying to pass the verb as first argument)
                 spark.Spark."$verb"(path) { req, res ->
                     res.type "application/json"
+                    if (authHandler) {
+                        authHandler(req, res)
+                    }
+
                     if (validate) {
                         validate(spec, req)
                     }
@@ -88,12 +86,21 @@ class SparkLoader {
     }
 
     private error = [
-        invalid: { results -> throw new ValidationException( validationResults: results ) }
+        //invalid: { results -> throw new ValidationException( validationResults: results ) },
+        invalid: { results ->
+            spark.Spark.halt(400, JsonOutput.toJson([
+                id: UUID.randomUUID(),
+                title: 'Invalid data',
+                detail: results.toString()
+            ]))
+        },
+        forbidden: {
+            spark.Spark.halt(403)
+        },
+        unauthorized: {
+            spark.Spark.halt(401)
+        }
     ]
-
-    private class ValidationException extends RuntimeException {
-        String validationResults
-    }
 
     private def getSchema(APIResource spec) {
         spec.toJsonSchema()[spec.resourceName]
