@@ -58,19 +58,27 @@ Given(~/^the aforementioned resource definition$/) { ->
 
 def error
 
-When(~/^I post a resource that is missing mandatory fields$/) { ->
-    def resource = [data: [type: 'comment', attributes: [author: [name: 'John Doe']]]]
+def executeOperation(Closure operation) {
+    response = error = null
     try {
-        response = client.post(path: '/comments', requestContentType: ContentType.JSON, body: resource)
-        fail("HTTP action should have returned an error")
+        response = operation()
     }
     catch(HttpResponseException e) {
         error = e
     }
 }
 
-Then(~/^I receive a (\d+) code$/) { code ->
-    assert error.statusCode.toString() == code
+When(~/^I post a resource that is missing mandatory fields$/) { ->
+    def resource = [data: [type: 'comment', attributes: [author: [name: 'John Doe']]]]
+
+    response = error = null
+    try {
+        response = client.post(path: '/comments', requestContentType: ContentType.JSON, body: resource, headers: [my_fake_token: 'valid'])
+        fail("HTTP action should have returned an error")
+    }
+    catch(HttpResponseException e) {
+        error = e
+    }
 }
 
 def msg
@@ -88,6 +96,7 @@ Then(~/^the details list all missing fields$/) { ->
 }
 
 When(~/^I get the documentation for it$/) { ->
+    response = error = null
     response = client.get(path: '/swagger', requestContentType: ContentType.JSON)
 }
 
@@ -217,8 +226,9 @@ Then(~/^the response correctly describes the resource$/) { ->
 
 When(~/^I run a (\w+) at path (.+)$/) { verb, path ->
     def body = targets[path][verb]
+    response = error = null
     try {
-        response = client."$verb"(path: path, requestContentType: ContentType.JSON, body: body)
+        response = client."$verb"(path: path, requestContentType: ContentType.JSON, body: body, headers:[my_fake_token: 'valid'])
     }
     catch (HttpResponseException e) {
         println "Error: ${ JsonOutput.toJson(e.response.responseData) }"
@@ -226,8 +236,13 @@ When(~/^I run a (\w+) at path (.+)$/) { verb, path ->
     }
 }
 
-Then(~/^I receive a (\d+) response code$/) { int code ->
-    assert response.status == code
+Then(~/^I receive a (\d+) response code$/) { String code ->
+    if (response) {
+        assert response.status.toString() == code
+    }
+    else {
+        assert error.statusCode.toString() == code
+    }
 }
 
 Then(~/^the response message is (.+)/) { messageContents ->
@@ -260,4 +275,20 @@ Then(~/^it is swagger-compliant response$/) { ->
     def data = objectMapper.valueToTree(response.responseData)
     def valResults = schema.validate(data)
     assert valResults.isSuccess()
+}
+
+When(~/^I try to acess the API with a (.*) auth token$/) { tokenScenario ->
+    def headers = [
+        'invalid': [my_fake_token: 'invalid'],
+        'valid': [my_fake_token: 'valid'],
+        'missing': [:]
+    ]
+
+    response = error = null
+    try {
+        response = client.get(path: '/comments', requestContentType: ContentType.JSON, headers: headers[tokenScenario])
+    }
+    catch (HttpResponseException e) {
+        error = e
+    }
 }

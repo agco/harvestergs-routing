@@ -6,6 +6,7 @@ class PathDefinition {
     final children = []
     private owner
     private thisObject
+    private Closure authHandler
 
     private run(Closure definition, delegate = this) {
         this.owner = definition.owner
@@ -25,7 +26,11 @@ class PathDefinition {
     }
 
     void authenticate(Closure cl) {
+        this.authHandler = cl
+    }
 
+    public Closure getAuthHandler() {
+        return this.authHandler
     }
 
     def get(Closure handler) {
