@@ -116,7 +116,9 @@ Then(~/^the response correctly describes the resource$/) { ->
             assert patch.parameters[0].description ==
                     "The comment JSON you want to update"
             assert patch
-            assert get
+            assertWith get, {
+                assert description == "Returns the comment with the provided id, if it exists."
+            }
             assert patch
             assert delete
         }
