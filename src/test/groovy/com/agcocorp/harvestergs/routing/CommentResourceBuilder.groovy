@@ -29,13 +29,12 @@ class CommentResourceBuilder {
                 }
             }
             .relationships {
-                post posts
+                post posts.description('Owning post').required
             }
             .paths {
                 "/comments" {
                     get { req, res ->
                         return this.getAll()
-                        //return []
                     }
 
                     post { req, res ->

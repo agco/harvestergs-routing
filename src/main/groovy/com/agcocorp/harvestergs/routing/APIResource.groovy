@@ -2,12 +2,12 @@ package com.agcocorp.harvestergs.routing
 
 class APIResource {
     final resourceName
-    final private attributes = new AttributeDefinition()
-    final private relationships = new RelationshipDefinition()
+    final private attributes = new AttributeSetDefinition()
+    final private relationships = new RelationshipSetDefinition()
     final private paths = new PathDefinition()
 
     APIResource(String name) {
-        attributes = new AttributeDefinition();
+        attributes = new AttributeSetDefinition();
         this.resourceName = name
     }
 
@@ -41,7 +41,7 @@ class APIResource {
                         type: [enum: [resourceName]],
                         id: [
                             type: 'string',
-                            pattern: TypeMapper.UUID_PATTERN
+                            pattern: AttributeMapper.UUID_PATTERN
                         ]
                     ]
                 ]

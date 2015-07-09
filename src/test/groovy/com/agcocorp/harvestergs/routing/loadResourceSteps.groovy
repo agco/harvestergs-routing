@@ -171,17 +171,20 @@ Then(~/^the response correctly describes the resource$/) { ->
                         relationships: [
                             properties: [
                                 post: [
+                                    description: "Owning post",
                                     properties: [
                                         data: [
                                             properties: [
                                                 type: [enum: ['posts']],
                                                 id: [type: 'string' ]
-                                            ]
+                                            ],
+                                            additionalProperties: false
                                         ]
                                     ],
                                     additionalProperties: false
                                 ]
                             ],
+                            required: ['post'],
                             additionalProperties: false
                         ]
                     ],
@@ -191,7 +194,7 @@ Then(~/^the response correctly describes the resource$/) { ->
         ]
 
         assert definitions.comment == expectedSchema :
-            JsonOutput.prettyPrint(JsonOutput.toJson(deepCompare(definitions.comment, expectedSchema)))
+            JsonOutput.prettyPrint(JsonOutput.toJson(deepCompare(expectedSchema, definitions.comment)))
 
         assertWith definitions.post.properties.data.properties, {
             assertWith attributes.properties, {
