@@ -177,7 +177,8 @@ Then(~/^the response correctly describes the resource$/) { ->
                                             properties: [
                                                 type: [enum: ['posts']],
                                                 id: [type: 'string' ]
-                                            ]
+                                            ],
+                                            additionalProperties: false
                                         ]
                                     ],
                                     additionalProperties: false
