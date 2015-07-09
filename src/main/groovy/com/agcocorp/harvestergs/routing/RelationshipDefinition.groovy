@@ -6,39 +6,18 @@ class RelationshipDefinition extends ItemDefinition {
 
     def RelationshipDefinition(String schemaRef) {
         this.schemaRef = schemaRef
-        this.jsonSchema = [data: [properties: [type: [enum: [schemaRef]], id: [type: 'string']]/*, additionalProperties: false*/]]
+        //todo: make schema strict within data element as well.
+        this.jsonSchema = [properties: [data: [properties: [type: [enum: [schemaRef]], id: [type: 'string']]/*, additionalProperties: false*/]], additionalProperties: false]
     }
 
     def RelationshipDefinition(RelationshipDefinition innerRelationship) {
         this.schemaRef = innerRelationship
-        this.jsonSchema = [data: [ type: 'array', items: [properties: [type: [enum: [innerRelationship.schemaRef]], id: [type: 'string']]]]]
-        //[innerRelationship.schemaRef]], id: [type: 'string']]]
+        this.jsonSchema = [properties: [data: [ type: 'array', items: [properties: [type: [enum: [innerRelationship.schemaRef]], id: [type: 'string']]]]], additionalProperties: false]
     }
 
     Map toJsonSchema() {
-        ////return [ properties: [ type: [enum: [relationship]], id: [ type: 'string' ] ] ]
-        def schema = jsonSchema
+        return jsonSchema << propSpec
         //schema << propSpec
         //schema << getPropsJsonSchema()
-    /*
-        switch (itemsSpec) {
-            case null:
-                break;
-            case ArrayList:
-                // todo: refactor for a more elegant solution -- perhaps some mapping?
-                schema.remove('type')
-                schema.enum = itemsSpec
-                break;
-            case AttributeDefinition:
-                schema.items = itemsSpec.toJsonSchema()
-                schema.additionalProperties = false
-                break;
-            default:
-                schema.items = [ type: itemsSpec ]
-                schema.additionalProperties = false
-                break;
-        }
-        */
-        return schema;
     }
 }

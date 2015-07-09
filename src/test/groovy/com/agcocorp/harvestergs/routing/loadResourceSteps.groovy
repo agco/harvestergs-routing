@@ -171,6 +171,7 @@ Then(~/^the response correctly describes the resource$/) { ->
                         relationships: [
                             properties: [
                                 post: [
+                                    description: "Owning post",
                                     properties: [
                                         data: [
                                             properties: [

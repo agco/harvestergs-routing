@@ -6,12 +6,10 @@ class RelationshipSetDefinition {
     def propertyMissing(String relationship) {
         // todo: support other kind of 'fk' types besides string
         // todo: consider pattern for 'fk' uuids
-        //return [ properties: [ type: [enum: [relationship]], id: [ type: 'string' ] ] ]
         return new RelationshipDefinition(relationship)
     }
 
     def arrayOf(RelationshipDefinition relationship){
-        //return [ type: 'array', items: relationship ]
         return new RelationshipDefinition(relationship)
     }
 
@@ -24,9 +22,8 @@ class RelationshipSetDefinition {
         if (props) {
             def schema = [relationships: [properties: [:], additionalProperties: false]]
             props.each {
-                //def data = [ properties: [ data: it.value ], additionalProperties: false ]
                 def data = it.value.toJsonSchema()
-                schema.relationships.properties[it.key] = [properties: data, additionalProperties: false]
+                schema.relationships.properties[it.key] = data
             }
             return schema
         }

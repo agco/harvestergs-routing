@@ -73,4 +73,28 @@ class AttributeMapper extends ItemDefinition {
                 throw new RuntimeException("hey, I don't know what else to throw, I got a '${args[0].class}'!!")
         }
     }
+
+    def props = [:]
+
+    Map getPropsJsonSchema()
+    {
+        def schema = [:]
+        def required = []
+        if (props) {
+            schema.properties = [:]
+            props.each {
+                schema.properties[it.key] = it.value.toJsonSchema()
+
+                if (it.value.parentSpec['required']) {
+                    required << it.key
+                }
+            }
+            schema.additionalProperties = false
+
+            if (required) {
+                schema.required = required
+            }
+        }
+        return schema;
+    }
 }
