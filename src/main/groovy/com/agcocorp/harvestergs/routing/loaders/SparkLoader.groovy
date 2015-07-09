@@ -88,7 +88,9 @@ class SparkLoader {
     }
 
     private error = [
-        invalid: { results -> throw new ValidationException( validationResults: results ) }
+        invalid: { results -> throw new ValidationException( validationResults: results ) },
+        forbidden: { halt(403) },
+        unauthorized: { halt(401) }
     ]
 
     private class ValidationException extends RuntimeException {

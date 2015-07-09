@@ -21,9 +21,11 @@ class PathDefinition {
     }
 
     private registerHandler(String verb, Closure handler) {
-        //def cl = handler.rehydrate(this.owner, this.owner, this.thisObject)
-        //handlers[verb] = new VerbDefinition(cl)
         handlers[verb] = new VerbDefinition(handler)
+    }
+
+    void authenticate(Closure cl) {
+
     }
 
     def get(Closure handler) {
@@ -42,7 +44,7 @@ class PathDefinition {
         registerHandler 'delete', handler
     }
 
-    def methodMissing(String name, args) {
+    void methodMissing(String name, args) {
         if (name.startsWith('/')) {
             if (! root) {
                 root = name
