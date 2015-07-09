@@ -6,6 +6,10 @@ class AttributeSetDefinition extends AttributeMapper {
         this
     }
 
+    def propertyMissing(String name) {
+        return name
+    }
+
     def toJsonSchema() {
         if (props) {
             return [attributes: getPropsJsonSchema()]

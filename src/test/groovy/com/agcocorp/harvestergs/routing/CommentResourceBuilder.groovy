@@ -22,11 +22,7 @@ class CommentResourceBuilder {
                     name string.required
                     size integer.readOnly
                 })
-                kind enumOf {
-                    classic
-                    picture
-                    howto
-                }
+                kind enumOf([ classic, picture, howto ])
             }
             .relationships {
                 post posts.description('Owning post').required

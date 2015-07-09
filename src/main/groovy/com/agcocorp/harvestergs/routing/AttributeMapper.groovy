@@ -25,12 +25,12 @@ class AttributeMapper extends ItemDefinition {
 
     // todo: support advanced cases such as arrayof(arrayof(...))
     def AttributeDefinition arrayOf(AttributeDefinition itemType) {
-        return new AttributeDefinition('array', null, itemType.type)
+        return new AttributeDefinition('array', itemType.type)
     }
 
     def AttributeDefinition arrayOf(Closure itemDefinition) {
         def innerProp = new AttributeDefinition('object', itemDefinition)
-        return new AttributeDefinition('array', null, innerProp)
+        return new AttributeDefinition('array', innerProp)
     }
 
     def AttributeDefinition getUuid() {
@@ -57,9 +57,10 @@ class AttributeMapper extends ItemDefinition {
         return prop
     }
 
-    def AttributeDefinition enumOf(Closure cl) {
-        def prop = new AttributeDefinition('enum', cl)
+    def AttributeDefinition enumOf(ArrayList enumValues) {
+        def prop = new AttributeDefinition(enumValues)
         return prop
+        //return arg
     }
 
     def parseArgs(args) {
@@ -69,6 +70,11 @@ class AttributeMapper extends ItemDefinition {
             case Closure.class:
                 def prop = new AttributeDefinition('object', args[0])
                 return prop
+            /*
+            case ArrayList.class:
+                def prop = new AttributeDefinition('string', null, null)
+                return prop
+               */
             default:
                 throw new RuntimeException("hey, I don't know what else to throw, I got a '${args[0].class}'!!")
         }

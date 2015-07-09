@@ -11,11 +11,28 @@ class AttributeDefinition extends AttributeMapper {
         }
     }
 
-    AttributeDefinition(String type, Closure cl = null, itemType = null) {
+    AttributeDefinition(String type) {
         this.type = type
-        this.itemsSpec = itemType
+    }
+
+    AttributeDefinition(String type, Closure cl) {
+        this.type = type
 
         runClosure(cl)
+    }
+
+    AttributeDefinition(String type, String itemType) {
+        this.type = type
+        this.itemsSpec = itemType
+    }
+
+    AttributeDefinition(String type, AttributeDefinition itemType) {
+        this.type = type
+        this.itemsSpec = itemType
+    }
+
+    AttributeDefinition(ArrayList enumValues) {
+        this.itemsSpec = enumValues
     }
 
     private def methodMissing(String name, args) {
@@ -35,16 +52,15 @@ class AttributeDefinition extends AttributeMapper {
     }
 
     Map toJsonSchema() {
-        def schema = [type: type]
+        def schema = type? [type: type] : [:]
         schema << propSpec
         schema << getPropsJsonSchema()
 
+        // todo: generate the schema upon construction -- avoids this horrid switch/case
         switch (itemsSpec) {
             case null:
                 break;
             case ArrayList:
-                // todo: refactor for a more elegant solution -- perhaps some mapping?
-                schema.remove('type')
                 schema.enum = itemsSpec
                 break;
             case AttributeDefinition:
