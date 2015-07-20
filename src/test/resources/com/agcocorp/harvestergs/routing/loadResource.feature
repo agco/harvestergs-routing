@@ -34,9 +34,14 @@ Feature: Load a resource
        Then it is swagger-compliant response
         And the response correctly describes the resource
 
-  Scenario: Mandatory fields missing
+  Scenario Outline: Mandatory fields missing
       Given the aforementioned resource definition
-       When I post a resource that is missing mandatory fields
+        And a resource that violates the <rule> rule
+        And containing these attributes <attributes>
+       When I post it at the /comments endpoint
        Then I receive a 400 response code
         And the response is a valid jsonapi error
         And the details list all missing fields
+  Examples:
+    | rule      | attributes                     |
+    | required  | {"author":{"name":"John Doe"}} |

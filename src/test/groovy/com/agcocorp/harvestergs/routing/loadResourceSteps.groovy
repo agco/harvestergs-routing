@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.fge.jsonschema.main.JsonSchemaFactory
 import groovy.json.JsonOutput
 import cucumber.api.PendingException
+import groovy.json.JsonSlurper
 
 import static cucumber.api.groovy.EN.*
 import groovyx.net.http.RESTClient
@@ -23,6 +24,8 @@ def comments = [
 def postComment = comments[2]
 def patchComment = comments[1]
 def getComment = comments[0]
+def _requestData
+
 
 Given(~/^a set of related resources$/) { ->
     def commentBuilder = new CommentResourceBuilder( { comments }, { getComment })
@@ -289,6 +292,32 @@ When(~/^I try to acess the API with a (.*) auth token$/) { tokenScenario ->
         response = client.get(path: '/comments', requestContentType: ContentType.JSON, headers: headers[tokenScenario])
     }
     catch (HttpResponseException e) {
+        error = e
+    }
+}
+
+
+Given(~/^a resource that violates the (.+) rule$/) { violationCase ->
+    // step left blank -- no setup needed here
+}
+
+Given(~/^containing these attributes (.+)$/) { String attrJson ->
+    slurper = JsonSlurper.newInstance()
+    def attrData = slurper.parseText(attrJson)
+    _requestData = [
+        data: [
+            attributes: attrData
+        ]
+    ]
+}
+
+When(~/^I post it at the (.+) endpoint$/) { path ->
+    response = error = null
+    try {
+        response = client.post(path: path, requestContentType: ContentType.JSON, body: _requestData, headers:[my_fake_token: 'valid'])
+        fail("HTTP action should have returned an error")
+    }
+    catch(HttpResponseException e) {
         error = e
     }
 }
