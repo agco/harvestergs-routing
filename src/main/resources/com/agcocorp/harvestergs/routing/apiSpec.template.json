@@ -10,7 +10,7 @@
         "https"
     ],
     "produces": [
-        "application/json"
+        "application/vnd.api+json"
     ],
     "paths": {
     },

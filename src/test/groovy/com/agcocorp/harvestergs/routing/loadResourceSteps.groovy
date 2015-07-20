@@ -25,7 +25,8 @@ def postComment = comments[2]
 def patchComment = comments[1]
 def getComment = comments[0]
 def _requestData
-
+def slurper = JsonSlurper.newInstance()
+def responseData
 
 Given(~/^a set of related resources$/) { ->
     def commentBuilder = new CommentResourceBuilder( { comments }, { getComment })
@@ -88,14 +89,16 @@ def msg
 
 Then(~/^the response is a valid jsonapi error$/) { ->
     assert error.response.responseData
-    msg = error.response.responseData
+    msg = slurper.parse(error.response.responseData)
     assert msg.id
     assert msg.title
     assert msg.detail
 }
-
-Then(~/^the details list all missing fields$/) { ->
-    assert msg.detail.contains('body')
+//And the conforms the following regex <regex>
+//Then(~/^the details list all missing fields$/) { ->
+Then(~/^the conforms the following regex (.*)$/) { pattern ->
+    //assert msg.detail.contains('body')
+    assert msg.detail ==~ pattern
 }
 
 When(~/^I get the documentation for it$/) { ->
@@ -105,8 +108,7 @@ When(~/^I get the documentation for it$/) { ->
 
 Then(~/^the response correctly describes the resource$/) { ->
     assert response
-    assert response.responseData
-    response.responseData.with {
+    assertWith msg,  {
         assert swagger == "2.0"
         assert info.version == "0.1.0"
         assert info.title == "testApp"
@@ -249,21 +251,23 @@ Then(~/^I receive a (\d+) response code$/) { String code ->
 }
 
 Then(~/^the response message is (.+)/) { messageContents ->
+    def data = response.responseData?
+        slurper.parse(response.responseData) : null
     switch (messageContents) {
         case "a list":
-            assert response.responseData == comments
+            assert data == comments
             break
         case "a single resource":
-            assert response.responseData == getComment
+            assert data == getComment
             break
         case "the new resource":
-            assert response.responseData == postComment
+            assert data == postComment
             break
         case "the updated resource":
-            assert response.responseData == patchComment
+            assert data == patchComment
             break
         case "empty":
-            assert ! response.responseData
+            assert ! data
             break
         default:
             throw new PendingException()
@@ -275,7 +279,8 @@ def objectMapper = new ObjectMapper()
 
 Then(~/^it is swagger-compliant response$/) { ->
     def schema = jsonSchemaFactory.getJsonSchema("resource:/com/agcocorp/harvestergs/routing/swagger-schema.json")
-    def data = objectMapper.valueToTree(response.responseData)
+    msg = slurper.parse(response.responseData)
+    def data = objectMapper.valueToTree(msg)
     def valResults = schema.validate(data)
     assert valResults.isSuccess()
 }
@@ -302,7 +307,6 @@ Given(~/^a resource that violates the (.+) rule$/) { violationCase ->
 }
 
 Given(~/^containing these attributes (.+)$/) { String attrJson ->
-    slurper = JsonSlurper.newInstance()
     def attrData = slurper.parseText(attrJson)
     _requestData = [
         data: [

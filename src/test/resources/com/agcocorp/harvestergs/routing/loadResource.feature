@@ -41,7 +41,9 @@ Feature: Load a resource
        When I post it at the /comments endpoint
        Then I receive a 400 response code
         And the response is a valid jsonapi error
-        And the details list all missing fields
+        And the conforms the following regex <regex>
   Examples:
-    | rule      | attributes                     |
-    | required  | {"author":{"name":"John Doe"}} |
+    | rule      | attributes                     | regex |
+    | required  | {"author":{"name":"John Doe"}} | (?s).*body.*      |
+    | readOnly  | {"body":"body","author":{"name":"author","email":"a@e.com"},"tags":[{"name":"TAG","size":15}]} | (?s).*size.*|
+
