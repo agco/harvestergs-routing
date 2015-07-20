@@ -27,6 +27,7 @@ def getComment = comments[0]
 def _requestData
 def slurper = JsonSlurper.newInstance()
 def responseData
+def msg
 
 Given(~/^a set of related resources$/) { ->
     def commentBuilder = new CommentResourceBuilder( { comments }, { getComment })
@@ -84,8 +85,6 @@ When(~/^I post a resource that is missing mandatory fields$/) { ->
         error = e
     }
 }
-
-def msg
 
 Then(~/^the response is a valid jsonapi error$/) { ->
     assert error.response.responseData
