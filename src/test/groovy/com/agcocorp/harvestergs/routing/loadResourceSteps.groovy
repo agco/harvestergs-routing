@@ -325,3 +325,10 @@ When(~/^I post it at the (.+) endpoint$/) { path ->
         error = e
     }
 }
+
+Then(~/^the response content-type is "(.*?)"$/) { String contentType ->
+    // Write code here that turns the phrase above into concrete actions
+    assert response
+    def expectedContentType = "Content-Type: $contentType".toString()
+    assert expectedContentType == response.headers['Content-Type'].toString()
+}

@@ -19,6 +19,7 @@ Feature: Load a resource
       When I run a <action> at path <path>
       Then I receive a <code> response code
        And the response message is <response>
+       And the response content-type is "application/vnd.api+json"
 
   Examples:
     | path       | action | code | response             |
