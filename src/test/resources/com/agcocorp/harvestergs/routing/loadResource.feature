@@ -44,7 +44,7 @@ Feature: Load a resource
         And the response is a valid jsonapi error
         And the conforms the following regex <regex>
   Examples:
-    | rule      | attributes                     | regex |
-    | required  | {"author":{"name":"John Doe"}} | (?s).*body.*      |
-    | readOnly  | {"body":"body","author":{"name":"author","email":"a@e.com"},"tags":[{"name":"TAG","size":15}]} | (?s).*size.*|
+    | rule      | attributes                                                                                     | regex        |
+    | required  | {"author":{"name":"John Doe"}}                                                                 | (?s).*body.* |
+    | readOnly  | {"body":"body","author":{"name":"author","email":"a@e.com"},"tags":[{"name":"TAG","size":15}]} | (?s).*size.* |
 

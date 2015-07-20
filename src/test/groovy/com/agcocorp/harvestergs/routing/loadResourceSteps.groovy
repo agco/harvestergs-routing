@@ -32,7 +32,8 @@ def msg
 Given(~/^a set of related resources$/) { ->
     def commentBuilder = new CommentResourceBuilder( { comments }, { getComment })
     def postBuilder = new PostResourceBuilder( { null }, { null })
-    resources = [ commentBuilder.build(), postBuilder.build() ]
+    def dummyBuilder = new DummyResourceBuilder()
+    resources = [ commentBuilder.build(), postBuilder.build(), dummyBuilder.build() ]
 }
 
 Given(~/^these resources are loaded into an API$/) { ->

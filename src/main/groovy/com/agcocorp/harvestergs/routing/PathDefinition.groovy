@@ -78,6 +78,7 @@ class PathDefinition {
     }
 
     def getAllPaths() {
-        recursePaths ''
+        if (root) return recursePaths('')
+        return null
     }
 }
