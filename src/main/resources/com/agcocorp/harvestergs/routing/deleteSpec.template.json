@@ -5,7 +5,7 @@
     "summary": "Deletes a $singular",
     "description": "Deletes a $singular",
     "produces": [
-        "application/json"
+        "application/vnd.api+json"
     ],
     "parameters": [
         {

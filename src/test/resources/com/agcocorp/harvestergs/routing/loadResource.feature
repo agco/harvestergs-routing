@@ -19,6 +19,7 @@ Feature: Load a resource
       When I run a <action> at path <path>
       Then I receive a <code> response code
        And the response message is <response>
+       And the response content-type is "application/vnd.api+json"
 
   Examples:
     | path       | action | code | response             |
@@ -41,7 +42,9 @@ Feature: Load a resource
        When I post it at the /comments endpoint
        Then I receive a 400 response code
         And the response is a valid jsonapi error
-        And the details list all missing fields
+        And the conforms the following regex <regex>
   Examples:
-    | rule      | attributes                     |
-    | required  | {"author":{"name":"John Doe"}} |
+    | rule      | attributes                     | regex |
+    | required  | {"author":{"name":"John Doe"}} | (?s).*body.*      |
+    | readOnly  | {"body":"body","author":{"name":"author","email":"a@e.com"},"tags":[{"name":"TAG","size":15}]} | (?s).*size.*|
+

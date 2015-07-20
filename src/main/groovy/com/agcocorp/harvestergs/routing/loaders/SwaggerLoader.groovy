@@ -90,7 +90,7 @@ class SwaggerLoader {
         def json = mapper.writeValueAsString(docs)
 
         spark.Spark.get("/swagger"){ req, res ->
-            res.type "application/json"
+            res.type "application/vnd.api+json"
             json
         }
     }
