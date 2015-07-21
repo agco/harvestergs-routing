@@ -28,6 +28,8 @@ def _requestData
 def slurper = JsonSlurper.newInstance()
 def responseData
 def msg
+def error
+def response
 
 Given(~/^a set of related resources$/) { ->
     def commentBuilder = new CommentResourceBuilder( { comments }, { getComment })
@@ -56,31 +58,15 @@ def targets = [
         ]
 ]
 
-def response
-
 Given(~/^the aforementioned resource definition$/) { ->
     // no action needed here -- all the setup occurred in the background steps
 }
 
-def error
 
 def executeOperation(Closure operation) {
     response = error = null
     try {
         response = operation()
-    }
-    catch(HttpResponseException e) {
-        error = e
-    }
-}
-
-When(~/^I post a resource that is missing mandatory fields$/) { ->
-    def resource = [data: [type: 'comment', attributes: [author: [name: 'John Doe']]]]
-
-    response = error = null
-    try {
-        response = client.post(path: '/comments', requestContentType: ContentType.JSON, body: resource, headers: [my_fake_token: 'valid'])
-        fail("HTTP action should have returned an error")
     }
     catch(HttpResponseException e) {
         error = e
@@ -339,5 +325,6 @@ Then(~/^the response content-type is "(.*?)"$/) { String contentType ->
 }
 
 When(~/^I try to access an endpoint configured with no auth$/) { ->
-    throw new PendingException()
+    response = error = null
+    response = client.get(path: '/comments', requestContentType: ContentType.JSON)
 }
