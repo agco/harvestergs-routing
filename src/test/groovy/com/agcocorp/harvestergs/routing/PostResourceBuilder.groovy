@@ -24,9 +24,21 @@ class PostResourceBuilder {
                 }
             }
             .paths {
+                authenticate { req, res ->
+                    switch(req.headers('my_fake_token'))
+                    {
+                        case null:
+                            error.unauthorized()
+                            break
+                        case 'invalid':
+                            error.forbidden()
+                            break
+                    }
+                    // this is a very bad idea to let all the other cases through, but this is dummy code anyway...
+                }
                 "/posts" {
                     get { req, res ->
-                        return getAll()
+                        return "Hello World!"
                     }
 
                     post { req, res ->

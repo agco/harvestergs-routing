@@ -292,7 +292,7 @@ Then(~/^it is swagger-compliant response$/) { ->
     assert valResults.isSuccess()
 }
 
-When(~/^I try to acess the API with a (.*) auth token$/) { tokenScenario ->
+When(~/^I try to access the API with a (.*) auth token$/) { tokenScenario ->
     def headers = [
         'invalid': [my_fake_token: 'invalid'],
         'valid': [my_fake_token: 'valid'],
@@ -301,7 +301,7 @@ When(~/^I try to acess the API with a (.*) auth token$/) { tokenScenario ->
 
     response = error = null
     try {
-        response = client.get(path: '/comments', requestContentType: ContentType.JSON, headers: headers[tokenScenario])
+        response = client.get(path: '/posts', requestContentType: ContentType.JSON, headers: headers[tokenScenario])
     }
     catch (HttpResponseException e) {
         error = e
@@ -336,4 +336,8 @@ When(~/^I post it at the (.+) endpoint$/) { path ->
 Then(~/^the response content-type is "(.*?)"$/) { String contentType ->
     def expectedContentType = "Content-Type: $contentType".toString()
     assert expectedContentType == response.headers['Content-Type'].toString()
+}
+
+When(~/^I try to access an endpoint configured with no auth$/) { ->
+    throw new PendingException()
 }

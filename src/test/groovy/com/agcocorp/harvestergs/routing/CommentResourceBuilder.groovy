@@ -47,16 +47,14 @@ class CommentResourceBuilder {
                 "/comments" {
                     get { req, res ->
                         return this.getAll()
-                    }
+                    }.skipAuth
 
                     post { req, res ->
                         return req.data
                     }.document { docs ->
                         docs.description = "Custom description for comments.post"
                         docs
-                    }
-                    .skipAuth
-                    .skipValidation
+                    }.skipValidation
 
                     "/:id" {
                         // todo: remove the need for the 'this' prefix when using closures.
