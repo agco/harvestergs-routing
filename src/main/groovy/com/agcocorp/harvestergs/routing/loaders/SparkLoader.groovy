@@ -65,10 +65,9 @@ class SparkLoader {
         spec.allPaths.each { path, pathSpec ->
             pathSpec.each { verb, verbSpec ->
                 def validate = validators[verb]
-                // todo: refactor for better composition (eg: use currying to pass the verb as first argument)
                 spark.Spark."$verb"(path) { req, res ->
                     res.type "application/vnd.api+json"
-                    if (authHandler) {
+                    if ((authHandler) && !(verbSpec.additionalFlags.skipAuth)) {
                         authHandler(req, res)
                     }
 
