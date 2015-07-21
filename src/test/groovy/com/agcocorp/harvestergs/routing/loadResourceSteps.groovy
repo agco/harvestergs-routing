@@ -176,6 +176,14 @@ Then(~/^the response correctly describes the resource$/) { ->
                                     type: 'array',
                                     additionalProperties: false
                                 ],
+                                coordinates: [
+                                    type: 'object',
+                                    properties: [
+                                        latitude: [ type: 'number' ],
+                                        longitude: [ type: 'number' ]
+                                    ],
+                                    additionalProperties: false
+                                ],
                                 kind: [
                                     enum: [ 'classic', 'picture', 'howto' ]
                                 ]

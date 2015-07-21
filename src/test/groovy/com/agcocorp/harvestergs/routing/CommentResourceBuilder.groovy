@@ -22,6 +22,10 @@ class CommentResourceBuilder {
                     name string.required.maxLength(10)
                     size integer.readOnly
                 })
+                coordinates {
+                    latitude number
+                    longitude number
+                }
                 kind enumOf([ classic, picture, howto ])
             }
             .relationships {
