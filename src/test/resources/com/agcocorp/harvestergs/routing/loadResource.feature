@@ -44,9 +44,11 @@ Feature: Load a resource
         And the response is a valid jsonapi error
         And the conforms the following regex <regex>
   Examples:
-    | rule      | regex        | attributes                                            |
-    | required  | (?s).*body.* | {"author":{"name":"John Doe"}}                        |
-    | minLength | (?s).*body.* | {"body":""} |
-    | pattern   | (?s).*name.* | {"body":"b","author":{"name":"a","email":"a@e.com"}}  |
-    | maxLength | (?s).*tags.* | {"body":"b","tags":[{"name":"LOOOOOOOONG"}]}  |
+    | rule      | regex         | attributes                                            |
+    | required  | (?s).*body.*  | {"author":{"name":"John Doe"}}                        |
+    | minLength | (?s).*body.*  | {"body":""}                                           |
+    | pattern   | (?s).*name.*  | {"body":"b","author":{"name":"a","email":"a@e.com"}}  |
+    | maxLength | (?s).*tags.*  | {"body":"b","tags":[{"name":"LOOOOOOOONG"}]}          |
+    | maximum   | (?s).*coord.* | {"body":"b","coordinates":{"latitude":200}}             |
+    | minimum   | (?s).*coord.* | {"body":"b","coordinates":{"latitude":-200}}            |
 
