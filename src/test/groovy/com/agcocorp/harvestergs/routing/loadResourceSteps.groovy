@@ -26,16 +26,15 @@ def patchComment = comments[1]
 def getComment = comments[0]
 def _requestData
 def slurper = JsonSlurper.newInstance()
-def responseData
 def msg
 def error
 def response
 
 Given(~/^a set of related resources$/) { ->
-    def commentBuilder = new CommentResourceBuilder( { comments }, { getComment })
-    def postBuilder = new PostResourceBuilder( { null }, { null })
+    def commentBuilder = new CommentResourceBuilder({ comments }, { getComment })
+    def postBuilder = new PostResourceBuilder({ null }, { null })
     def dummyBuilder = new DummyResourceBuilder()
-    resources = [ commentBuilder.build(), postBuilder.build(), dummyBuilder.build() ]
+    resources = [commentBuilder.build(), postBuilder.build(), dummyBuilder.build()]
 }
 
 Given(~/^these resources are loaded into an API$/) { ->
