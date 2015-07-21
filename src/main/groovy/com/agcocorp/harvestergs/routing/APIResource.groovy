@@ -32,12 +32,6 @@ class APIResource {
         this
     }
 
-    /*
-    def id(Closure cl) {
-
-    }
-    */
-
     def toJsonSchema() {
         def schema = [:]
         schema[resourceName] = [

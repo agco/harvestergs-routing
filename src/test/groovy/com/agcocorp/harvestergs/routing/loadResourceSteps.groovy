@@ -8,6 +8,9 @@ import groovy.json.JsonOutput
 import cucumber.api.PendingException
 import groovy.json.JsonSlurper
 
+this.metaClass.mixin(cucumber.api.groovy.Hooks)
+this.metaClass.mixin(cucumber.api.groovy.EN)
+
 import static cucumber.api.groovy.EN.*
 import groovyx.net.http.RESTClient
 import groovyx.net.http.*
@@ -24,11 +27,40 @@ def comments = [
 def postComment = comments[2]
 def patchComment = comments[1]
 def getComment = comments[0]
-def _requestData
-def slurper = JsonSlurper.newInstance()
-def msg
-def error
-def response
+
+class LoadWorld {
+    def _requestData
+    def slurper = JsonSlurper.newInstance()
+    def msg
+    def error
+    def response
+    def client = new RESTClient('http://localhost:4567')
+    def responseData
+    def returnCode
+
+    def parseData(response) {
+        responseData = response.responseData? slurper.parse(response.responseData) : null
+        returnCode = response.status?: response.statusCode
+    }
+
+    def doOp(String verb, String path, Map body = null, boolean shouldFail = false) {
+        response = error = null
+        try {
+            response = client."$verb"(path: path, body: body, requestContentType: ContentType.JSON)
+            if (shouldFail) throw new IllegalStateException("HTTP action should have returned an _error")
+            parseData(response)
+        }
+        catch (Exception exc) {
+            if (!shouldFail) throw exc
+            error = exc
+            parseData(error)
+        }
+    }
+}
+
+World() {
+    return new LoadWorld()
+}
 
 Given(~/^a set of related resources$/) { ->
     def commentBuilder = new CommentResourceBuilder({ comments }, { getComment })
@@ -39,12 +71,11 @@ Given(~/^a set of related resources$/) { ->
 
 Given(~/^these resources are loaded into an API$/) { ->
     def loader = new SparkLoader()
-    loader.loadResources resources
+    loader.loadResources(resources)
     def documenter = new SwaggerLoader([ "title": "testApp" ])
-    documenter.loadDocs resources
+    documenter.loadDocs(resources)
 }
 
-def client = new RESTClient('http://localhost:4567')
 def targets = [
         "comments" : [
                 "get" : null,
@@ -61,17 +92,6 @@ Given(~/^the aforementioned resource definition$/) { ->
     // no action needed here -- all the setup occurred in the background steps
 }
 
-
-def executeOperation(Closure operation) {
-    response = error = null
-    try {
-        response = operation()
-    }
-    catch(HttpResponseException e) {
-        error = e
-    }
-}
-
 Then(~/^the response is a valid jsonapi error$/) { ->
     assert error.response.responseData
     msg = slurper.parse(error.response.responseData)
@@ -84,13 +104,13 @@ Then(~/^the conforms the following regex (.*)$/) { pattern ->
 }
 
 When(~/^I get the documentation for it$/) { ->
-    response = error = null
-    response = client.get(path: '/swagger', requestContentType: ContentType.JSON)
+    //response = client.get(path: '/swagger', requestContentType: ContentType.JSON)
+    doOp("get", "/swagger")
 }
 
 Then(~/^the response correctly describes the resource$/) { ->
     assert response
-    assertWith msg,  {
+    assertWith responseData,  {
         assert swagger == "2.0"
         assert info.version == "0.1.0"
         assert info.title == "testApp"
@@ -271,8 +291,7 @@ def objectMapper = new ObjectMapper()
 
 Then(~/^it is swagger-compliant response$/) { ->
     def schema = jsonSchemaFactory.getJsonSchema("resource:/com/agcocorp/harvestergs/routing/swagger-schema.json")
-    msg = slurper.parse(response.responseData)
-    def data = objectMapper.valueToTree(msg)
+    def data = objectMapper.valueToTree(responseData)
     def valResults = schema.validate(data)
     assert valResults.isSuccess()
 }
