@@ -6,7 +6,7 @@ apply plugin: 'groovy'
 apply plugin: 'jacoco'
 apply plugin: 'codenarc'
 
-version = '0.7.1-beta'
+version = '0.8.0-beta'
 
 repositories {
     jcenter()

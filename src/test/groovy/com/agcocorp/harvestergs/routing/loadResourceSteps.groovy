@@ -26,14 +26,15 @@ def patchComment = comments[1]
 def getComment = comments[0]
 def _requestData
 def slurper = JsonSlurper.newInstance()
-def responseData
 def msg
+def error
+def response
 
 Given(~/^a set of related resources$/) { ->
-    def commentBuilder = new CommentResourceBuilder( { comments }, { getComment })
-    def postBuilder = new PostResourceBuilder( { null }, { null })
+    def commentBuilder = new CommentResourceBuilder({ comments }, { getComment })
+    def postBuilder = new PostResourceBuilder({ null }, { null })
     def dummyBuilder = new DummyResourceBuilder()
-    resources = [ commentBuilder.build(), postBuilder.build(), dummyBuilder.build() ]
+    resources = [commentBuilder.build(), postBuilder.build(), dummyBuilder.build()]
 }
 
 Given(~/^these resources are loaded into an API$/) { ->
@@ -56,31 +57,15 @@ def targets = [
         ]
 ]
 
-def response
-
 Given(~/^the aforementioned resource definition$/) { ->
     // no action needed here -- all the setup occurred in the background steps
 }
 
-def error
 
 def executeOperation(Closure operation) {
     response = error = null
     try {
         response = operation()
-    }
-    catch(HttpResponseException e) {
-        error = e
-    }
-}
-
-When(~/^I post a resource that is missing mandatory fields$/) { ->
-    def resource = [data: [type: 'comment', attributes: [author: [name: 'John Doe']]]]
-
-    response = error = null
-    try {
-        response = client.post(path: '/comments', requestContentType: ContentType.JSON, body: resource, headers: [my_fake_token: 'valid'])
-        fail("HTTP action should have returned an error")
     }
     catch(HttpResponseException e) {
         error = e
@@ -94,10 +79,7 @@ Then(~/^the response is a valid jsonapi error$/) { ->
     assert msg.title
     assert msg.detail
 }
-//And the conforms the following regex <regex>
-//Then(~/^the details list all missing fields$/) { ->
 Then(~/^the conforms the following regex (.*)$/) { pattern ->
-    //assert msg.detail.contains('body')
     assert msg.detail ==~ pattern
 }
 
@@ -162,12 +144,14 @@ Then(~/^the response correctly describes the resource$/) { ->
                                 ],
                                 body: [
                                     description: 'Comments contents',
-                                    type: 'string'
+                                    type: 'string',
+                                    maxLength: 4000,
+                                    minLength: 1
                                 ],
                                 tags: [
                                     items: [
                                         properties: [
-                                            name: [type: 'string' ],
+                                            name: [type: 'string', maxLength: 10 ],
                                             size: [type: 'integer', readOnly: true ]
                                         ],
                                         required: [ 'name' ],
@@ -175,6 +159,14 @@ Then(~/^the response correctly describes the resource$/) { ->
                                         additionalProperties: false
                                     ],
                                     type: 'array',
+                                    additionalProperties: false
+                                ],
+                                coordinates: [
+                                    type: 'object',
+                                    properties: [
+                                        latitude: [ type: 'number', maximum: 180.0, minimum: -180.0 ],
+                                        longitude: [ type: 'number', maximum: 180.0, minimum: -180.0 ]
+                                    ],
                                     additionalProperties: false
                                 ],
                                 kind: [
@@ -285,7 +277,7 @@ Then(~/^it is swagger-compliant response$/) { ->
     assert valResults.isSuccess()
 }
 
-When(~/^I try to acess the API with a (.*) auth token$/) { tokenScenario ->
+When(~/^I try to access the API with a (.*) auth token$/) { tokenScenario ->
     def headers = [
         'invalid': [my_fake_token: 'invalid'],
         'valid': [my_fake_token: 'valid'],
@@ -294,7 +286,7 @@ When(~/^I try to acess the API with a (.*) auth token$/) { tokenScenario ->
 
     response = error = null
     try {
-        response = client.get(path: '/comments', requestContentType: ContentType.JSON, headers: headers[tokenScenario])
+        response = client.get(path: '/posts', requestContentType: ContentType.JSON, headers: headers[tokenScenario])
     }
     catch (HttpResponseException e) {
         error = e
@@ -327,8 +319,15 @@ When(~/^I post it at the (.+) endpoint$/) { path ->
 }
 
 Then(~/^the response content-type is "(.*?)"$/) { String contentType ->
-    // Write code here that turns the phrase above into concrete actions
-    assert response
     def expectedContentType = "Content-Type: $contentType".toString()
     assert expectedContentType == response.headers['Content-Type'].toString()
+}
+
+When(~/^I try to access an endpoint configured with no auth$/) { ->
+    response = error = null
+    response = client.get(path: '/comments', requestContentType: ContentType.JSON)
+}
+
+When(~/I run a post command that bypasses standard validation/) { ->
+    response = client.post(path: '/posts', requestContentType: ContentType.JSON)
 }

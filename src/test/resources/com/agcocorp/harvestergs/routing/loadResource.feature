@@ -5,7 +5,7 @@ Feature: Load a resource
 
   Scenario Outline: API auth
      Given the aforementioned resource definition
-      When I try to acess the API with a <case> auth token
+      When I try to access the API with a <case> auth token
       Then I receive a <code> response code
 
     Examples:
@@ -13,6 +13,12 @@ Feature: Load a resource
       | missing |  401 |
       | invalid |  403 |
       | valid   |  200 |
+
+  Scenario: Skip auth
+    Given the aforementioned resource definition
+    When I try to access an endpoint configured with no auth
+    Then I receive a 200 response code
+
 
   Scenario Outline: Single valid resource
      Given the aforementioned resource definition
@@ -44,7 +50,16 @@ Feature: Load a resource
         And the response is a valid jsonapi error
         And the conforms the following regex <regex>
   Examples:
-    | rule      | attributes                                                                                     | regex        |
-    | required  | {"author":{"name":"John Doe"}}                                                                 | (?s).*body.* |
-    | readOnly  | {"body":"body","author":{"name":"author","email":"a@e.com"},"tags":[{"name":"TAG","size":15}]} | (?s).*size.* |
+    | rule      | regex         | attributes                                            |
+    | required  | (?s).*body.*  | {"author":{"name":"John Doe"}}                        |
+    | minLength | (?s).*body.*  | {"body":""}                                           |
+    | pattern   | (?s).*name.*  | {"body":"b","author":{"name":"a","email":"a@e.com"}}  |
+    | maxLength | (?s).*tags.*  | {"body":"b","tags":[{"name":"LOOOOOOOONG"}]}          |
+    | maximum   | (?s).*coord.* | {"body":"b","coordinates":{"latitude":200}}           |
+    | minimum   | (?s).*coord.* | {"body":"b","coordinates":{"latitude":-200}}          |
+
+  Scenario: validation skip
+      Given the aforementioned resource definition
+       When I run a post command that bypasses standard validation
+       Then I receive a 201 response code
 
