@@ -58,3 +58,8 @@ Feature: Load a resource
     | maximum   | (?s).*coord.* | {"body":"b","coordinates":{"latitude":200}}           |
     | minimum   | (?s).*coord.* | {"body":"b","coordinates":{"latitude":-200}}          |
 
+  Scenario: validation skip
+      Given the aforementioned resource definition
+       When I run a post command that bypasses standard validation
+       Then I receive a 201 response code
+

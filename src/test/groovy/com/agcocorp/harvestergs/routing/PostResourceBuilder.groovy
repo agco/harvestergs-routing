@@ -43,7 +43,7 @@ class PostResourceBuilder {
 
                     post { req, res ->
                         return req.data
-                    }
+                    }.skipValidation.skipAuth
 
                     "/:id" {
                         get { req, res -> return getById(req.params(':id')) }

@@ -54,7 +54,7 @@ class CommentResourceBuilder {
                     }.document { docs ->
                         docs.description = "Custom description for comments.post"
                         docs
-                    }.skipValidation
+                    }
 
                     "/:id" {
                         // todo: remove the need for the 'this' prefix when using closures.

@@ -22,8 +22,8 @@ class SparkLoader {
         }
     }
 
-    private getPogo(req) {
-        if (! req.body()) {
+    private getPogo(req, allowNulls = false) {
+        if ((!req.body()) && (!allowNulls)) {
             error.invalid('Empty request')
         }
         try {
@@ -72,7 +72,13 @@ class SparkLoader {
                     }
 
                     if (validate) {
-                        validate(spec, req)
+                        // todo: refactor here and take hydration outside of validation
+                        if ((verbSpec.additionalFlags.skipValidation)) {
+                            getPogo(req, true)
+                        }
+                        else {
+                            validate(spec, req)
+                        }
                     }
 
                     res.status defaultCodes[req.requestMethod()]
@@ -85,7 +91,6 @@ class SparkLoader {
     }
 
     private error = [
-        //invalid: { results -> throw new ValidationException( validationResults: results ) },
         invalid: { results ->
             spark.Spark.halt(400, JsonOutput.toJson([
                 id: UUID.randomUUID(),

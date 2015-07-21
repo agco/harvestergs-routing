@@ -328,3 +328,7 @@ When(~/^I try to access an endpoint configured with no auth$/) { ->
     response = error = null
     response = client.get(path: '/comments', requestContentType: ContentType.JSON)
 }
+
+When(~/I run a post command that bypasses standard validation/) { ->
+    response = client.post(path: '/posts', requestContentType: ContentType.JSON)
+}
