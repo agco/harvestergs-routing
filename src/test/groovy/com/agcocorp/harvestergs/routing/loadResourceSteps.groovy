@@ -94,10 +94,7 @@ Then(~/^the response is a valid jsonapi error$/) { ->
     assert msg.title
     assert msg.detail
 }
-//And the conforms the following regex <regex>
-//Then(~/^the details list all missing fields$/) { ->
 Then(~/^the conforms the following regex (.*)$/) { pattern ->
-    //assert msg.detail.contains('body')
     assert msg.detail ==~ pattern
 }
 
@@ -169,7 +166,7 @@ Then(~/^the response correctly describes the resource$/) { ->
                                 tags: [
                                     items: [
                                         properties: [
-                                            name: [type: 'string' ],
+                                            name: [type: 'string', maxLength: 10 ],
                                             size: [type: 'integer', readOnly: true ]
                                         ],
                                         required: [ 'name' ],
@@ -329,8 +326,6 @@ When(~/^I post it at the (.+) endpoint$/) { path ->
 }
 
 Then(~/^the response content-type is "(.*?)"$/) { String contentType ->
-    // Write code here that turns the phrase above into concrete actions
-    assert response
     def expectedContentType = "Content-Type: $contentType".toString()
     assert expectedContentType == response.headers['Content-Type'].toString()
 }

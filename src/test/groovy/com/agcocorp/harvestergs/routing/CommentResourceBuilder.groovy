@@ -19,7 +19,7 @@ class CommentResourceBuilder {
                     url uri
                 }
                 tags arrayOf({
-                    name string.required
+                    name string.required.maxLength(10)
                     size integer.readOnly
                 })
                 kind enumOf([ classic, picture, howto ])
