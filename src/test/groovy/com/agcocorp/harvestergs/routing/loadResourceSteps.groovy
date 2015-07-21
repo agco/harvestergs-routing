@@ -38,22 +38,22 @@ class LoadWorld {
     def responseData
     def returnCode
 
-    def parseData(response) {
+    def parseResponse(response) {
         responseData = response.responseData? slurper.parse(response.responseData) : null
-        returnCode = response.status?: response.statusCode
+        returnCode = response.status
     }
 
-    def doOp(String verb, String path, Map body = null, boolean shouldFail = false) {
+    def doOp(String verb, String path, Map body = null, Map headers = null, boolean shouldFail = false) {
         response = error = null
         try {
-            response = client."$verb"(path: path, body: body, requestContentType: ContentType.JSON)
+            response = client."$verb"(path: path, body: body, requestContentType: ContentType.JSON, headers: headers)
             if (shouldFail) throw new IllegalStateException("HTTP action should have returned an _error")
-            parseData(response)
+            parseResponse(response)
         }
-        catch (Exception exc) {
+        catch (HttpResponseException exc) {
             if (!shouldFail) throw exc
             error = exc
-            parseData(error)
+            parseResponse(exc.response)
         }
     }
 }
@@ -93,14 +93,14 @@ Given(~/^the aforementioned resource definition$/) { ->
 }
 
 Then(~/^the response is a valid jsonapi error$/) { ->
-    assert error.response.responseData
-    msg = slurper.parse(error.response.responseData)
-    assert msg.id
-    assert msg.title
-    assert msg.detail
+    assertWith responseData, {
+        assert id
+        assert title
+        assert detail
+    }
 }
 Then(~/^the conforms the following regex (.*)$/) { pattern ->
-    assert msg.detail ==~ pattern
+    assert responseData.detail ==~ pattern
 }
 
 When(~/^I get the documentation for it$/) { ->
@@ -327,6 +327,7 @@ Given(~/^containing these attributes (.+)$/) { String attrJson ->
 }
 
 When(~/^I post it at the (.+) endpoint$/) { path ->
+    /*
     response = error = null
     try {
         response = client.post(path: path, requestContentType: ContentType.JSON, body: _requestData, headers:[my_fake_token: 'valid'])
@@ -335,6 +336,8 @@ When(~/^I post it at the (.+) endpoint$/) { path ->
     catch(HttpResponseException e) {
         error = e
     }
+    */
+    doOp("post", path, _requestData, [my_fake_token: 'valid'], true)
 }
 
 Then(~/^the response content-type is "(.*?)"$/) { String contentType ->
