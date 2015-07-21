@@ -23,8 +23,8 @@ class CommentResourceBuilder {
                     size integer.readOnly
                 })
                 coordinates {
-                    latitude number
-                    longitude number
+                    latitude number.minimum(-180.0).maximum(180.0)
+                    longitude number.minimum(-180.0).maximum(180.0)
                 }
                 kind enumOf([ classic, picture, howto ])
             }

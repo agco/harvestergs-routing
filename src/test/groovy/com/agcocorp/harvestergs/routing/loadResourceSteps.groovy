@@ -179,8 +179,8 @@ Then(~/^the response correctly describes the resource$/) { ->
                                 coordinates: [
                                     type: 'object',
                                     properties: [
-                                        latitude: [ type: 'number' ],
-                                        longitude: [ type: 'number' ]
+                                        latitude: [ type: 'number', maximum: 180.0, minimum: -180.0 ],
+                                        longitude: [ type: 'number', maximum: 180.0, minimum: -180.0 ]
                                     ],
                                     additionalProperties: false
                                 ],

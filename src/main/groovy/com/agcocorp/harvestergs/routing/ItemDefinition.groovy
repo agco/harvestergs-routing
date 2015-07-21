@@ -39,4 +39,14 @@ class ItemDefinition {
         propSpec['minLength'] = size
         return this
     }
+
+    ItemDefinition maximum(Double size) {
+        propSpec['maximum'] = size
+        return this
+    }
+
+    ItemDefinition minimum(Double size) {
+        propSpec['minimum'] = size
+        return this
+    }
 }
