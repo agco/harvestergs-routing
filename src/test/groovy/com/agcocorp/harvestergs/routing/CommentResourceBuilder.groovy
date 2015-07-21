@@ -12,7 +12,7 @@ class CommentResourceBuilder {
     def build() {
         def resource = new APIResource('comment')
             .attributes {
-                body string.description('Comments contents').required
+                body string.description('Comments contents').required.maxLength(4000).minLength(1)
                 author {
                     name string.required.pattern(/.+ .+/)
                     email email.required

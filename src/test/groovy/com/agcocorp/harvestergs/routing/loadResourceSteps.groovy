@@ -162,7 +162,9 @@ Then(~/^the response correctly describes the resource$/) { ->
                                 ],
                                 body: [
                                     description: 'Comments contents',
-                                    type: 'string'
+                                    type: 'string',
+                                    maxLength: 4000,
+                                    minLength: 1
                                 ],
                                 tags: [
                                     items: [
