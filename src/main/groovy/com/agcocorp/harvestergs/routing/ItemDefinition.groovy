@@ -29,4 +29,24 @@ class ItemDefinition {
         propSpec['description'] = description
         return this
     }
+
+    ItemDefinition maxLength(Integer size) {
+        propSpec['maxLength'] = size
+        return this
+    }
+
+    ItemDefinition minLength(Integer size) {
+        propSpec['minLength'] = size
+        return this
+    }
+
+    ItemDefinition maximum(Double size) {
+        propSpec['maximum'] = size
+        return this
+    }
+
+    ItemDefinition minimum(Double size) {
+        propSpec['minimum'] = size
+        return this
+    }
 }
