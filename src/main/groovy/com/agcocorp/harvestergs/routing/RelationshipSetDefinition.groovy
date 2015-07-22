@@ -5,7 +5,7 @@ class RelationshipSetDefinition {
 
     def propertyMissing(String relationship) {
         // todo: support other kind of 'fk' types besides string
-        // todo: consider pattern for 'fk' uuids
+        // todo: consider pattern for 'fk' uuid keys
         return new RelationshipDefinition(relationship)
     }
 

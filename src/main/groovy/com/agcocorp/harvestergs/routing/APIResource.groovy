@@ -7,7 +7,6 @@ class APIResource {
     final private paths = new PathDefinition()
 
     APIResource(String name) {
-        attributes = new AttributeSetDefinition();
         this.resourceName = name
     }
 
@@ -31,12 +30,6 @@ class APIResource {
         run cl, paths
         this
     }
-
-    /*
-    def id(Closure cl) {
-
-    }
-    */
 
     def toJsonSchema() {
         def schema = [:]
@@ -64,8 +57,6 @@ class APIResource {
         schema[resourceName].properties.data.additionalProperties = false
 
         return schema
-
-        return attributes.toJsonSchema();
     }
 
     def getAllPaths() {

@@ -30,7 +30,6 @@ Given(~/^a complete schema definition$/) { ->
         }
         .relationships {
             spouse person
-            // todo: add 'reverse' support
             posts arrayOf(post)
         }
 }
