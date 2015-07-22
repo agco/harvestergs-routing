@@ -32,6 +32,7 @@ class AttributeDefinition extends AttributeMapper {
     }
 
     AttributeDefinition(ArrayList enumValues) {
+        this.type = null
         this.itemsSpec = enumValues
     }
 

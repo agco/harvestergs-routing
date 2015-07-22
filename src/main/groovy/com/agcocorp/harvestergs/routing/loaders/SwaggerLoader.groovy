@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import groovy.json.JsonSlurper
 import groovy.text.SimpleTemplateEngine
+import spark.Spark
 
 class SwaggerLoader {
     private slurper = new JsonSlurper()
@@ -89,7 +90,7 @@ class SwaggerLoader {
         mapper.setSerializationInclusion(Include.NON_NULL)
         def json = mapper.writeValueAsString(docs)
 
-        spark.Spark.get("/swagger"){ req, res ->
+        Spark.get("/swagger"){ req, res ->
             res.type "application/vnd.api+json"
             json
         }

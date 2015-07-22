@@ -24,50 +24,50 @@ An example:
 ```groovy
 // defining a resource named "post"
 def resource = new APIResource('post')
-			// the 'attributes' section contains all properties of a post resource
-            .attributes {
-            	// all native json schema types are supported. 
-            	// validation is specified in-loco
-                title string.required
-                // you can also provide descriptions for attributes
-                // and relationships
-                body string.description('Post contents').required
-                // arrays are also supported. you can also define complex
-                // types as array items
-                tags arrayOf(string)
-            }.relationships {
-            	// defining a relationship to a 'person' resource, named
-            	// 'author'
-                author person
+    // the 'attributes' section contains all properties of a post resource
+    .attributes {
+        // all native json schema types are supported.
+        // validation is specified in-loco
+        title string.required
+        // you can also provide descriptions for attributes
+        // and relationships
+        body string.description('Post contents').required
+        // arrays are also supported. you can also define complex
+        // types as array items
+        tags arrayOf(string)
+    }.relationships {
+        // defining a relationship to a 'person' resource, named
+        // 'author'
+        author person
+    }
+    // in this section you define which routes exist and the closures
+    // that define them
+    .paths {
+        "/posts" {
+            // defining the handling for GET verbs on the '/posts' endpoint
+            get { req, res ->
+                // the req, res arguments come from java spark
+                return this.getAll()
             }
-            // in this section you define which routes exist and the closures
-            // that define them
-            .paths {
-                "/posts" {
-                	// defining the handling for GET verbs on the '/posts' endpoint
-                    get { req, res ->
-                    	// the req, res arguments come from java spark
-                        return this.getAll()
-                    }
-                    post { req, res ->
-                        return req.data
-                    }.document { docs ->
-                    	// out-of-box, the swagger loader provides templates 
-                    	// for documentation. You can override that test by 
-                    	// using the 'document' command. Please remember to
-                    	// return the docs object
-                        docs.description = "Custom description for posts.post"
-                        docs
-                    }
-                    // nested path. in this example, this maps to "/posts/:id"
-                    // the ":id" format comes from spark as well
-                    "/:id" {
-                        get { req, res -> return this.getById(req.params(':id')) }
-                        patch { req, res -> return req.data }
-                        delete { req, res -> return null }
-                    }
-                }
+            post { req, res ->
+                return req.data
+            }.document { docs ->
+                // out-of-box, the swagger loader provides templates
+                // for documentation. You can override that test by
+                // using the 'document' command. Please remember to
+                // return the docs object
+                docs.description = "Custom description for posts.post"
+                docs
             }
+            // nested path. in this example, this maps to "/posts/:id"
+            // the ":id" format comes from spark as well
+            "/:id" {
+                get { req, res -> return this.getById(req.params(':id')) }
+                patch { req, res -> return req.data }
+                delete { req, res -> return null }
+            }
+        }
+    }
 ```
 
 

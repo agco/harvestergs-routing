@@ -4,18 +4,19 @@ import com.agcocorp.harvestergs.routing.loaders.SparkLoader
 import com.agcocorp.harvestergs.routing.loaders.SwaggerLoader
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.fge.jsonschema.main.JsonSchemaFactory
+import cucumber.api.groovy.EN
+import cucumber.api.groovy.Hooks
 import groovy.json.JsonOutput
 import cucumber.api.PendingException
 import groovy.json.JsonSlurper
 
-this.metaClass.mixin(cucumber.api.groovy.Hooks)
-this.metaClass.mixin(cucumber.api.groovy.EN)
+this.metaClass.mixin(Hooks)
+this.metaClass.mixin(EN)
 
 import static cucumber.api.groovy.EN.*
 import groovyx.net.http.RESTClient
 import groovyx.net.http.*
 import static testHelpers.*
-
 
 def resources = []
 def comments = [
@@ -29,14 +30,17 @@ def patchComment = comments[1]
 def getComment = comments[0]
 
 class LoadWorld {
-    def _requestData
+    def requestData
     def slurper = JsonSlurper.newInstance()
-    def msg
-    def error
+    def _error
     def response
-    def client = new RESTClient('http://localhost:4567')
+    def _client = new RESTClient('http://localhost:4567')
     def responseData
     def returnCode
+
+    def getValidToken() {
+        return [my_fake_token: 'valid']
+    }
 
     def parseResponse(response) {
         responseData = response.responseData? slurper.parse(response.responseData) : null
@@ -44,15 +48,15 @@ class LoadWorld {
     }
 
     def doOp(String verb, String path, Map body = null, Map headers = null, boolean shouldFail = false) {
-        response = error = null
+        response = _error = null
         try {
-            response = client."$verb"(path: path, body: body, requestContentType: ContentType.JSON, headers: headers)
+            response = _client."$verb"(path: path, body: body, requestContentType: ContentType.JSON, headers: headers)
             if (shouldFail) throw new IllegalStateException("HTTP action should have returned an _error")
             parseResponse(response)
         }
         catch (HttpResponseException exc) {
             if (!shouldFail) throw exc
-            error = exc
+            _error = exc
             parseResponse(exc.response)
         }
     }
@@ -70,10 +74,10 @@ Given(~/^a set of related resources$/) { ->
 }
 
 Given(~/^these resources are loaded into an API$/) { ->
-    def loader = new SparkLoader()
-    loader.loadResources(resources)
-    def documenter = new SwaggerLoader([ "title": "testApp" ])
-    documenter.loadDocs(resources)
+    def sparkLoader = new SparkLoader()
+    sparkLoader.loadResources(resources)
+    def swaggerLoader = new SwaggerLoader([ "title": "testApp" ])
+    swaggerLoader.loadDocs(resources)
 }
 
 def targets = [
@@ -104,7 +108,6 @@ Then(~/^the conforms the following regex (.*)$/) { pattern ->
 }
 
 When(~/^I get the documentation for it$/) { ->
-    //response = client.get(path: '/swagger', requestContentType: ContentType.JSON)
     doOp("get", "/swagger")
 }
 
@@ -243,53 +246,38 @@ Then(~/^the response correctly describes the resource$/) { ->
 
 When(~/^I run a (\w+) at path (.+)$/) { verb, path ->
     def body = targets[path][verb]
-    response = error = null
-    try {
-        response = client."$verb"(path: path, requestContentType: ContentType.JSON, body: body, headers:[my_fake_token: 'valid'])
-    }
-    catch (HttpResponseException e) {
-        println "Error: ${ JsonOutput.toJson(e.response.responseData) }"
-        throw e
-    }
+    doOp(verb, path, body, validToken)
 }
 
 Then(~/^I receive a (\d+) response code$/) { String code ->
-    if (response) {
-        assert response.status.toString() == code
-    }
-    else {
-        assert error.statusCode.toString() == code
-    }
+    returnCode.toString() == code
 }
 
 Then(~/^the response message is (.+)/) { messageContents ->
-    def data = response.responseData?
-        slurper.parse(response.responseData) : null
     switch (messageContents) {
         case "a list":
-            assert data == comments
+            assert responseData == comments
             break
         case "a single resource":
-            assert data == getComment
+            assert responseData == getComment
             break
         case "the new resource":
-            assert data == postComment
+            assert responseData == postComment
             break
         case "the updated resource":
-            assert data == patchComment
+            assert responseData == patchComment
             break
         case "empty":
-            assert ! data
+            assert ! responseData
             break
         default:
             throw new PendingException()
     }
 }
 
-def jsonSchemaFactory = JsonSchemaFactory.byDefault()
-def objectMapper = new ObjectMapper()
-
 Then(~/^it is swagger-compliant response$/) { ->
+    def jsonSchemaFactory = JsonSchemaFactory.byDefault()
+    def objectMapper = new ObjectMapper()
     def schema = jsonSchemaFactory.getJsonSchema("resource:/com/agcocorp/harvestergs/routing/swagger-schema.json")
     def data = objectMapper.valueToTree(responseData)
     def valResults = schema.validate(data)
@@ -302,14 +290,7 @@ When(~/^I try to access the API with a (.*) auth token$/) { tokenScenario ->
         'valid': [my_fake_token: 'valid'],
         'missing': [:]
     ]
-
-    response = error = null
-    try {
-        response = client.get(path: '/posts', requestContentType: ContentType.JSON, headers: headers[tokenScenario])
-    }
-    catch (HttpResponseException e) {
-        error = e
-    }
+    doOp('get', '/posts', null, headers[tokenScenario], tokenScenario != 'valid')
 }
 
 
@@ -319,25 +300,15 @@ Given(~/^a resource that violates the (.+) rule$/) { violationCase ->
 
 Given(~/^containing these attributes (.+)$/) { String attrJson ->
     def attrData = slurper.parseText(attrJson)
-    _requestData = [
+    requestData = [
         data: [
             attributes: attrData
         ]
     ]
 }
 
-When(~/^I post it at the (.+) endpoint$/) { path ->
-    /*
-    response = error = null
-    try {
-        response = client.post(path: path, requestContentType: ContentType.JSON, body: _requestData, headers:[my_fake_token: 'valid'])
-        fail("HTTP action should have returned an error")
-    }
-    catch(HttpResponseException e) {
-        error = e
-    }
-    */
-    doOp("post", path, _requestData, [my_fake_token: 'valid'], true)
+When(~/^I post it at the (.+) endpoint$/) { String path ->
+    doOp("post", path, requestData, validToken, true)
 }
 
 Then(~/^the response content-type is "(.*?)"$/) { String contentType ->
@@ -346,10 +317,9 @@ Then(~/^the response content-type is "(.*?)"$/) { String contentType ->
 }
 
 When(~/^I try to access an endpoint configured with no auth$/) { ->
-    response = error = null
-    response = client.get(path: '/comments', requestContentType: ContentType.JSON)
+    doOp("get", "/comments")
 }
 
 When(~/I run a post command that bypasses standard validation/) { ->
-    response = client.post(path: '/posts', requestContentType: ContentType.JSON)
+    doOp("post", "/posts")
 }
