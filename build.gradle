@@ -5,8 +5,10 @@ plugins {
 apply plugin: 'groovy'
 apply plugin: 'jacoco'
 apply plugin: 'codenarc'
+apply plugin: "maven-publish"
 
-version = '0.8.0-beta'
+version = '0.8.1-beta'
+group = 'com.agcocorp'
 
 repositories {
     jcenter()
@@ -60,3 +62,13 @@ artifacts {
     archives sourcesJar
     archives javadocJar
 }
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifact sourcesJar
+            artifact javadocJar
+        }
+    }
+}
+
