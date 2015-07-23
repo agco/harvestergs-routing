@@ -3,7 +3,7 @@
     "tags": ["$plural"],
     "parameters": [
         {
-            "name": "${singular}Id",
+            "name": "id",
             "in": "path",
             "type": "string",
             "description": "ID of the $singular",

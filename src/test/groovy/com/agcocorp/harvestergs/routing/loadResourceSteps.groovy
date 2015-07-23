@@ -109,7 +109,7 @@ Then(~/^the response correctly describes the resource$/) { ->
 
         assert paths."/comments/:id"
         paths."/comments/:id".with {
-            assert patch.parameters[0].description ==
+            assert patch.parameters[1].description ==
                     "The comment JSON you want to update"
             assert patch
             assertWith get, {
