@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.fge.jsonschema.main.JsonSchemaFactory
 import groovy.json.JsonOutput
 import com.fasterxml.jackson.databind.JsonNode
+import spark.Spark
 
 class SparkLoader {
     private final jsonSchemaFactory = JsonSchemaFactory.byDefault()
@@ -30,7 +31,9 @@ class SparkLoader {
             req.metaClass.data = objectMapper.readValue(req.body()?: "{}", Map.class)
             return objectMapper.convertValue(req.data, JsonNode.class)
         }
-        catch (IOException e) {
+        // the interface is named ignored because we will throw an error of our own
+        // with the error.invalid command below.
+        catch (IOException ignored) {
             error.invalid('Could not parse JSON message.')
         }
     }
@@ -65,7 +68,7 @@ class SparkLoader {
         spec.allPaths.each { path, pathSpec ->
             pathSpec.each { verb, verbSpec ->
                 def validate = validators[verb]
-                spark.Spark."$verb"(path) { req, res ->
+                Spark."$verb"(path) { req, res ->
                     res.type "application/vnd.api+json"
                     if ((authHandler) && !(verbSpec.additionalFlags.skipAuth)) {
                         authHandler(req, res)
@@ -92,17 +95,17 @@ class SparkLoader {
 
     private error = [
         invalid: { results ->
-            spark.Spark.halt(400, JsonOutput.toJson([
+            Spark.halt(400, JsonOutput.toJson([
                 id: UUID.randomUUID(),
                 title: 'Invalid data',
                 detail: results.toString()
             ]))
         },
         forbidden: {
-            spark.Spark.halt(403)
+            Spark.halt(403)
         },
         unauthorized: {
-            spark.Spark.halt(401)
+            Spark.halt(401)
         }
     ]
 

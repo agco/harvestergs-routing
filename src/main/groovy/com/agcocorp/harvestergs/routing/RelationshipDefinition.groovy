@@ -6,7 +6,6 @@ class RelationshipDefinition extends ItemDefinition {
 
     def RelationshipDefinition(String schemaRef) {
         this.schemaRef = schemaRef
-        //todo: make schema strict within data element as well.
         this.jsonSchema = [properties: [data: [properties: [type: [enum: [schemaRef]], id: [type: 'string']], additionalProperties: false]], additionalProperties: false]
     }
 

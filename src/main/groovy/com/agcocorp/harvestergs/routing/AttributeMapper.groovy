@@ -23,7 +23,7 @@ class AttributeMapper extends ItemDefinition {
         return new AttributeDefinition('integer')
     }
 
-    // todo: support advanced cases such as arrayof(arrayof(...))
+    // todo: support advanced cases such as arrayOf(arrayOf(...))
     def AttributeDefinition arrayOf(AttributeDefinition itemType) {
         return new AttributeDefinition('array', itemType.type)
     }

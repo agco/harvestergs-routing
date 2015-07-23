@@ -1,3 +1,4 @@
+@load
 Feature: Load a resource
   Background:
     Given a set of related resources
