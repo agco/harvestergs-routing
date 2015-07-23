@@ -130,9 +130,10 @@ Then(~/^the response correctly describes the resource$/) { ->
             assert post.description == "Custom description for comments.post"
         }
 
-        assert paths."/comments/:id"
-        paths."/comments/:id".with {
-            assert patch.parameters[0].description ==
+        //assert paths."/comments/:id"
+        //paths."/comments/{id}".with {
+        assertWith paths."/comments/{id}", {
+            assert patch.parameters[1].description ==
                     "The comment JSON you want to update"
             assert patch
             assertWith get, {

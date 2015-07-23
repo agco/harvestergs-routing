@@ -78,7 +78,9 @@ class SwaggerLoader {
 
                 currentPath[verb] = verbTpl
             }
-            root.paths[path] = currentPath
+
+            def swaggerPath = path.replaceAll(/:(\w+)/, /{$1}/)
+            root.paths[swaggerPath] = currentPath
         }
 
         return root
