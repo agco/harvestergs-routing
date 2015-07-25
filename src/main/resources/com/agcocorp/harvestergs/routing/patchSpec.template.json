@@ -1,6 +1,13 @@
 {
     "parameters": [
         {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "description": "ID of the $singular",
+            "required": true
+        },
+        {
             "name": "$singular",
             "in": "body",
             "description": "The $singular JSON you want to update",

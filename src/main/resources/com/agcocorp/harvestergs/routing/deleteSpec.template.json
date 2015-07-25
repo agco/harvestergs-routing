@@ -10,7 +10,7 @@
     "parameters": [
         {
             "in": "path",
-            "name": "${singular}Id",
+            "name": "id",
             "description": "$resource id to delete",
             "required": true,
             "type": "integer",
