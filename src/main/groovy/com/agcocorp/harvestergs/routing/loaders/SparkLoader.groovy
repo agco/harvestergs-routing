@@ -17,9 +17,13 @@ class SparkLoader {
     def SparkLoader() {
         this.objectMapper = new ObjectMapper()
         this.objectMapper.setSerializationInclusion Include.NON_NULL
+        //def sp = new spark.SparkBase()
     }
 
     def loadApi(ApiDefinition api) {
+        if (api.apiProperties['port']) {
+            Spark.port((int)api.apiProperties['port'])
+        }
         globalAuth = api.authClosure
 
         api.getAllResources().each {

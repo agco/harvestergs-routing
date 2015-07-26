@@ -2,6 +2,7 @@ package com.agcocorp.harvestergs.routing
 
 class ApiDefinition {
     private final resourceList = [:]
+    private final apiProperties = [:]
     Closure authClosure
 
     def resources(Closure definition) {
@@ -13,6 +14,11 @@ class ApiDefinition {
 
     def auth(Closure authClosure) {
         this.authClosure = authClosure
+        return this
+    }
+
+    def port(Integer portNumber) {
+        apiProperties['port'] = portNumber
         return this
     }
 

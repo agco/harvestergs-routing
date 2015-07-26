@@ -31,12 +31,13 @@ def patchComment = comments[1]
 def getComment = comments[0]
 
 class LoadWorld {
+    static def loaded = false
     def apiDefinition
     def requestData
     def slurper = JsonSlurper.newInstance()
     def _error
     def response
-    def _client = new RESTClient('http://localhost:4567')
+    def _client = new RESTClient('http://localhost:1234')
     def responseData
     def returnCode
 
@@ -75,6 +76,7 @@ Given(~/^a set of related resources$/) { ->
     resources = [commentBuilder.build(), postBuilder.build(), dummyBuilder.build()]
     apiDefinition = new ApiDefinition()
         .addResources(resources)
+        .port(1234)
         .auth { req, res ->
             switch(req.headers('my_fake_token'))
             {
@@ -89,11 +91,14 @@ Given(~/^a set of related resources$/) { ->
 }
 
 Given(~/^these resources are loaded into an API$/) { ->
-    def sparkLoader = new SparkLoader()
-    //sparkLoader.loadResources(resources)
-    sparkLoader.loadApi(apiDefinition)
-    def swaggerLoader = new SwaggerLoader([ "title": "testApp" ])
-    swaggerLoader.loadDocs(resources)
+    if (!loaded) {
+        def sparkLoader = new SparkLoader()
+        //sparkLoader.loadResources(resources)
+        sparkLoader.loadApi(apiDefinition)
+        def swaggerLoader = new SwaggerLoader([ "title": "testApp" ])
+        swaggerLoader.loadDocs(resources)
+        loaded = true
+    }
 }
 
 def targets = [
