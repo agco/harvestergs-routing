@@ -25,9 +25,11 @@ class PathDefinition {
         handlers[verb] = new VerbDefinition(handler)
     }
 
+    /*
     void authenticate(Closure cl) {
         this.authHandler = cl
     }
+    */
 
     public Closure getAuthHandler() {
         return this.authHandler

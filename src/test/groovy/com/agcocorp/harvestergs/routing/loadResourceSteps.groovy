@@ -73,7 +73,19 @@ Given(~/^a set of related resources$/) { ->
     def postBuilder = new PostResourceBuilder({ null }, { null })
     def dummyBuilder = new DummyResourceBuilder()
     resources = [commentBuilder.build(), postBuilder.build(), dummyBuilder.build()]
-    apiDefinition = new ApiDefinition().addResources(resources)
+    apiDefinition = new ApiDefinition()
+        .addResources(resources)
+        .auth { req, res ->
+            switch(req.headers('my_fake_token'))
+            {
+                case null:
+                    error.unauthorized()
+                    break
+                case 'invalid':
+                    error.forbidden()
+                    break
+            }
+        }
 }
 
 Given(~/^these resources are loaded into an API$/) { ->

@@ -24,6 +24,7 @@ class PostResourceBuilder {
                 }
             }
             .paths {
+            /*
                 authenticate { req, res ->
                     switch(req.headers('my_fake_token'))
                     {
@@ -36,6 +37,7 @@ class PostResourceBuilder {
                     }
                     // this is a very bad idea to let all the other cases through, but this is dummy code anyway...
                 }
+            */
                 "/posts" {
                     get { req, res ->
                         return "Hello World!"

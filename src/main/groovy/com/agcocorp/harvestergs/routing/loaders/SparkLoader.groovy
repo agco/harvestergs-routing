@@ -12,6 +12,7 @@ import spark.Spark
 class SparkLoader {
     private final jsonSchemaFactory = JsonSchemaFactory.byDefault()
     private final objectMapper
+    private Closure globalAuth
 
     def SparkLoader() {
         this.objectMapper = new ObjectMapper()
@@ -19,6 +20,8 @@ class SparkLoader {
     }
 
     def loadApi(ApiDefinition api) {
+        globalAuth = api.authClosure
+
         api.getAllResources().each {
             loadPath(it.value)
         }
@@ -61,7 +64,8 @@ class SparkLoader {
     ]
 
     private def loadPath(ResourceDefinition spec) {
-        def authHandler = spec.paths? spec.paths.authHandler : null
+        //def authHandler = spec.paths? spec.paths.authHandler : null
+        def authHandler = globalAuth
         if (authHandler) {
             authHandler.delegate = this
         }
