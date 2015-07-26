@@ -32,20 +32,6 @@ class CommentResourceBuilder {
                 post posts.description('Owning post').required
             }
             .paths {
-            /*
-                authenticate { req, res ->
-                    switch(req.headers('my_fake_token'))
-                    {
-                        case null:
-                            error.unauthorized()
-                            break
-                        case 'invalid':
-                            error.forbidden()
-                            break
-                    }
-                    // this is a very bad idea to let all the other cases through, but this is dummy code anyway...
-                }
-           */
                 "/comments" {
                     get { req, res ->
                         return this.getAll()
