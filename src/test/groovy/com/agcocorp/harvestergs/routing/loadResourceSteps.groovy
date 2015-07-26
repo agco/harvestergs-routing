@@ -19,6 +19,7 @@ import groovyx.net.http.*
 import static testHelpers.*
 
 def resources = []
+
 def comments = [
     [ body: 'First!', author: [ name: 'John Doe', email: 'john@doe.com' ], tags: [ [name: 'TEST'], [name: 'DUMMY'] ]],
     [ body: 'Really, John?', author: [ name: 'Jane Doe', email: 'jane@doe.com' ], tags: [ [name: 'TEST'], [name: 'DUMMY'] ]],
@@ -30,6 +31,7 @@ def patchComment = comments[1]
 def getComment = comments[0]
 
 class LoadWorld {
+    def apiDefinition
     def requestData
     def slurper = JsonSlurper.newInstance()
     def _error
@@ -71,11 +73,25 @@ Given(~/^a set of related resources$/) { ->
     def postBuilder = new PostResourceBuilder({ null }, { null })
     def dummyBuilder = new DummyResourceBuilder()
     resources = [commentBuilder.build(), postBuilder.build(), dummyBuilder.build()]
+    apiDefinition = new ApiDefinition()
+        .addResources(resources)
+        .auth { req, res ->
+            switch(req.headers('my_fake_token'))
+            {
+                case null:
+                    error.unauthorized()
+                    break
+                case 'invalid':
+                    error.forbidden()
+                    break
+            }
+        }
 }
 
 Given(~/^these resources are loaded into an API$/) { ->
     def sparkLoader = new SparkLoader()
-    sparkLoader.loadResources(resources)
+    //sparkLoader.loadResources(resources)
+    sparkLoader.loadApi(apiDefinition)
     def swaggerLoader = new SwaggerLoader([ "title": "testApp" ])
     swaggerLoader.loadDocs(resources)
 }

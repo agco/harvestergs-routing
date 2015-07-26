@@ -10,7 +10,7 @@ class PostResourceBuilder {
     }
 
     def build() {
-        def resource = new APIResource('post')
+        def resource = new ResourceDefinition('post')
             .attributes {
                 id string.description('url-encoded version of the tile, for easy permalinks')
                 title string.required
@@ -24,18 +24,6 @@ class PostResourceBuilder {
                 }
             }
             .paths {
-                authenticate { req, res ->
-                    switch(req.headers('my_fake_token'))
-                    {
-                        case null:
-                            error.unauthorized()
-                            break
-                        case 'invalid':
-                            error.forbidden()
-                            break
-                    }
-                    // this is a very bad idea to let all the other cases through, but this is dummy code anyway...
-                }
                 "/posts" {
                     get { req, res ->
                         return "Hello World!"

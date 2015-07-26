@@ -1,27 +1,18 @@
-harvestergs-routing
-===================
-*A DSL for defining [JSON API](http://jsonapi.org/)-compliant APIs*
+package com.agcocorp.harvestergs.routing
 
-how to use it
--------------
+import javax.annotation.Resource
 
-### DSL
+import static cucumber.api.groovy.EN.*
+import static testHelpers.*
+import cucumber.api.PendingException
 
-The DSL follows verbiage from [JSON API](http://jsonapi.org), [JSON Schema](http://json-schema.org/)  specs wherever possible (keywords, structure, etc) for easier adoption.
+def sut
+def resources
 
-When defining an API resource, the DSL expects up to three sections to be provided:
-* *attributes:* defines the properties of the resource you are mapping. All
-properties (except relationships) and their validation go here;
-* *relationships:* define relationships to other resources. These will be
-mapped to properties within the payload for validation and documentation
-purposes, but receives some special handling by the loaders. This split also
-makes the structure closer to JSON API definitions;
-* *paths:* defines what actions (and under which endpoints) are defined for a
-given resource. Paths may be nested (eg: "/:id" within "/paths"). Also maps
-those actions to the closures you provide;
+Given(~/^a complete API definition$/) { ->
+    // PLEASE NOTE:  the code below is the exact example at the README. This
+    // guarantees the sample code always builds
 
-An example:
-```groovy
     // defining an API
     def api = new ApiDefinition()
         // the resources property is where all API resources are defined
@@ -82,18 +73,41 @@ An example:
                 error.unauthorized()
             }
         }
-```
 
+    sut = api
+}
 
-*Please notice:* this DSL is a) still not feature complete and b) has the (small) potential for breaking changes. Version 1.0 will settle on a stable DSL and set of features.
+When(~/^I get its resources and attributes$/) { ->
+    resources = sut.getAllResources()
+}
 
-### Loaders
+Then(~/^I get a complete, correct list$/) { ->
+    assert resources
+    assert resources.post
+    assert resources.post.class == ResourceDefinition.class
+    assert resources.comment
+    assert resources.comment.class == ResourceDefinition.class
+    assert sut.authClosure
+}
 
-Currently, the library contains two loaders:
-* *SparkLoader:* uses [Spark](http://sparkjava.com/) to load the routes and
-map them to handling closures. Elements in the DSL (such as the ":<key>" url
-routing and the ```req, res``` arguments);
-* *SwaggerLoader:* creates [Swagger](http://swagger.io/) documentation, using
-a number of templates.
+def builders = []
 
-*Please notice:* more loaders (especially for the endpoint mapping) may be created in the future. Points to keep in mind are: a) this will probably cause the creation of specialized harvestergs libraries and b) the expectation is that the introduction of a loader will *not* cause breaking changes to the DSL.
+Given(~/^a set of resource builders$/) { ->
+    builders << new CommentResourceBuilder({ null }, { null })
+    builders << new PostResourceBuilder({ null }, { null })
+}
+
+When(~/^I define an API using them$/) { ->
+    sut = new ApiDefinition().addResources(
+        builders.collect {
+            it.build()
+        }
+    )
+}
+
+Then(~/^I get a correct list, with all builder results$/) { ->
+    resources = sut.getAllResources()
+    assert resources
+    assert resources.comment
+    assert resources.post
+}
