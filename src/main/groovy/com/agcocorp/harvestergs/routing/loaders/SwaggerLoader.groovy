@@ -1,6 +1,6 @@
 package com.agcocorp.harvestergs.routing.loaders
 
-import com.agcocorp.harvestergs.routing.APIResource
+import com.agcocorp.harvestergs.routing.ResourceDefinition
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -52,7 +52,7 @@ class SwaggerLoader {
         }
     }
 
-    private loadSpec(APIResource spec, Map current = null) {
+    private loadSpec(ResourceDefinition spec, Map current = null) {
         def root = current?: loadSpecTemplate('api', specProperties)
         def resource = spec.resourceName
         def singular = camelCase(resource)
@@ -98,7 +98,7 @@ class SwaggerLoader {
         }
     }
 
-    def loadDocs(Iterable<APIResource> specs) {
+    def loadDocs(Iterable<ResourceDefinition> specs) {
         def docs = null
         specs.each {
             docs = this.loadSpec it, docs

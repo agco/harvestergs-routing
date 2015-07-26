@@ -10,7 +10,7 @@ class PostResourceBuilder {
     }
 
     def build() {
-        def resource = new APIResource('post')
+        def resource = new ResourceDefinition('post')
             .attributes {
                 id string.description('url-encoded version of the tile, for easy permalinks')
                 title string.required

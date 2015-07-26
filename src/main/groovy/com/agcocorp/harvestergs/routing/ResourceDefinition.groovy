@@ -1,12 +1,12 @@
 package com.agcocorp.harvestergs.routing
 
-class APIResource {
+class ResourceDefinition {
     final resourceName
     final private attributes = new AttributeSetDefinition()
     final private relationships = new RelationshipSetDefinition()
     final private paths = new PathDefinition()
 
-    APIResource(String name) {
+    ResourceDefinition(String name) {
         this.resourceName = name
     }
 

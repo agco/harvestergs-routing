@@ -3,11 +3,11 @@ package com.agcocorp.harvestergs.routing
 import static cucumber.api.groovy.EN.*
 import static testHelpers.*
 
-APIResource definition
+ResourceDefinition definition
 def paths
 
 Given(~/^a valid path definition$/) { ->
-    definition = new APIResource('person')
+    definition = new ResourceDefinition('person')
         .paths {
             authenticate { req, res ->
                 error.forbidden()
