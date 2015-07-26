@@ -2,10 +2,17 @@ package com.agcocorp.harvestergs.routing
 
 class ApiDefinition {
     private final resourceList = [:]
+    Closure authClosure
+
     def resources(Closure definition) {
         definition.delegate = this
         definition.resolveStrategy = Closure.DELEGATE_FIRST
         definition.call()
+        return this
+    }
+
+    def auth(Closure authClosure) {
+        this.authClosure = authClosure
         return this
     }
 

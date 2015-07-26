@@ -19,6 +19,9 @@ Given(~/^a complete API definition$/) { ->
                 body string
             }
         }
+        .auth { req, res ->
+            return "Ok, you're good to go"
+        }
 }
 
 When(~/^I get its resources and attributes$/) { ->
@@ -31,6 +34,7 @@ Then(~/^I get a complete, correct list$/) { ->
     assert resources.post.class == ResourceDefinition.class
     assert resources.comment
     assert resources.comment.class == ResourceDefinition.class
+    assert sut.authClosure
 }
 
 def builders = []
