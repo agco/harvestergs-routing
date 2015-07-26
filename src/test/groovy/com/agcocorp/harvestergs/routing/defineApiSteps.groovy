@@ -31,9 +31,6 @@ Then(~/^I get a complete, correct list$/) { ->
     assert resources.post.class == ResourceDefinition.class
     assert resources.comment
     assert resources.comment.class == ResourceDefinition.class
-
-    // Write code here that turns the phrase above into concrete actions
-    throw new PendingException()
 }
 
 def builders = []
