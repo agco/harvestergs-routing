@@ -1,5 +1,6 @@
 package com.agcocorp.harvestergs.routing.loaders
 
+import com.agcocorp.harvestergs.routing.ApiDefinition
 import com.agcocorp.harvestergs.routing.ResourceDefinition
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -17,9 +18,9 @@ class SparkLoader {
         this.objectMapper.setSerializationInclusion Include.NON_NULL
     }
 
-    def loadResources(Iterable<ResourceDefinition> specs) {
-        specs.each {
-            loadPath it
+    def loadApi(ApiDefinition api) {
+        api.getAllResources().each {
+            loadPath(it.value)
         }
     }
 
