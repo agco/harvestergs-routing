@@ -9,11 +9,6 @@ def paths
 Given(~/^a valid path definition$/) { ->
     definition = new ResourceDefinition('person')
         .paths {
-            /*
-            authenticate { req, res ->
-                error.forbidden()
-            }
-            */
             '/people' {
                 get { req, res -> 'people.get' }
                     .document {

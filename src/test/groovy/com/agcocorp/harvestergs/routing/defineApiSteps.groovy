@@ -15,6 +15,7 @@ Given(~/^a complete API definition$/) { ->
 
     // defining an API
     def api = new ApiDefinition()
+        .port(49575)
         // the resources property is where all API resources are defined
         .resources {
             // creating a 'post' resource. The attributed property

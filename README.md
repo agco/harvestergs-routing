@@ -85,7 +85,9 @@ An example:
 ```
 
 
-*Please notice:* this DSL is a) still not feature complete and b) has the (small) potential for breaking changes. Version 1.0 will settle on a stable DSL and set of features.
+*Please notice:* this DSL is a) still not feature complete and b) has the
+(small) potential for breaking changes. Version 1.0 will settle on a stable DSL
+and set of features.
 
 ### Loaders
 
