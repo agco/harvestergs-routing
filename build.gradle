@@ -63,11 +63,22 @@ artifacts {
     archives javadocJar
 }
 
+configurations {
+    compile {
+        description = 'compile classpath'
+        transitive = true
+    }
+    runtime {
+        extendsFrom compile
+    }
+}
+
 publishing {
     publications {
         maven(MavenPublication) {
             artifact sourcesJar
             artifact javadocJar
+            artifact jar
         }
     }
 }
