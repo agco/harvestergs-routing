@@ -1,6 +1,7 @@
 package com.agcocorp.harvestergs.routing.loaders
 
-import com.agcocorp.harvestergs.routing.APIResource
+import com.agcocorp.harvestergs.routing.ApiDefinition
+import com.agcocorp.harvestergs.routing.ResourceDefinition
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.fge.jsonschema.main.JsonSchemaFactory
@@ -11,15 +12,22 @@ import spark.Spark
 class SparkLoader {
     private final jsonSchemaFactory = JsonSchemaFactory.byDefault()
     private final objectMapper
+    private Closure globalAuth
 
     def SparkLoader() {
         this.objectMapper = new ObjectMapper()
         this.objectMapper.setSerializationInclusion Include.NON_NULL
+        //def sp = new spark.SparkBase()
     }
 
-    def loadResources(Iterable<APIResource> specs) {
-        specs.each {
-            loadPath it
+    def loadApi(ApiDefinition api) {
+        if (api.apiProperties['port']) {
+            Spark.port((int)api.apiProperties['port'])
+        }
+        globalAuth = api.authClosure
+
+        api.getAllResources().each {
+            loadPath(it.value)
         }
     }
 
@@ -59,8 +67,9 @@ class SparkLoader {
         }
     ]
 
-    private def loadPath(APIResource spec) {
-        def authHandler = spec.paths? spec.paths.authHandler : null
+    private def loadPath(ResourceDefinition spec) {
+        //def authHandler = spec.paths? spec.paths.authHandler : null
+        def authHandler = globalAuth
         if (authHandler) {
             authHandler.delegate = this
         }
@@ -109,7 +118,7 @@ class SparkLoader {
         }
     ]
 
-    private def getSchema(APIResource spec) {
+    private def getSchema(ResourceDefinition spec) {
         spec.toJsonSchema()[spec.resourceName]
     }
 
