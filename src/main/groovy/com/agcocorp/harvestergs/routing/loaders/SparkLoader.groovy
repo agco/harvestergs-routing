@@ -17,7 +17,6 @@ class SparkLoader {
     def SparkLoader() {
         this.objectMapper = new ObjectMapper()
         this.objectMapper.setSerializationInclusion Include.NON_NULL
-        //def sp = new spark.SparkBase()
     }
 
     def loadApi(ApiDefinition api) {
@@ -68,7 +67,6 @@ class SparkLoader {
     ]
 
     private def loadPath(ResourceDefinition spec) {
-        //def authHandler = spec.paths? spec.paths.authHandler : null
         def authHandler = globalAuth
         if (authHandler) {
             authHandler.delegate = this

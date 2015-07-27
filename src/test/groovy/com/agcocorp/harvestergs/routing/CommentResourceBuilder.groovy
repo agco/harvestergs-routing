@@ -48,7 +48,6 @@ class CommentResourceBuilder {
                         // todo: remove the need for the 'this' prefix when using closures.
                         get    {req, res -> return this.getById(req.params(':id')) }
                         patch  {req, res -> return req.data }
-                        //.document { docs -> docs.operationId = "commentUpdate"; docs }
                         delete {req, res -> return null }
                     }
                 }

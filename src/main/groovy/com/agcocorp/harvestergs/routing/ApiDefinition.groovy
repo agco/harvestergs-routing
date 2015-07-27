@@ -2,7 +2,6 @@ package com.agcocorp.harvestergs.routing
 
 class ApiDefinition {
     private ResourceSetDefinition allResources
-    private final resourceList = [:]
     final apiProperties = [:]
     Closure authClosure
 
@@ -14,14 +13,6 @@ class ApiDefinition {
         cl.call()
     }
 
-    /*
-    def resources(Closure definition) {
-        definition.delegate = this
-        definition.resolveStrategy = Closure.DELEGATE_FIRST
-        definition.call()
-        return this
-    }
-    */
     def apiResources(Closure cl) {
         allResources = new ResourceSetDefinition(cl)
         return this
@@ -48,23 +39,11 @@ class ApiDefinition {
     def title(String value) { setProp('title', value) }
 
     def addResources(Iterable<ResourceDefinition> resources) {
-        resources.each { resource ->
-            resourceList[resource.resourceName] = resource
-        }
+        allResources = new ResourceSetDefinition(resources)
         return this
     }
 
-    def propertyMissing(String name) {
-        def res = new ResourceDefinition(name)
-        resourceList[name] = res
-        return res
-    }
-
     def getAllResources() {
-        // todo: remove resourceList usage at the end of the refactoring
-        if (resourceList)
-            return resourceList
-
         return allResources? allResources.resourceList : null
     }
 }
