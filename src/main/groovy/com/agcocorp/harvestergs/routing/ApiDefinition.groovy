@@ -14,14 +14,15 @@ class ApiDefinition {
         cl.call()
     }
 
+    /*
     def resources(Closure definition) {
         definition.delegate = this
         definition.resolveStrategy = Closure.DELEGATE_FIRST
         definition.call()
         return this
     }
-
-    def res(Closure cl) {
+    */
+    def apiResources(Closure cl) {
         allResources = new ResourceSetDefinition(cl)
         return this
     }

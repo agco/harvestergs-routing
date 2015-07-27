@@ -22,7 +22,7 @@ Given(~/^a complete API definition$/) { ->
                 error.unauthorized()
             }
         }
-        res {
+        apiResources {
             post {
                 attributes {
                     // defining a 'title' property. It is a string with a maximum
