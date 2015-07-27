@@ -6,12 +6,13 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory
 import static cucumber.api.groovy.EN.*
 import static testHelpers.*
 
-ResourceDefinition definition
+def definition
 def schema
 
 Given(~/^a complete schema definition$/) { ->
-    definition = new ResourceDefinition('person')
-        .attributes {
+    definition = new ResourceDefinition('person',
+    {
+        attributes {
             id uuid.description('User ID. Do not send it when posting or patching.')
             firstName string.required.description("User's first name")
             lastName string.required
@@ -28,10 +29,11 @@ Given(~/^a complete schema definition$/) { ->
                 url string.required
             }
         }
-        .relationships {
+        relationships {
             spouse person
             posts arrayOf(post)
         }
+    })
 }
 
 When(~/^I get its corresponding JSON schema$/) { ->
