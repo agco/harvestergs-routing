@@ -2,7 +2,7 @@ package com.agcocorp.harvestergs.routing
 
 class ApiDefinition {
     private final resourceList = [:]
-    private final apiProperties = [:]
+    final apiProperties = [:]
     Closure authClosure
 
     def resources(Closure definition) {

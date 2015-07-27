@@ -52,8 +52,7 @@ class SwaggerLoader {
         }
     }
 
-    private loadSpec(ResourceDefinition spec, Map current = null) {
-        def root = current?: loadSpecTemplate('api', specProperties)
+    private loadSpec(ResourceDefinition spec, Map root) {
         def resource = spec.resourceName
         def singular = camelCase(resource)
         def plural = getPlural(spec.paths.root)
@@ -98,14 +97,16 @@ class SwaggerLoader {
         }
     }
 
+    private def loadRoot(ApiDefinition api) {
+        def specs = defaultProps
+        specs << api.apiProperties
+        return loadSpecTemplate('api', specProperties)
+    }
+
     def loadDocs(ApiDefinition api) {
-        // todo: side effects all over -- object cannot be reused
-        // (even though nothing indicates the contrary). Remove the
-        // specProperties field altogether
-        specProperties << api.apiProperties
-        def docs = null
+        Map docs = loadRoot(api)
         api.getAllResources().each {
-            docs = this.loadSpec it.value, docs
+            this.loadSpec(it.value, docs)
         }
 
         registerDocs docs
