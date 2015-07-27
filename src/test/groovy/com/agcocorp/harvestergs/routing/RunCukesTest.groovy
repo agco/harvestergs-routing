@@ -9,5 +9,5 @@ import org.junit.runner.RunWith
     format=["pretty", "html:build/reports/cucumber"]
 )
 public class RunCukesTest {
-//leave me empty!
+    // leave me empty!
 }

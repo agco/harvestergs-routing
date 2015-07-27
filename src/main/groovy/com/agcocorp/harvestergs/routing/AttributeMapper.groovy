@@ -60,7 +60,6 @@ class AttributeMapper extends ItemDefinition {
     def AttributeDefinition enumOf(ArrayList enumValues) {
         def prop = new AttributeDefinition(enumValues)
         return prop
-        //return arg
     }
 
     def parseArgs(args) {
@@ -85,7 +84,6 @@ class AttributeMapper extends ItemDefinition {
     {
         def schema = [:]
         def required = []
-        //def idSchema = [  ]
         if (props) {
             schema.properties = [:]
             props.each {

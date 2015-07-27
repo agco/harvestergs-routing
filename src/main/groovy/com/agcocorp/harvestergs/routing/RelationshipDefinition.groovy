@@ -20,7 +20,5 @@ class RelationshipDefinition extends ItemDefinition {
 
     Map toJsonSchema() {
         return jsonSchema << propSpec
-        //schema << propSpec
-        //schema << getPropsJsonSchema()
     }
 }

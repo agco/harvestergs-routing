@@ -6,10 +6,20 @@ class ResourceDefinition {
     final private relationships = new RelationshipSetDefinition()
     final private paths = new PathDefinition()
 
+    /**
+     * Creates a new instance of a ResourceDefinition
+     *
+     * @deprecated use {@link #ResourceDefinition(String, Closure)} instead.
+     */
+    @Deprecated
     ResourceDefinition(String name) {
         this.resourceName = name
     }
 
+    ResourceDefinition(String name, Closure cl) {
+        this.resourceName = name
+        run(cl, this)
+    }
     private run(Closure cl, Object delegate) {
         cl.delegate = delegate
         cl.resolveStrategy = Closure.DELEGATE_FIRST

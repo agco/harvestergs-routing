@@ -77,6 +77,10 @@ Given(~/^a set of related resources$/) { ->
     apiDefinition = new ApiDefinition()
         .addResources(resources)
         .port(1234)
+        .title('Sample API')
+        .description('Sample API for testing purposes')
+        .host('0.0.0.0')
+        .version('1.0.0-alpha')
         .auth { req, res ->
             switch(req.headers('my_fake_token'))
             {
@@ -93,10 +97,9 @@ Given(~/^a set of related resources$/) { ->
 Given(~/^these resources are loaded into an API$/) { ->
     if (!loaded) {
         def sparkLoader = new SparkLoader()
-        //sparkLoader.loadResources(resources)
         sparkLoader.loadApi(apiDefinition)
-        def swaggerLoader = new SwaggerLoader([ "title": "testApp" ])
-        swaggerLoader.loadDocs(resources)
+        def swaggerLoader = new SwaggerLoader()
+        swaggerLoader.loadDocs(apiDefinition)
         loaded = true
     }
 }
@@ -136,8 +139,8 @@ Then(~/^the response correctly describes the resource$/) { ->
     assert response
     assertWith responseData,  {
         assert swagger == "2.0"
-        assert info.version == "0.1.0"
-        assert info.title == "testApp"
+        assert info.version == "1.0.0-alpha"
+        assert info.title == "Sample API"
 
         assert definitions.comment
         assert definitions.post
@@ -151,8 +154,6 @@ Then(~/^the response correctly describes the resource$/) { ->
             assert post.description == "Custom description for comments.post"
         }
 
-        //assert paths."/comments/:id"
-        //paths."/comments/{id}".with {
         assertWith paths."/comments/{id}", {
             assert patch.parameters[1].description ==
                     "The comment JSON you want to update"

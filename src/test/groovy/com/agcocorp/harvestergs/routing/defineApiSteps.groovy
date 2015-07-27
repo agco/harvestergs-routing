@@ -14,66 +14,70 @@ Given(~/^a complete API definition$/) { ->
     // guarantees the sample code always builds
 
     // defining an API
-    def api = new ApiDefinition()
-        .port(49575)
-        // the resources property is where all API resources are defined
-        .resources {
-            // creating a 'post' resource. The attributed property
-            // defines the data contract for the resource, as per JSONAPI
-            post.attributes {
-                // defining a 'title' property. It is a string with a maximum
-                // 100 chars length and is mandatory
-                title string.required.maxLength(100)
-                body string.required.maxLength(4000)
-                status enumOf([ draft, published, howto ])
-                tags arrayOf(string)
-            // relationships (which establish links to other resources) are
-            // defined in this special section
-            }.relationships {
-                // establishing a relationship to a person resource. It is
-                // mandatory and is called 'person'
-                author person.required
-            // the paths section is where API operations are defined
-            }.paths {
-                // all paths must start with a '/' (slash)
-                "/posts" {
-                    // this tells the loader that clients can get and post against the
-                    // /posts endpoint
-                    // the req and res arguments come from java spark
-                    get { req, res -> return "A post list should be returned here." }
-                    post { req, res -> return "This closure should implement the creation of posts." }
-                    // all closures in the section below correspond to http verbs at the
-                    // /posts/:id endpoint
-                    "/:id" {
-                        get { req, res -> return "A specific post should be returned here." }
-                        // please notice that, as per JSON API specs, PATCH is used for updates
-                        patch { req, res -> return "Implement here the code to update posts." }
-                        delete { req, res -> return "Implement here the code to delete a posts." }
-                    }
-                }
-            }
-
-            // defining another resource, called 'comment'. Pretty barebones,
-            // in order to keep this example brief
-            comment.attributes {
-                body string
-            }.relationships {
-                author person
-            }
-
-            // third resource definition
-            person.attributes {
-                name string.required
-                email email.required
-            }
-        }
-        // you can globally set an auth closure for your api
-        .auth { req, res ->
+    def api = new ApiDefinition({
+        port(1337)
+        auth { req, res ->
             if (!req.headers('Authorization')) {
                 // 'error' has helper methods for sending error status codes
                 error.unauthorized()
             }
         }
+        apiResources {
+            post {
+                attributes {
+                    // defining a 'title' property. It is a string with a maximum
+                    // 100 chars length and is mandatory
+                    title string.required.maxLength(100)
+                    body string.required.maxLength(4000)
+                    status enumOf([draft, published, howto])
+                    tags arrayOf(string)
+                }
+                // relationships (which establish links to other resources) are
+                // defined in this special section
+                relationships {
+                    // establishing a relationship to a person resource. It is
+                    // mandatory and is called 'person'
+                    author person.required
+                    // the paths section is where API operations are defined
+                }
+                paths {
+                    // all paths must start with a '/' (slash)
+                    "/posts" {
+                        // this tells the loader that clients can get and post against the
+                        // /posts endpoint
+                        // the req and res arguments come from java spark
+                        get { req, res -> return "A post list should be returned here." }
+                        post { req, res -> return "This closure should implement the creation of posts." }
+                        // all closures in the section below correspond to http verbs at the
+                        // /posts/:id endpoint
+                        "/:id" {
+                            get { req, res -> return "A specific post should be returned here." }
+                            // please notice that, as per JSON API specs, PATCH is used for updates
+                            patch { req, res -> return "Implement here the code to update posts." }
+                            delete { req, res -> return "Implement here the code to delete a posts." }
+                        }
+                    }
+                }
+            }
+            // defining another resource, called 'comment'. Pretty barebones,
+            // in order to keep this example brief
+            comment {
+                attributes {
+                    body string
+                }
+                relationships {
+                    author person
+                }
+            }
+            // third resource definition
+            person {
+                attributes {
+                    name string.required
+                    email email.required
+                }
+            }
+        }
+    })
 
     sut = api
 }
