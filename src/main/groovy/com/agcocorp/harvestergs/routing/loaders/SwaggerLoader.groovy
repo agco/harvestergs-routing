@@ -1,5 +1,6 @@
 package com.agcocorp.harvestergs.routing.loaders
 
+import com.agcocorp.harvestergs.routing.ApiDefinition
 import com.agcocorp.harvestergs.routing.ResourceDefinition
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -15,10 +16,9 @@ class SwaggerLoader {
     private templates = [:]
     private final defaultProps = ['host': 'localhost', 'version': '0.1.0', 'description': 'api description', 'title': 'api title']
 
-    def SwaggerLoader(
-        specProperties = null) {
+    def SwaggerLoader() {
+        // todo: remove this line
         this.specProperties = defaultProps
-        this.specProperties << (specProperties?:[:])
     }
 
     private getTemplate(specName) {
@@ -98,10 +98,14 @@ class SwaggerLoader {
         }
     }
 
-    def loadDocs(Iterable<ResourceDefinition> specs) {
+    def loadDocs(ApiDefinition api) {
+        // todo: side effects all over -- object cannot be reused
+        // (even though nothing indicates the contrary). Remove the
+        // specProperties field altogether
+        specProperties << api.apiProperties
         def docs = null
-        specs.each {
-            docs = this.loadSpec it, docs
+        api.getAllResources().each {
+            docs = this.loadSpec it.value, docs
         }
 
         registerDocs docs
