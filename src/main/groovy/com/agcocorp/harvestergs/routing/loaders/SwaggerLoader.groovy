@@ -11,14 +11,11 @@ import spark.Spark
 
 class SwaggerLoader {
     private slurper = new JsonSlurper()
-    private specProperties
     private engine = new SimpleTemplateEngine()
     private templates = [:]
     private final defaultProps = ['host': 'localhost', 'version': '0.1.0', 'description': 'api description', 'title': 'api title']
 
     def SwaggerLoader() {
-        // todo: remove this line
-        this.specProperties = defaultProps
     }
 
     private getTemplate(specName) {
@@ -100,7 +97,7 @@ class SwaggerLoader {
     private def loadRoot(ApiDefinition api) {
         def specs = defaultProps
         specs << api.apiProperties
-        return loadSpecTemplate('api', specProperties)
+        return loadSpecTemplate('api', specs)
     }
 
     def loadDocs(ApiDefinition api) {
