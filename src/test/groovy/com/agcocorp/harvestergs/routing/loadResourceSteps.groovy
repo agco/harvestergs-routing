@@ -19,6 +19,7 @@ import groovyx.net.http.*
 import static testHelpers.*
 
 def resources = []
+
 def comments = [
     [ body: 'First!', author: [ name: 'John Doe', email: 'john@doe.com' ], tags: [ [name: 'TEST'], [name: 'DUMMY'] ]],
     [ body: 'Really, John?', author: [ name: 'Jane Doe', email: 'jane@doe.com' ], tags: [ [name: 'TEST'], [name: 'DUMMY'] ]],
@@ -30,11 +31,13 @@ def patchComment = comments[1]
 def getComment = comments[0]
 
 class LoadWorld {
+    static def loaded = false
+    def apiDefinition
     def requestData
     def slurper = JsonSlurper.newInstance()
     def _error
     def response
-    def _client = new RESTClient('http://localhost:4567')
+    def _client = new RESTClient('http://localhost:1234')
     def responseData
     def returnCode
 
@@ -71,13 +74,34 @@ Given(~/^a set of related resources$/) { ->
     def postBuilder = new PostResourceBuilder({ null }, { null })
     def dummyBuilder = new DummyResourceBuilder()
     resources = [commentBuilder.build(), postBuilder.build(), dummyBuilder.build()]
+    apiDefinition = new ApiDefinition()
+        .addResources(resources)
+        .port(1234)
+        .title('Sample API')
+        .description('Sample API for testing purposes')
+        .host('0.0.0.0')
+        .version('1.0.0-alpha')
+        .auth { req, res ->
+            switch(req.headers('my_fake_token'))
+            {
+                case null:
+                    error.unauthorized()
+                    break
+                case 'invalid':
+                    error.forbidden()
+                    break
+            }
+        }
 }
 
 Given(~/^these resources are loaded into an API$/) { ->
-    def sparkLoader = new SparkLoader()
-    sparkLoader.loadResources(resources)
-    def swaggerLoader = new SwaggerLoader([ "title": "testApp" ])
-    swaggerLoader.loadDocs(resources)
+    if (!loaded) {
+        def sparkLoader = new SparkLoader()
+        sparkLoader.loadApi(apiDefinition)
+        def swaggerLoader = new SwaggerLoader()
+        swaggerLoader.loadDocs(apiDefinition)
+        loaded = true
+    }
 }
 
 def targets = [
@@ -115,8 +139,8 @@ Then(~/^the response correctly describes the resource$/) { ->
     assert response
     assertWith responseData,  {
         assert swagger == "2.0"
-        assert info.version == "0.1.0"
-        assert info.title == "testApp"
+        assert info.version == "1.0.0-alpha"
+        assert info.title == "Sample API"
 
         assert definitions.comment
         assert definitions.post
@@ -130,8 +154,6 @@ Then(~/^the response correctly describes the resource$/) { ->
             assert post.description == "Custom description for comments.post"
         }
 
-        //assert paths."/comments/:id"
-        //paths."/comments/{id}".with {
         assertWith paths."/comments/{id}", {
             assert patch.parameters[1].description ==
                     "The comment JSON you want to update"

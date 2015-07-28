@@ -1,6 +1,7 @@
 package com.agcocorp.harvestergs.routing.loaders
 
-import com.agcocorp.harvestergs.routing.APIResource
+import com.agcocorp.harvestergs.routing.ApiDefinition
+import com.agcocorp.harvestergs.routing.ResourceDefinition
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -15,10 +16,9 @@ class SwaggerLoader {
     private templates = [:]
     private final defaultProps = ['host': 'localhost', 'version': '0.1.0', 'description': 'api description', 'title': 'api title']
 
-    def SwaggerLoader(
-        specProperties = null) {
+    def SwaggerLoader() {
+        // todo: remove this line
         this.specProperties = defaultProps
-        this.specProperties << (specProperties?:[:])
     }
 
     private getTemplate(specName) {
@@ -52,8 +52,7 @@ class SwaggerLoader {
         }
     }
 
-    private loadSpec(APIResource spec, Map current = null) {
-        def root = current?: loadSpecTemplate('api', specProperties)
+    private loadSpec(ResourceDefinition spec, Map root) {
         def resource = spec.resourceName
         def singular = camelCase(resource)
         def plural = getPlural(spec.paths.root)
@@ -98,10 +97,16 @@ class SwaggerLoader {
         }
     }
 
-    def loadDocs(Iterable<APIResource> specs) {
-        def docs = null
-        specs.each {
-            docs = this.loadSpec it, docs
+    private def loadRoot(ApiDefinition api) {
+        def specs = defaultProps
+        specs << api.apiProperties
+        return loadSpecTemplate('api', specProperties)
+    }
+
+    def loadDocs(ApiDefinition api) {
+        Map docs = loadRoot(api)
+        api.getAllResources().each {
+            this.loadSpec(it.value, docs)
         }
 
         registerDocs docs

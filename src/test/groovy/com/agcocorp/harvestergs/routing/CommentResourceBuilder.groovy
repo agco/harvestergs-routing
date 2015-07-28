@@ -10,7 +10,7 @@ class CommentResourceBuilder {
     }
 
     def build() {
-        def resource = new APIResource('comment')
+        def resource = new ResourceDefinition('comment')
             .attributes {
                 body string.description('Comments contents').required.maxLength(4000).minLength(1)
                 author {
@@ -32,18 +32,6 @@ class CommentResourceBuilder {
                 post posts.description('Owning post').required
             }
             .paths {
-                authenticate { req, res ->
-                    switch(req.headers('my_fake_token'))
-                    {
-                        case null:
-                            error.unauthorized()
-                            break
-                        case 'invalid':
-                            error.forbidden()
-                            break
-                    }
-                    // this is a very bad idea to let all the other cases through, but this is dummy code anyway...
-                }
                 "/comments" {
                     get { req, res ->
                         return this.getAll()
@@ -60,7 +48,6 @@ class CommentResourceBuilder {
                         // todo: remove the need for the 'this' prefix when using closures.
                         get    {req, res -> return this.getById(req.params(':id')) }
                         patch  {req, res -> return req.data }
-                        //.document { docs -> docs.operationId = "commentUpdate"; docs }
                         delete {req, res -> return null }
                     }
                 }

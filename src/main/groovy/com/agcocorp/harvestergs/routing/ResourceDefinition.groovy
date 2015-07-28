@@ -1,15 +1,25 @@
 package com.agcocorp.harvestergs.routing
 
-class APIResource {
+class ResourceDefinition {
     final resourceName
     final private attributes = new AttributeSetDefinition()
     final private relationships = new RelationshipSetDefinition()
     final private paths = new PathDefinition()
 
-    APIResource(String name) {
+    /**
+     * Creates a new instance of a ResourceDefinition
+     *
+     * @deprecated use {@link #ResourceDefinition(String, Closure)} instead.
+     */
+    @Deprecated
+    ResourceDefinition(String name) {
         this.resourceName = name
     }
 
+    ResourceDefinition(String name, Closure cl) {
+        this.resourceName = name
+        run(cl, this)
+    }
     private run(Closure cl, Object delegate) {
         cl.delegate = delegate
         cl.resolveStrategy = Closure.DELEGATE_FIRST

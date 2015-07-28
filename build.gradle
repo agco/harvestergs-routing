@@ -1,12 +1,14 @@
 plugins {
-    id "com.jfrog.bintray" version "1.1"
+    id "com.jfrog.bintray" version "1.2"
 }
 
 apply plugin: 'groovy'
 apply plugin: 'jacoco'
 apply plugin: 'codenarc'
+apply plugin: "maven-publish"
 
-version = '0.8.0-beta'
+version = '0.9.0-beta'
+group = 'com.agcocorp'
 
 repositories {
     jcenter()
@@ -38,7 +40,7 @@ codenarc {
 bintray {
     user = "${System.env.BINTRAY_USER}"
     key = "${System.env.BINTRAY_KEY}"
-    dryRun = true
+    publications = ['maven']
     pkg {
         repo = 'harvester.gs'
         name = 'harvestergs-routing'
@@ -56,7 +58,13 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
-artifacts {
-    archives sourcesJar
-    archives javadocJar
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+        }
+    }
 }
+
