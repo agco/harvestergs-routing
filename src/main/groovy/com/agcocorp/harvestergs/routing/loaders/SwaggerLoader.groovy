@@ -82,13 +82,14 @@ class SwaggerLoader {
         return root
     }
 
-    private registerDocs(docs) {
+    private registerDocs(Map docs, ApiDefinition api) {
         ObjectMapper mapper = new ObjectMapper()
         mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false)
         mapper.setSerializationInclusion(Include.NON_NULL)
         def json = mapper.writeValueAsString(docs)
+        def docsEndpoint = api.apiProperties.docsEndpoint?: 'swagger'
 
-        Spark.get("/swagger"){ req, res ->
+        Spark.get("/$docsEndpoint"){ req, res ->
             res.type "application/vnd.api+json"
             json
         }
@@ -106,6 +107,6 @@ class SwaggerLoader {
             this.loadSpec(it.value, docs)
         }
 
-        registerDocs docs
+        registerDocs(docs, api)
     }
 }

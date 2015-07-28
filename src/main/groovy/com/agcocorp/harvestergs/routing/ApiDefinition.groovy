@@ -28,7 +28,7 @@ class ApiDefinition {
         return this
     }
 
-    def port(Integer portNumber) { setProp('port', portNumber) }
+    def port(Integer value) { setProp('port', value) }
 
     def host(String value) { setProp('host', value) }
 
@@ -37,6 +37,8 @@ class ApiDefinition {
     def description(String value) { setProp('description', value) }
 
     def title(String value) { setProp('title', value) }
+
+    def docsEndpoint(String value) { setProp('docsEndpoint', value) }
 
     def addResources(Iterable<ResourceDefinition> resources) {
         allResources = new ResourceSetDefinition(resources)

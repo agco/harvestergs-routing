@@ -81,6 +81,7 @@ Given(~/^a set of related resources$/) { ->
         .description('Sample API for testing purposes')
         .host('0.0.0.0')
         .version('1.0.0-alpha')
+        .docsEndpoint('docs')
         .auth { req, res ->
             switch(req.headers('my_fake_token'))
             {
@@ -132,7 +133,7 @@ Then(~/^the conforms the following regex (.*)$/) { pattern ->
 }
 
 When(~/^I get the documentation for it$/) { ->
-    doOp("get", "/swagger")
+    doOp("get", "/docs")
 }
 
 Then(~/^the response correctly describes the resource$/) { ->
