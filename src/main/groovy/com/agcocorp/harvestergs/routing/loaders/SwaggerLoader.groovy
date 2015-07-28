@@ -11,14 +11,11 @@ import spark.Spark
 
 class SwaggerLoader {
     private slurper = new JsonSlurper()
-    private specProperties
     private engine = new SimpleTemplateEngine()
     private templates = [:]
     private final defaultProps = ['host': 'localhost', 'version': '0.1.0', 'description': 'api description', 'title': 'api title']
 
     def SwaggerLoader() {
-        // todo: remove this line
-        this.specProperties = defaultProps
     }
 
     private getTemplate(specName) {
@@ -85,13 +82,14 @@ class SwaggerLoader {
         return root
     }
 
-    private registerDocs(docs) {
+    private registerDocs(Map docs, ApiDefinition api) {
         ObjectMapper mapper = new ObjectMapper()
         mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false)
         mapper.setSerializationInclusion(Include.NON_NULL)
         def json = mapper.writeValueAsString(docs)
+        def docsEndpoint = api.apiProperties.docsEndpoint?: 'swagger'
 
-        Spark.get("/swagger"){ req, res ->
+        Spark.get("/$docsEndpoint"){ req, res ->
             res.type "application/vnd.api+json"
             json
         }
@@ -100,7 +98,7 @@ class SwaggerLoader {
     private def loadRoot(ApiDefinition api) {
         def specs = defaultProps
         specs << api.apiProperties
-        return loadSpecTemplate('api', specProperties)
+        return loadSpecTemplate('api', specs)
     }
 
     def loadDocs(ApiDefinition api) {
@@ -109,6 +107,6 @@ class SwaggerLoader {
             this.loadSpec(it.value, docs)
         }
 
-        registerDocs docs
+        registerDocs(docs, api)
     }
 }
