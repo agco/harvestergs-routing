@@ -7,7 +7,7 @@ apply plugin: 'jacoco'
 apply plugin: 'codenarc'
 apply plugin: "maven-publish"
 
-version = '0.8.1-beta'
+version = '0.9.0-beta'
 group = 'com.agcocorp'
 
 repositories {
@@ -45,6 +45,10 @@ bintray {
         repo = 'harvester.gs'
         name = 'harvestergs-routing'
         userOrg = 'agco'
+        version {
+            name = version
+            vcsTag = version
+        }
     }
 }
 
@@ -58,27 +62,12 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-}
-
-configurations {
-    compile {
-        description = 'compile classpath'
-        transitive = true
-    }
-    runtime {
-        extendsFrom compile
-    }
-}
-
 publishing {
     publications {
         maven(MavenPublication) {
+            from components.java
             artifact sourcesJar
             artifact javadocJar
-            artifact jar
         }
     }
 }
