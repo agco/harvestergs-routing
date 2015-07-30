@@ -128,7 +128,7 @@ Then(~/^the response is a valid jsonapi error$/) { ->
         assert detail
     }
 }
-Then(~/^the conforms the following regex (.*)$/) { pattern ->
+Then(~/^it conforms the following regex (.*)$/) { pattern ->
     assert responseData.detail ==~ pattern
 }
 

@@ -42,14 +42,14 @@ Feature: Load a resource
        Then it is swagger-compliant response
         And the response correctly describes the resource
 
-  Scenario Outline: Mandatory fields missing
+  Scenario Outline: Validation
       Given the aforementioned resource definition
         And a resource that violates the <rule> rule
         And containing these attributes <attributes>
        When I post it at the /comments endpoint
        Then I receive a 400 response code
         And the response is a valid jsonapi error
-        And the conforms the following regex <regex>
+        And it conforms the following regex <regex>
   Examples:
     | rule      | regex         | attributes                                            |
     | required  | (?s).*body.*  | {"author":{"name":"John Doe"}}                        |
@@ -63,4 +63,13 @@ Feature: Load a resource
       Given the aforementioned resource definition
        When I run a post command that bypasses standard validation
        Then I receive a 201 response code
+
+  Scenario: API error handling
+     Given a failure case where <failure_case>
+      When I run a <action> at path <path>
+      Then I receive a <number> response code
+       And the response is a valid jsonapi error
+       And the conforms the following regex <regex>
+    | case | action | number |
+
 

@@ -38,8 +38,8 @@ codenarc {
 }
 
 bintray {
-    user = "${System.env.BINTRAY_USER}"
-    key = "${System.env.BINTRAY_KEY}"
+    user = "dclucas"
+    key = "34fa8320d3587756367a395fdb78c3088b748d02"
     publications = ['maven']
     pkg {
         repo = 'harvester.gs'
