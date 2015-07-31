@@ -5,6 +5,7 @@ import com.agcocorp.harvestergs.routing.ResourceDefinition
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.fge.jsonschema.main.JsonSchemaFactory
+import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
 import com.fasterxml.jackson.databind.JsonNode
 import spark.Spark
@@ -28,6 +29,20 @@ class SparkLoader {
         api.getAllResources().each {
             loadPath(it.value)
         }
+        Spark.exception(Exception.class, { e, req, res ->
+            res.status(500)
+            res.type "application/vnd.api+json"
+            res.body(getErrorMsg([title: 'Internal server error']))
+        })
+    }
+
+    private getErrorMsg(Map... errors) {
+        def result = [errors:
+            errors.collect {
+                [id: UUID.randomUUID()] << it
+            }
+        ]
+        return JsonOutput.toJson(result)
     }
 
     private getPogo(req, allowNulls = false) {
@@ -102,8 +117,7 @@ class SparkLoader {
 
     private error = [
         invalid: { results ->
-            Spark.halt(400, JsonOutput.toJson([
-                id: UUID.randomUUID(),
+            Spark.halt(400, getErrorMsg([
                 title: 'Invalid data',
                 detail: results.toString()
             ]))

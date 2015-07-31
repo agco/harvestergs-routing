@@ -72,8 +72,9 @@ World() {
 Given(~/^a set of related resources$/) { ->
     def commentBuilder = new CommentResourceBuilder({ comments }, { getComment })
     def postBuilder = new PostResourceBuilder({ null }, { null })
+    def errorBuilder = new ErrorResourceBuilder()
     def dummyBuilder = new DummyResourceBuilder()
-    resources = [commentBuilder.build(), postBuilder.build(), dummyBuilder.build()]
+    resources = [commentBuilder.build(), postBuilder.build(), dummyBuilder.build(), errorBuilder.build()]
     apiDefinition = new ApiDefinition()
         .addResources(resources)
         .port(1234)
@@ -106,15 +107,21 @@ Given(~/^these resources are loaded into an API$/) { ->
 }
 
 def targets = [
-        "comments" : [
-                "get" : null,
-                "post": postComment,
-        ],
-        "comments/1": [
-                "get": null,
-                "patch": patchComment,
-                "delete": null
-        ]
+    "comments": [
+            "get" : null,
+            "post": postComment,
+    ],
+    "comments/1": [
+            "get": null,
+            "patch": patchComment,
+            "delete": null
+    ],
+    "errors": [
+        "post": [:]
+    ],
+    "errors/1": [
+        get: null
+    ]
 ]
 
 Given(~/^the aforementioned resource definition$/) { ->
@@ -123,13 +130,14 @@ Given(~/^the aforementioned resource definition$/) { ->
 
 Then(~/^the response is a valid jsonapi error$/) { ->
     assertWith responseData, {
-        assert id
-        assert title
-        assert detail
+        assert errors
+        //assert id
+        //assert title
+        //assert detail
     }
 }
 Then(~/^it conforms the following regex (.*)$/) { pattern ->
-    assert responseData.detail ==~ pattern
+    assert responseData.errors[0].detail ==~ pattern
 }
 
 When(~/^I get the documentation for it$/) { ->
@@ -346,4 +354,14 @@ When(~/^I try to access an endpoint configured with no auth$/) { ->
 
 When(~/I run a post command that bypasses standard validation/) { ->
     doOp("post", "/posts")
+}
+
+
+Given(~/^a failing API endpoint$/) { ->
+    // no action here -- the 'errors' endpoint has already been loaded
+}
+
+When(~/^I post against it$/) { ->
+    //throw new PendingException()
+    doOp("post", "/errors", [:], null, true)
 }
