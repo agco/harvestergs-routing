@@ -65,11 +65,10 @@ Feature: Load a resource
        Then I receive a 201 response code
 
   Scenario: API error handling
-     Given a failure case where <failure_case>
-      When I run a <action> at path <path>
-      Then I receive a <number> response code
+     Given a failing API endpoint
+      When I post against it
+      Then I receive a 500 response code
        And the response is a valid jsonapi error
-       And the conforms the following regex <regex>
-    | case | action | number |
+
 
 
