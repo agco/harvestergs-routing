@@ -49,6 +49,9 @@ class CommentResourceBuilder {
                         get    {req, res -> return this.getById(req.params(':id')) }
                         patch  {req, res -> return req.data }
                         delete {req, res -> return null }
+                        "/post" {
+                            get { req, res -> return [data:[type:'post', attributes: ['title': 'fake post']]]}
+                        }
                     }
                 }
             }

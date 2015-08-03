@@ -116,6 +116,9 @@ def targets = [
             "patch": patchComment,
             "delete": null
     ],
+    "comments/1/post": [
+        "get" : null,
+    ],
     "errors": [
         "post": [:]
     ],
@@ -301,6 +304,10 @@ Then(~/^the response message is (.+)/) { messageContents ->
             break
         case "empty":
             assert ! responseData
+            break
+        case "a linked resource":
+            assert responseData.data
+            assert responseData.data.type == 'post'
             break
         default:
             throw new PendingException()

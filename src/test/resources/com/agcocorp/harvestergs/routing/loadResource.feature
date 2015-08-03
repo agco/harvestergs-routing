@@ -29,12 +29,13 @@ Feature: Load a resource
        And the response content-type is "application/vnd.api+json"
 
   Examples:
-    | path       | action | code | response             |
-    | comments   | get    |  200 | a list               |
-    | comments   | post   |  201 | the new resource     |
-    | comments/1 | patch  |  200 | the updated resource |
-    | comments/1 | delete |  204 | empty                |
-    | comments/1 | get    |  200 | a single resource    |
+    | path            | action | code | response             |
+    | comments        | get    |  200 | a list               |
+    | comments        | post   |  201 | the new resource     |
+    | comments/1      | patch  |  200 | the updated resource |
+    | comments/1      | delete |  204 | empty                |
+    | comments/1      | get    |  200 | a single resource    |
+    | comments/1/post | get    |  200 | a linked resource    |
 
   Scenario: Standard docs generation
       Given the aforementioned resource definition
